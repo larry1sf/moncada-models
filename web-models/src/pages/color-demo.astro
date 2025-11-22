@@ -1,0 +1,239 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ColorSelector from "../components/ColorSelector.astro";
+---
+
+<BaseLayout title="Selector de Colores - Demo">
+    <section class="demo-section">
+        <div class="demo-container">
+            <div class="demo-left">
+                <h2>Selector de Colores</h2>
+                <p>
+                    Haz clic en cualquier color para seleccionarlo. El
+                    componente es totalmente personalizable y adorable.
+                </p>
+
+                <ColorSelector
+                    label="Elige tu color favorito"
+                    activeColor="#FFE5D9"
+                    colors={[
+                        "#FFE5D9",
+                        "#B4D7F1",
+                        "#FFB6C1",
+                        "#E8D5C4",
+                        "#C4A47A",
+                        "#8A7A72",
+                    ]}
+                />
+
+                <div class="color-info">
+                    <h3>Colores disponibles:</h3>
+                    <ul>
+                        <li>
+                            <span class="dot" style="background: #FFE5D9;"
+                            ></span> Coral Claro
+                        </li>
+                        <li>
+                            <span class="dot" style="background: #B4D7F1;"
+                            ></span> Azul Cielo
+                        </li>
+                        <li>
+                            <span class="dot" style="background: #FFB6C1;"
+                            ></span> Rosa Suave
+                        </li>
+                        <li>
+                            <span class="dot" style="background: #E8D5C4;"
+                            ></span> Beige Cálido
+                        </li>
+                        <li>
+                            <span class="dot" style="background: #C4A47A;"
+                            ></span> Marrón Tostado
+                        </li>
+                        <li>
+                            <span class="dot" style="background: #8A7A72;"
+                            ></span> Gris Taupe
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="demo-right">
+                <div class="preview-box">
+                    <h3>Vista Previa</h3>
+                    <div
+                        id="colorPreview"
+                        class="color-preview"
+                        style="background: #FFE5D9;"
+                    >
+                    </div>
+                    <p id="colorName">Color seleccionado: Coral Claro</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</BaseLayout>
+
+<style>
+    .demo-section {
+        animation: fadeIn 0.6s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .demo-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        align-items: start;
+    }
+
+    .demo-left h2 {
+        font-size: 2rem;
+        color: var(--color-text-dark);
+        margin: 0 0 1rem 0;
+        font-weight: 700;
+    }
+
+    .demo-left > p {
+        color: var(--color-text-medium);
+        font-size: 1.05rem;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+    }
+
+    .color-info {
+        margin-top: 3rem;
+        padding: 2rem;
+        background: linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.7) 0%,
+            rgba(245, 241, 232, 0.7) 100%
+        );
+        border-radius: 1rem;
+        border: 1px solid rgba(232, 213, 196, 0.5);
+    }
+
+    .color-info h3 {
+        margin: 0 0 1.5rem 0;
+        color: var(--color-text-dark);
+        font-weight: 600;
+    }
+
+    .color-info ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    .color-info li {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        color: var(--color-text-medium);
+        font-weight: 500;
+    }
+
+    .dot {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid rgba(232, 213, 196, 0.5);
+    }
+
+    .demo-right {
+        display: flex;
+        justify-content: center;
+    }
+
+    .preview-box {
+        background: white;
+        border: 2px solid rgba(232, 213, 196, 0.6);
+        border-radius: 1.5rem;
+        padding: 2.5rem;
+        text-align: center;
+        box-shadow: 0 4px 20px rgba(172, 140, 124, 0.1);
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .preview-box h3 {
+        margin: 0 0 1.5rem 0;
+        color: var(--color-text-dark);
+        font-weight: 600;
+    }
+
+    .color-preview {
+        width: 100%;
+        height: 200px;
+        border-radius: 1rem;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    #colorName {
+        margin: 0;
+        color: var(--color-text-medium);
+        font-weight: 500;
+        font-size: 0.95rem;
+    }
+
+    @media (max-width: 968px) {
+        .demo-container {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .preview-box {
+            max-width: none;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .demo-left h2 {
+            font-size: 1.5rem;
+        }
+
+        .color-info {
+            padding: 1.5rem;
+        }
+    }
+</style>
+
+<script>
+    // Escuchar cambios de color
+    document.addEventListener("colorChange", (event: any) => {
+        const color = event.detail.color;
+        const colorNames: Record<string, string> = {
+            "#FFE5D9": "Coral Claro",
+            "#B4D7F1": "Azul Cielo",
+            "#FFB6C1": "Rosa Suave",
+            "#E8D5C4": "Beige Cálido",
+            "#C4A47A": "Marrón Tostado",
+            "#8A7A72": "Gris Taupe",
+        };
+
+        const preview = document.getElementById("colorPreview") as HTMLElement;
+        const colorName = document.getElementById("colorName") as HTMLElement;
+
+        if (preview) {
+            preview.style.background = color;
+        }
+        if (colorName) {
+            colorName.textContent = `Color seleccionado: ${colorNames[color] || color}`;
+        }
+    });
+</script>

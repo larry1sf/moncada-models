@@ -1,0 +1,80 @@
+---
+import { categories } from "../data/categories";
+
+const categoryFilters = categories.map((cat) => ({
+  id: cat.id,
+  // label: `${cat.icon} ${cat.name}`,
+  count: cat.productCount,
+}));
+---
+
+<div class="filter-container">
+  {
+    categoryFilters.map((cat) => (
+      <button class="filter-btn" data-category={cat.id}>
+        {/* {cat.label} */}
+        <span class="count">({cat.count})</span>
+      </button>
+    ))
+  }
+</div>
+
+<style>
+  .filter-container {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.5) 0%,
+      rgba(245, 241, 232, 0.5) 100%
+    );
+    border-radius: 1rem;
+    border: 1px solid rgba(232, 213, 196, 0.4);
+  }
+
+  .filter-btn {
+    padding: 0.7rem 1.2rem;
+    border: 2px solid #e8d5c4;
+    background: white;
+    color: #5a4a42;
+    border-radius: 0.75rem;
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: "Poppins", sans-serif;
+  }
+
+  .filter-btn:hover {
+    border-color: #c4a47a;
+    background: linear-gradient(135deg, #f5f1e8 0%, #ede8e0 100%);
+    transform: translateY(-2px);
+  }
+
+  .filter-btn.active {
+    background: linear-gradient(135deg, #a89080 0%, #c4a47a 100%);
+    color: white;
+    border-color: #a89080;
+  }
+
+  .count {
+    font-size: 0.85rem;
+    opacity: 0.8;
+    margin-left: 0.3rem;
+  }
+
+  @media (max-width: 640px) {
+    .filter-container {
+      gap: 0.7rem;
+    }
+
+    .filter-btn {
+      padding: 0.5rem 0.9rem;
+      font-size: 0.85rem;
+    }
+  }
+</style>

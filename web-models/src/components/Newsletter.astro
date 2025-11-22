@@ -1,0 +1,119 @@
+---
+---
+
+<section class="newsletter">
+  <div class="newsletter-content">
+    <div class="newsletter-text">
+      <h2>Suscríbete a Nuestro Newsletter</h2>
+      <p>Recibe ofertas exclusivas, tips de moda y nuevas colecciones primero 💌</p>
+    </div>
+    <form class="newsletter-form">
+      <input 
+        type="email" 
+        placeholder="tu@email.com" 
+        required
+        class="email-input"
+      />
+      <button type="submit" class="subscribe-btn">
+        ✉️ Suscribirse
+      </button>
+    </form>
+  </div>
+</section>
+
+<style>
+  .newsletter {
+    background: linear-gradient(135deg, #a89080 0%, #c4a47a 100%);
+    border-radius: 1.5rem;
+    padding: 3rem 2rem;
+    margin: 4rem 0 3rem 0;
+    box-shadow: 0 8px 24px rgba(172, 140, 124, 0.2);
+  }
+
+  .newsletter-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .newsletter-text h2 {
+    margin: 0 0 0.75rem 0;
+    color: white;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .newsletter-text p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .newsletter-form {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .email-input {
+    flex: 1;
+    padding: 0.85rem 1.2rem;
+    border: none;
+    border-radius: 0.75rem;
+    background: white;
+    color: #5a4a42;
+    font-size: 0.95rem;
+    font-family: 'Poppins', sans-serif;
+    transition: box-shadow 0.3s ease;
+  }
+
+  .email-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+  }
+
+  .email-input::placeholder {
+    color: #a89080;
+  }
+
+  .subscribe-btn {
+    padding: 0.85rem 1.8rem;
+    background: white;
+    color: #a89080;
+    border: none;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    white-space: nowrap;
+  }
+
+  .subscribe-btn:hover {
+    background: rgba(255, 255, 255, 0.9);
+    transform: scale(1.02);
+  }
+
+  @media (max-width: 768px) {
+    .newsletter-content {
+      grid-template-columns: 1fr;
+    }
+
+    .newsletter-form {
+      flex-direction: column;
+    }
+
+    .subscribe-btn {
+      width: 100%;
+    }
+
+    .newsletter {
+      padding: 2rem 1.5rem;
+      margin: 3rem 0 2rem 0;
+    }
+  }
+</style>

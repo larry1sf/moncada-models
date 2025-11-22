@@ -1,0 +1,174 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import CategoryCard from "../components/CategoryCard.astro";
+import { categories } from "../data/categories";
+---
+
+<BaseLayout title="Categorías de Blusas - Tienda de Ropa">
+  <div class="categories-container">
+    <section class="hero-section">
+      <div class="hero-content">
+        <h1>Explora Nuestras Categorías</h1>
+        <p>
+          Descubre diferentes estilos de blusas para cada ocasión. Desde casual
+          hasta formal, encuentra tu estilo perfecto.
+        </p>
+      </div>
+    </section>
+
+    <section class="categories-grid">
+      {
+        categories.map(
+          ({ id, slug, title, description, image, productCount }) => (
+            <CategoryCard
+              id={id}
+              slug={slug}
+              title={title}
+              description={description}
+              image={image}
+              productCount={productCount}
+            />
+          ),
+        )
+      }
+    </section>
+
+    <section class="cta-section">
+      <div class="cta-content">
+        <h2>¿No sabes qué elegir?</h2>
+        <p>
+          Visita nuestra colección completa y descubre todas nuestras blusas
+        </p>
+        <a href="/" class="cta-button">Ver Todos los Productos</a>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .categories-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .hero-section {
+    text-align: center;
+    margin-bottom: 4rem;
+    animation: fadeInDown 0.6s ease-out;
+  }
+
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .hero-content h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    margin: 0 0 1rem 0;
+    font-weight: 700;
+    background: linear-gradient(135deg, #a89080 0%, #c4a47a 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.02em;
+  }
+
+  .hero-content p {
+    font-size: 1.1rem;
+    color: #8a7a72;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .categories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 4rem;
+    animation: fadeInUp 0.6s ease-out 0.2s both;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .cta-section {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.7) 0%,
+      rgba(245, 241, 232, 0.7) 100%
+    );
+    border: 2px solid rgba(232, 213, 196, 0.6);
+    border-radius: 1.5rem;
+    padding: 3rem;
+    text-align: center;
+    backdrop-filter: blur(10px);
+  }
+
+  .cta-content h2 {
+    font-size: 1.8rem;
+    margin: 0 0 0.8rem 0;
+    color: #5a4a42;
+    font-weight: 700;
+  }
+
+  .cta-content p {
+    font-size: 1rem;
+    color: #8a7a72;
+    margin: 0 0 1.5rem 0;
+  }
+
+  .cta-button {
+    display: inline-block;
+    padding: 0.9rem 2rem;
+    background: linear-gradient(135deg, #a89080 0%, #c4a47a 100%);
+    color: white;
+    border: none;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(172, 140, 124, 0.2);
+  }
+
+  .cta-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(172, 140, 124, 0.3);
+  }
+
+  @media (max-width: 768px) {
+    .categories-container {
+      padding: 1rem;
+    }
+
+    .categories-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .cta-section {
+      padding: 2rem;
+    }
+
+    .cta-content h2 {
+      font-size: 1.5rem;
+    }
+  }
+</style>

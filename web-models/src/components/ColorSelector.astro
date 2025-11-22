@@ -1,0 +1,174 @@
+---
+export interface Props {
+    colors?: string[];
+    activeColor?: string;
+    label?: string;
+    onChange?: (color: string) => void;
+}
+
+const {
+    colors = ["#FFE5D9", "#B4D7F1", "#FFB6C1", "#E8D5C4", "#C4A47A", "#8A7A72"],
+    activeColor,
+    label = "Selecciona un color",
+    onChange,
+} = Astro.props;
+
+const colorLabels: Record<string, string> = {
+    "#FFE5D9": "Coral Claro",
+    "#B4D7F1": "Azul Cielo",
+    "#FFB6C1": "Rosa Suave",
+    "#E8D5C4": "Beige Cálido",
+    "#C4A47a": "Marrón Tostado",
+    "#8A7A72": "Gris Taupe",
+};
+---
+
+<div class="color-selector">
+    <label class="selector-label">{label}</label>
+    <div class="colors-grid">
+        {
+            colors.map((color) => (
+                <button
+                    class={`color-button ${activeColor === color ? "active" : ""}`}
+                    style={`--color: ${color}`}
+                    data-color={color}
+                    title={colorLabels[color] || color}
+                    aria-label={`Seleccionar color ${colorLabels[color] || color}`}
+                >
+                    <span class="color-dot" />
+                    {activeColor === color && <span class="checkmark">✓</span>}
+                </button>
+            ))
+        }
+    </div>
+</div>
+
+<style>
+    .color-selector {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .selector-label {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--color-text-dark, #5a4a42);
+        letter-spacing: 0.05em;
+        display: block;
+    }
+
+    .colors-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+        gap: 1rem;
+        max-width: 100%;
+    }
+
+    .color-button {
+        --color: #c4a47a;
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1;
+        border: 3px solid transparent;
+        border-radius: 1rem;
+        background: transparent;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .color-dot {
+        display: block;
+        width: 100%;
+        height: 100%;
+        background-color: var(--color);
+        border-radius: 0.8rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .color-button:hover .color-dot {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        transform: scale(1.05);
+    }
+
+    .color-button:hover {
+        border-color: var(--color);
+        transform: translateY(-2px);
+    }
+
+    .color-button.active {
+        border-color: var(--color-accent, #c4a47a);
+        box-shadow: 0 0 0 3px rgba(196, 164, 122, 0.2);
+    }
+
+    .color-button.active .color-dot {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+        transform: scale(0.95);
+    }
+
+    .checkmark {
+        position: absolute;
+        color: white;
+        font-size: 1.5rem;
+        font-weight: bold;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        animation: checkPulse 0.4s ease-out;
+        z-index: 10;
+    }
+
+    @keyframes checkPulse {
+        0% {
+            transform: scale(0.5);
+            opacity: 0;
+        }
+        50% {
+            transform: scale(1.2);
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .colors-grid {
+            grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+            gap: 0.8rem;
+        }
+
+        .selector-label {
+            font-size: 0.95rem;
+        }
+
+        .checkmark {
+            font-size: 1.2rem;
+        }
+    }
+</style>
+
+<script>
+    document.querySelectorAll(".color-button").forEach((button) => {
+        button.addEventListener("click", (e) => {
+            e.preventDefault();
+            const color = button.getAttribute("data-color");
+
+            // Actualizar estado visual
+            document.querySelectorAll(".color-button").forEach((btn) => {
+                btn.classList.remove("active");
+            });
+            button.classList.add("active");
+
+            // Disparar evento personalizado
+            const event = new CustomEvent("colorChange", {
+                detail: { color },
+            });
+            document.dispatchEvent(event);
+        });
+    });
+</script>

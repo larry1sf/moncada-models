@@ -1,0 +1,38 @@
+---
+import { products as allProducts } from "../data/products";
+import ProductCard from "./ProductCard.astro";
+
+type Props = {
+  products?: typeof allProducts;
+};
+const { products = allProducts } = Astro.props;
+---
+
+<section class="product-list">
+  {products.map((product) => <ProductCard product={product} />)}
+</section>
+
+<style>
+  .product-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 2rem;
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .product-list {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+  }
+</style>

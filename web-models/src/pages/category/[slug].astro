@@ -1,0 +1,277 @@
+---
+import type { GetStaticPaths } from "astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ProductList from "../../components/ProductList.astro";
+import { categories } from "../../data/categories";
+import { products } from "../../data/products";
+import { STRAPI_HOST } from "~/services/consts";
+import Image from "astro/components/Image.astro";
+
+const { slug } = Astro.params;
+
+// Encontrar la categoría
+const category = categories.find((cat) => cat.slug === slug);
+
+if (!category) {
+  return Astro.redirect("/categories");
+}
+
+export const getStaticPaths = (() => {
+  return categories.map(({ slug }) => ({ params: { slug } }));
+}) satisfies GetStaticPaths;
+
+// Mapear productos a categorías
+const categoryProductsMap: Record<string, string[]> = {
+  vestidos: [
+    "blusa-crema-clasica",
+    "blusa-beige-manga-larga",
+    "blusa-blanca-pura",
+  ],
+  blusas: ["blusa-azul-cielo", "blusa-rosa-suave"],
+  "conjunto-de-dama": ["conjunto-coral"],
+};
+
+// const categoryProducts = categoryProductsMap[category.slug ?? ""] || [];
+const filteredProducts = products.filter(
+  (p) => p.product_category.slug === category.slug,
+);
+---
+
+<BaseLayout title={`${category.title} - Tienda de Blusas`}>
+  <div class="category-container">
+    <section class="category-hero">
+      <div class="hero-image">
+        <Image
+          height={300}
+          width={1600}
+          transition:name={slug}
+          src={`${STRAPI_HOST}${category.image.url}`}
+          alt={category.title}
+        />
+        <div class="hero-overlay"></div>
+      </div>
+
+      <div class="hero-content">
+        <a href="/categories" class="back-link">← Volver a categorías</a>
+
+        <h1>{category.title}</h1>
+        <p>{category.description}</p>
+        <div class="category-meta">
+          <span class="product-count">
+            {filteredProducts.length}
+            {filteredProducts.length === 1 ? "producto" : "productos"}
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <section class="products-section">
+      <div class="products-wrapper">
+        <ProductList products={filteredProducts} />
+      </div>
+    </section>
+
+    <section class="explore-other">
+      <h2>Explora Otras Categorías</h2>
+      <div class="other-categories">
+        {
+          categories
+            .filter((cat) => cat.slug !== slug)
+            .map((cat) => (
+              <a href={`/category/${cat.slug}`} class="other-category-link">
+                <span>{"icon"}</span>
+                <span>{cat.title}</span>
+              </a>
+            ))
+        }
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<!-- <style define:vars={{ bgColor: category.color }}> -->
+<style>
+  .category-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .category-hero {
+    margin-bottom: 4rem;
+  }
+
+  .hero-image {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    margin-bottom: 2rem;
+  }
+
+  .hero-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    /* background: var(--bgColor); */
+    opacity: 0.2;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-bottom: 1rem;
+    color: #a89080;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .back-link:hover {
+    color: #c4a47a;
+    transform: translateX(-4px);
+  }
+
+  .category-icon {
+    display: block;
+    font-size: 3rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .hero-content h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    margin: 0 0 1rem 0;
+    font-weight: 700;
+    color: #5a4a42;
+    letter-spacing: -0.02em;
+  }
+
+  .hero-content p {
+    font-size: 1.1rem;
+    color: #8a7a72;
+    margin: 0 0 1.5rem 0;
+    max-width: 600px;
+    line-height: 1.6;
+  }
+
+  .category-meta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .product-count {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #ffe5d9 0%, #ffd4c1 100%);
+    color: #a89080;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .products-section {
+    margin-bottom: 4rem;
+  }
+
+  .products-wrapper {
+    animation: fadeIn 0.4s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .explore-other {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.7) 0%,
+      rgba(245, 241, 232, 0.7) 100%
+    );
+    border: 2px solid rgba(232, 213, 196, 0.6);
+    border-radius: 1.5rem;
+    padding: 2.5rem;
+    text-align: center;
+  }
+
+  .explore-other h2 {
+    font-size: 1.6rem;
+    margin: 0 0 1.5rem 0;
+    color: #5a4a42;
+    font-weight: 700;
+  }
+
+  .other-categories {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .other-category-link {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.8rem 1.5rem;
+    background: white;
+    border: 2px solid #e8d5c4;
+    border-radius: 0.75rem;
+    text-decoration: none;
+    color: #5a4a42;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .other-category-link:hover {
+    border-color: #c4a47a;
+    background: linear-gradient(135deg, #f5f1e8 0%, #ede8e0 100%);
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 768px) {
+    .category-container {
+      padding: 1rem;
+    }
+
+    .hero-image {
+      height: 220px;
+      margin-bottom: 1.5rem;
+    }
+
+    .category-icon {
+      font-size: 2.2rem;
+    }
+
+    .hero-content h1 {
+      font-size: 1.8rem;
+    }
+
+    .explore-other {
+      padding: 1.5rem;
+    }
+
+    .other-categories {
+      flex-direction: column;
+    }
+
+    .other-category-link {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
