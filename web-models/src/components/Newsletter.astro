@@ -1,36 +1,80 @@
 ---
+
 ---
 
-<section class="newsletter">
+<section class="newsletter" id="newsletter">
+  <div class="newsletter-bg"></div>
   <div class="newsletter-content">
     <div class="newsletter-text">
-      <h2>Suscríbete a Nuestro Newsletter</h2>
-      <p>Recibe ofertas exclusivas, tips de moda y nuevas colecciones primero 💌</p>
+      <h2>Suscríbete Como Nuestro Cliente</h2>
+      <p>
+        Recibe ofertas exclusivas, tips de moda y nuevas colecciones primero.
+      </p>
     </div>
     <form class="newsletter-form">
-      <input 
-        type="email" 
-        placeholder="tu@email.com" 
+      <input
+        type="email"
+        placeholder="tu@email.com"
         required
         class="email-input"
       />
-      <button type="submit" class="subscribe-btn">
-        ✉️ Suscribirse
-      </button>
+      <button type="submit" class="subscribe-btn"> Suscribirse 🎁 </button>
     </form>
   </div>
 </section>
 
+<script>
+  const newsletter = document.getElementById("newsletter");
+
+  if (newsletter) {
+    newsletter.addEventListener("mousemove", (e) => {
+      const rect = newsletter.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      newsletter.style.setProperty("--mouse-x", `${x}px`);
+      newsletter.style.setProperty("--mouse-y", `${y}px`);
+    });
+  }
+</script>
+
 <style>
   .newsletter {
-    background: linear-gradient(135deg, #a89080 0%, #c4a47a 100%);
+    position: relative;
     border-radius: 1.5rem;
     padding: 3rem 2rem;
-    margin: 4rem 0 3rem 0;
-    box-shadow: 0 8px 24px rgba(172, 140, 124, 0.2);
+    margin-block: 5rem;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    background: var(--color-cta-dark);
+    border: 1px solid var(--color-border);
+  }
+
+  /* Dynamic background layer */
+  .newsletter-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    background: radial-gradient(
+      800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+      rgba(196, 164, 122, 0.15),
+      transparent 40%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  .newsletter:hover .newsletter-bg {
+    opacity: 1;
   }
 
   .newsletter-content {
+    position: relative;
+    z-index: 1;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 2rem;
@@ -39,18 +83,20 @@
 
   .newsletter-text h2 {
     margin: 0 0 0.75rem 0;
-    color: white;
+    color: var(--color-cream);
     font-size: clamp(1.5rem, 3vw, 2rem);
     font-weight: 700;
     letter-spacing: -0.01em;
+    font-family: "Playfair Display", serif;
   }
 
   .newsletter-text p {
     margin: 0;
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--color-bg-light);
     font-size: 1rem;
     line-height: 1.6;
     font-weight: 300;
+    font-family: "Poppins", sans-serif;
   }
 
   .newsletter-form {
@@ -61,41 +107,44 @@
   .email-input {
     flex: 1;
     padding: 0.85rem 1.2rem;
-    border: none;
+    border: 1px solid var(--color-border);
     border-radius: 0.75rem;
-    background: white;
-    color: #5a4a42;
+    background: var(--color-bg-light);
+    color: var(--color-text-dark);
     font-size: 0.95rem;
-    font-family: 'Poppins', sans-serif;
-    transition: box-shadow 0.3s ease;
+    font-family: "Poppins", sans-serif;
+    transition: var(--transition);
   }
 
   .email-input:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+    background: var(--color-bg-dark);
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(196, 164, 122, 0.1);
   }
 
   .email-input::placeholder {
-    color: #a89080;
+    color: var(--color-text-light);
   }
 
   .subscribe-btn {
     padding: 0.85rem 1.8rem;
-    background: white;
-    color: #a89080;
+    background: var(--color-accent);
+    color: var(--color-cream);
     border: none;
     border-radius: 0.75rem;
     font-weight: 600;
     font-size: 0.95rem;
     cursor: pointer;
-    transition: all 0.3s ease;
-    font-family: 'Poppins', sans-serif;
+    transition: var(--transition);
+    font-family: "Poppins", sans-serif;
     white-space: nowrap;
   }
 
   .subscribe-btn:hover {
-    background: rgba(255, 255, 255, 0.9);
-    transform: scale(1.02);
+    background: var(--color-accent-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
   }
 
   @media (max-width: 768px) {
@@ -113,7 +162,8 @@
 
     .newsletter {
       padding: 2rem 1.5rem;
-      margin: 3rem 0 2rem 0;
+      margin: 3rem auto 2rem auto;
+      /* width is already handled by the main rule */
     }
   }
 </style>

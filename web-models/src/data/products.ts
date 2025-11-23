@@ -1,4 +1,5 @@
 import { getProducts } from "~/services/get-products";
+import type { ProductAttributes } from "~/types/product";
 type StrapiImages = {
   id: number;
   documentId: string,
@@ -25,4 +26,4 @@ export type Product = {
 
 const { data } = await getProducts()
 
-export const products: Product[] = data
+export const products: ProductAttributes[] = data

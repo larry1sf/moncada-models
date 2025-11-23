@@ -1,176 +1,70 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import CategoryShowcase from '../components/CategoryShowcase.astro';
-import Newsletter from '../components/Newsletter.astro';
+import BaseLayout from "../layouts/BaseLayout.astro";
+import CategoryShowcase from "../components/CategoryShowcase.astro";
+import Newsletter from "../components/Newsletter.astro";
+import Hero from "../components/Hero.astro";
+import Novedades from "~/components/Novedades.astro";
 ---
 
 <BaseLayout title="Tienda de Moda - Ropa Cómoda y Elegante">
-  <section class="hero">
-    <div class="hero-content">
-      <div class="hero-text">
-        <h2>Colecciones de Ropa Hermosa</h2>
-        <p>
-          Descubre nuestra selección de ropa cómoda, elegante y adorable. 
-          Desde blusas hasta vestidos, pantalones y abrigos - todo confeccionado con los mejores materiales.
-        </p>
-      </div>
-      <div class="hero-image">
-        <span class="emoji">✨</span>
-      </div>
-    </div>
-  </section>
+  <Hero />
 
-  <section class="features">
-    <div class="feature-card">
-      <span class="feature-icon">✨</span>
-      <h3>Calidad Premium</h3>
-      <p>Tejidos de alta calidad y acabados perfectos</p>
-    </div>
-    <div class="feature-card">
-      <span class="feature-icon">🎨</span>
-      <h3>Estilos Variados</h3>
-      <p>Desde casual hasta formal, tenemos todo</p>
-    </div>
-    <div class="feature-card">
-      <span class="feature-icon">💝</span>
-      <h3>Diseño Adorable</h3>
-      <p>Estilos dulces y modernos para ti</p>
-    </div>
-  </section>
+  <Novedades />
 
-  <section class="categories-section">
+  <section id="colecciones" class="categories-section">
     <div class="section-header">
       <h2>Nuestras Colecciones</h2>
       <p>Explora todas nuestras categorías de ropa</p>
     </div>
     <CategoryShowcase />
+    <div class="view-more-container">
+      <a href="/categories" class="view-more-btn">
+        Ver Todas las Colecciones
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path
+            d="M7.5 15L12.5 10L7.5 5"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"></path>
+        </svg>
+      </a>
+    </div>
   </section>
 
   <Newsletter />
 </BaseLayout>
 
-<style>
-  .hero {
-    margin-bottom: 3rem;
-    animation: fadeInDown 0.6s ease-out;
+<style is:global>
+  /* Hero styles moved to Hero.astro */
+  /* Novedades Section */
+  .novedades-section {
+    max-width: 1200px;
+    position: relative;
+    z-index: 10;
   }
 
-  @keyframes fadeInDown {
-    from {
-      opacity: 0;
-      transform: translateY(-20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .hero-content {
+  .novedades-grid {
     display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 3rem;
-    align-items: center;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(245, 241, 232, 0.7) 100%);
-    padding: 2.5rem;
-    border-radius: 1.5rem;
-    border: 2px solid rgba(232, 213, 196, 0.6);
-    backdrop-filter: blur(10px);
-  }
-
-  .hero-text h2 {
-    font-size: clamp(1.8rem, 4vw, 2.8rem);
-    margin: 0 0 1rem 0;
-    font-weight: 700;
-    background: linear-gradient(135deg, #a89080 0%, #c4a47a 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: -0.02em;
-  }
-
-  .hero-text p {
-    margin: 0;
-    max-width: 35rem;
-    color: #8a7a72;
-    font-size: 1.05rem;
-    line-height: 1.6;
-    font-weight: 300;
-  }
-
-  .hero-image {
-    font-size: 5rem;
-    animation: float 3s ease-in-out infinite;
-  }
-
-  @keyframes float {
-    0%, 100% {
-      transform: translateY(0px);
-    }
-    50% {
-      transform: translateY(-15px);
-    }
-  }
-
-  .emoji {
-    display: inline-block;
-  }
-
-  .features {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
-    margin-bottom: 3.5rem;
+    animation: fadeIn 0.6s ease-out;
   }
-
-  .feature-card {
-    background: linear-gradient(135deg, #fafaf8 0%, #f5f1e8 100%);
-    padding: 2rem;
-    border-radius: 1rem;
-    text-align: center;
-    border: 1px solid rgba(232, 213, 196, 0.5);
-    transition: all 0.3s ease;
+  @media (max-width: 768px) {
+    .novedades-grid {
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+    }
   }
-
-  .feature-card:hover {
-    transform: translateY(-4px);
-    border-color: #e8d5c4;
-    box-shadow: 0 8px 16px rgba(172, 140, 124, 0.1);
-  }
-
-  .feature-icon {
-    display: block;
-    font-size: 2.5rem;
-    margin-bottom: 0.8rem;
-  }
-
-  .feature-card h3 {
-    margin: 0.5rem 0;
-    color: #5a4a42;
-    font-weight: 600;
-    font-size: 1.1rem;
-  }
-
-  .feature-card p {
-    margin: 0;
-    color: #8a7a72;
-    font-size: 0.95rem;
-    line-height: 1.5;
+  @media (max-width: 640px) {
+    .novedades-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
   }
 
   .categories-section {
-    animation: fadeInUp 0.6s ease-out 0.2s both;
-  }
-
-  @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    margin-top: 5rem;
   }
 
   .section-header {
@@ -191,6 +85,48 @@ import Newsletter from '../components/Newsletter.astro';
     font-size: 1rem;
     font-weight: 300;
     letter-spacing: 0.05em;
+  }
+
+  .view-more-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 3rem;
+  }
+  .view-more-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 2.5rem;
+    background: linear-gradient(
+      135deg,
+      var(--color-accent) 0%,
+      var(--color-accent-hover) 100%
+    );
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    border-radius: 12px;
+    transition: var(--transition);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .view-more-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+    background: linear-gradient(
+      135deg,
+      var(--color-accent-hover) 0%,
+      var(--color-accent) 100%
+    );
+  }
+
+  .view-more-btn svg {
+    transition: transform 0.3s ease;
+  }
+
+  .view-more-btn:hover svg {
+    transform: translateX(4px);
   }
 
   @media (max-width: 640px) {

@@ -1,0 +1,338 @@
+---
+import { Image } from "astro:assets";
+// We will use the generated image which should be in public folder or assets
+// Assuming it will be placed in public/hero-fashion.png based on the plan
+---
+
+<section class="hero-section">
+  <div class="hero-container">
+    <div class="hero-content">
+      <span class="badge">Nueva Colección 2025</span>
+      <h1>Elegancia en <span class="highlight">Cada Detalle</span></h1>
+      <p>
+        Descubre nuestra colección de blusas diseñadas para la mujer moderna.
+        Tejidos premium, cortes exclusivos y ese toque de sofisticación que
+        buscas para tu día a día.
+      </p>
+      <div class="cta-group">
+        <a href="#colecciones" class="btn-primary">Comprar Ahora</a>
+        <a href="#novedades" class="btn-secondary">Ver Novedades</a>
+      </div>
+
+      <div class="features-list">
+        <div class="feature-item">
+          <span class="check-icon">✓</span>
+          <span>Envíos Gratis</span>
+        </div>
+        <div class="feature-item">
+          <span class="check-icon">✓</span>
+          <span>Calidad Premium</span>
+        </div>
+        <div class="feature-item">
+          <span class="check-icon">✓</span>
+          <span>Respuestas Rápida</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="image-container">
+        <div class="image-frame"></div>
+        <img
+          src="/hero-fashion.png"
+          alt="Blusa elegante de nueva colección"
+          class="hero-image"
+          width="600"
+          height="800"
+        />
+        <div class="price-tag">
+          <span class="price-label">Desde</span>
+          <span class="price-amount">$29.99 Cop</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero-section {
+    position: relative;
+    padding: 5rem 2rem;
+    background: transparent;
+    overflow: hidden;
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+  }
+
+  .hero-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 6rem;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Content Styles */
+  .hero-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    /* animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); */
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 0.6rem 1.2rem;
+    background: var(--color-text-dark);
+    color: #fff;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    width: fit-content;
+    font-family: "Poppins", sans-serif;
+  }
+
+  h1 {
+    font-family: "Playfair Display", serif;
+    font-size: clamp(3.5rem, 5vw, 5.5rem);
+    line-height: 1.1;
+    color: var(--color-text-dark);
+    margin: 0;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s;
+  }
+
+  .highlight {
+    color: var(--color-accent);
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  p {
+    font-size: 1.2rem;
+    line-height: 1.8;
+    color: var(--color-text-medium);
+    max-width: 540px;
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+    font-weight: 300;
+    animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.225s;
+  }
+
+  /* Buttons */
+  .cta-group {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1rem;
+    animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.24s;
+  }
+
+  .btn-primary {
+    background: var(--color-cta-dark);
+    color: #fff;
+    padding: 1.2rem 3rem;
+    border-radius: 4px; /* More professional, less rounded */
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition);
+    font-family: "Poppins", sans-serif;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+  }
+
+  .btn-primary:hover {
+    background: var(--color-cta-dark-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--color-cta-dark);
+    padding: 1.2rem 3rem;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 500;
+    border: 1px solid var(--color-cta-dark);
+    transition: var(--transition);
+    font-family: "Poppins", sans-serif;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+  }
+
+  .btn-secondary:hover {
+    background: var(--color-cta-dark);
+    color: #fff;
+  }
+
+  /* Features List */
+  .features-list {
+    display: flex;
+    gap: 2rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(168, 144, 128, 0.2);
+  }
+
+  .feature-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-text-dark);
+    font-size: 0.9rem;
+    font-weight: 500;
+    font-family: "Poppins", sans-serif;
+  }
+
+  .check-icon {
+    color: var(--color-accent);
+    font-weight: bold;
+  }
+
+  /* Visual Area */
+  .hero-visual {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    animation: fadeIn 1.2s ease-out 0.2s both;
+  }
+
+  .image-container {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+  }
+
+  .image-frame {
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 100%;
+    height: 100%;
+    border: 2px solid var(--color-accent);
+    z-index: 0;
+  }
+
+  .hero-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  }
+
+  .price-tag {
+    position: absolute;
+    bottom: 40px;
+    left: -30px;
+    background: #fff;
+    padding: 1.5rem;
+    z-index: 2;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 120px;
+    animation: float 4s ease-in-out infinite;
+  }
+
+  .price-label {
+    font-size: 0.8rem;
+    color: var(--color-text-medium);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.2rem;
+  }
+
+  .price-amount {
+    font-family: "Playfair Display", serif;
+    font-size: 1.8rem;
+    color: var(--color-text-dark);
+    font-weight: 700;
+  }
+
+  /* Animations */
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 968px) {
+    .hero-container {
+      grid-template-columns: 1fr;
+      text-align: center;
+      gap: 4rem;
+    }
+
+    .hero-content {
+      align-items: center;
+    }
+
+    .features-list {
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .image-frame {
+      display: none;
+    }
+
+    .price-tag {
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: -20px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    h1 {
+      font-size: 3rem;
+    }
+    .cta-group {
+      flex-direction: column;
+      width: 100%;
+    }
+    .btn-primary,
+    .btn-secondary {
+      width: 100%;
+      text-align: center;
+    }
+  }
+</style>

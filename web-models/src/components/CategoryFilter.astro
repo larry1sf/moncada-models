@@ -3,7 +3,6 @@ import { categories } from "../data/categories";
 
 const categoryFilters = categories.map((cat) => ({
   id: cat.id,
-  // label: `${cat.icon} ${cat.name}`,
   count: cat.productCount,
 }));
 ---
@@ -12,7 +11,6 @@ const categoryFilters = categories.map((cat) => ({
   {
     categoryFilters.map((cat) => (
       <button class="filter-btn" data-category={cat.id}>
-        {/* {cat.label} */}
         <span class="count">({cat.count})</span>
       </button>
     ))

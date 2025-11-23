@@ -1,0 +1,354 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getProducts } from "~/services/get-products";
+import { STRAPI_HOST } from "~/services/consts";
+import Image from "astro/components/Image.astro";
+export const prerender = true;
+export async function getStaticPaths() {
+  const { data: products } = await getProducts();
+
+  return products.map((product) => ({
+    params: { slug: product.slug },
+    props: { product, products },
+  }));
+}
+const { product } = Astro.props;
+---
+
+<BaseLayout title={`${product?.name} - Tienda de Moda`}>
+  <div class="product-container">
+    <div class="product-wrapper">
+      <div class="product-gallery">
+        <div class="main-image">
+          <Image
+            transition:name={product.slug}
+            src={`${STRAPI_HOST}${product?.images[0]?.url ?? "s"}`}
+            alt={product?.name ?? ""}
+            width={600}
+            height={800}
+            transition:name={`image-${product?.slug}`}
+          />
+        </div>
+        {
+          product?.images?.length > 1 && (
+            <div class="thumbnails">
+              {product.images.map((img) => (
+                <div class="thumbnail">
+                  <Image
+                    src={`${STRAPI_HOST}${img.url}`}
+                    alt={product.name}
+                    width={100}
+                    height={100}
+                  />
+                </div>
+              ))}
+            </div>
+          )
+        }
+      </div>
+
+      <div class="product-info">
+        <nav class="breadcrumbs">
+          <a href="/">Inicio</a>
+          <span class="separator">/</span>
+          <a href="/categories">Categorías</a>
+          <span class="separator">/</span>
+          <a href={`/category/${product?.product_category?.slug}`}
+            >{product?.product_category?.slug}</a
+          >
+        </nav>
+
+        <h1 class="product-title">{product?.name}</h1>
+
+        <div class="price-container">
+          <span class="product-price">
+            {
+              new Intl.NumberFormat("es-CO", {
+                style: "currency",
+                currency: "COP",
+                minimumFractionDigits: 0,
+              }).format(product?.price)
+            }
+          </span>
+          {!product?.isActive && <span class="out-of-stock">Agotado</span>}
+        </div>
+
+        <p class="description">{product?.description}</p>
+
+        {
+          product?.size && (
+            <div class="options-section">
+              <h3>Tallas Disponibles</h3>
+              <div class="options-grid">
+                {Array.isArray(product?.size) ? (
+                  product?.size.map((s) => (
+                    <button class="option-btn">{s}</button>
+                  ))
+                ) : (
+                  <button class="option-btn">{product?.size}</button>
+                )}
+              </div>
+            </div>
+          )
+        }
+
+        {
+          product?.color && (
+            <div class="options-section">
+              <h3>Colores</h3>
+              <div class="options-grid">
+                {Array.isArray(product?.color) ? (
+                  product?.color?.map((c) => (
+                    <button class="option-btn">{c}</button>
+                  ))
+                ) : (
+                  <button class="option-btn">{product?.color}</button>
+                )}
+              </div>
+            </div>
+          )
+        }
+
+        <div class="actions">
+          <button class="add-to-cart-btn" disabled={!product?.isActive}>
+            {product?.isActive ? "Añadir al Carrito" : "Agotado"}
+          </button>
+        </div>
+
+        {
+          product?.texture && (
+            <div class="details-box">
+              <h3>Detalles</h3>
+              <p>Textura: {product?.texture}</p>
+            </div>
+          )
+        }
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .product-price {
+    color: var(--color-text-dark);
+    font-size: 2rem;
+    font-weight: 700;
+    font-family: "Playfair Display", serif;
+  }
+
+  .product-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .product-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  .product-gallery {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .main-image {
+    width: 100%;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f5f1e8 0%, #ede8e0 100%);
+    border: 1px solid rgba(232, 213, 196, 0.5);
+  }
+
+  .main-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .thumbnails {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+
+  .thumbnail {
+    width: 80px;
+    height: 80px;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+  }
+
+  .thumbnail:hover {
+    border-color: #c4a47a;
+  }
+
+  .thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    color: #8a7a72;
+  }
+
+  .breadcrumbs a {
+    color: #8a7a72;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .breadcrumbs a:hover {
+    color: #c4a47a;
+  }
+
+  .separator {
+    color: #e8d5c4;
+  }
+
+  .product-title {
+    font-size: 2.5rem;
+    color: #5a4a42;
+    margin: 0 0 1rem 0;
+    line-height: 1.2;
+  }
+
+  .price-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .out-of-stock {
+    background: #ffe5e5;
+    color: #d32f2f;
+    padding: 0.4rem 0.8rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .description {
+    color: #8a7a72;
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+    font-size: 1.05rem;
+  }
+
+  .options-section {
+    margin-bottom: 2rem;
+  }
+
+  .options-section h3 {
+    font-size: 1rem;
+    color: #5a4a42;
+    margin: 0 0 0.8rem 0;
+    font-weight: 600;
+  }
+
+  .options-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+
+  .option-btn {
+    padding: 0.6rem 1.2rem;
+    border: 1px solid #e8d5c4;
+    background: white;
+    border-radius: 0.75rem;
+    color: #5a4a42;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    font-size: 0.95rem;
+  }
+
+  .option-btn:hover {
+    border-color: #c4a47a;
+    background: #fcfbf9;
+  }
+
+  .option-btn.selected {
+    background: #5a4a42;
+    color: white;
+    border-color: #5a4a42;
+  }
+
+  .actions {
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+  }
+
+  .add-to-cart-btn {
+    width: 100%;
+    padding: 1.2rem;
+    background: linear-gradient(135deg, #5a4a42 0%, #4a3a32 100%);
+    color: white;
+    border: none;
+    border-radius: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 20px rgba(90, 74, 66, 0.2);
+  }
+
+  .add-to-cart-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px rgba(90, 74, 66, 0.3);
+  }
+
+  .add-to-cart-btn:disabled {
+    background: #e8ddd2;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  .details-box {
+    background: #fcfbf9;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    border: 1px solid #f0e8e0;
+  }
+
+  .details-box h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+    color: #5a4a42;
+  }
+
+  .details-box p {
+    margin: 0;
+    color: #8a7a72;
+  }
+
+  @media (max-width: 768px) {
+    .product-wrapper {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .product-title {
+      font-size: 2rem;
+    }
+
+    .product-container {
+      padding: 1rem;
+    }
+  }
+</style>

@@ -1,5 +1,6 @@
 ---
 import { products as allProducts } from "../data/products";
+import CardsProducts from "./CardsProducts.astro";
 import ProductCard from "./ProductCard.astro";
 
 type Props = {
@@ -9,13 +10,23 @@ const { products = allProducts } = Astro.props;
 ---
 
 <section class="product-list">
-  {products.map((product) => <ProductCard product={product} />)}
+  {
+    products.map(({ name, slug, price, description, images }) => (
+      <CardsProducts
+        title={name}
+        slug={slug}
+        price={price}
+        description={description}
+        images={images}
+      />
+    ))
+  }
 </section>
 
 <style>
   .product-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 2rem;
     animation: fadeIn 0.5s ease-out;
   }

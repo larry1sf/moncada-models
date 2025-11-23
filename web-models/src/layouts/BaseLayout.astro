@@ -1,168 +1,679 @@
 ---
-const { title = "Astro Ecommerce" } = Astro.props;
+import "../styles/global.css";
 import { ClientRouter } from "astro:transitions";
+import { categories } from "../data/categories";
+
+interface Props {
+    title: string;
+}
+
+const { title } = Astro.props;
 ---
 
+<!doctype html>
 <html lang="es">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
-    <ClientRouter />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <header class="header">
-      <div class="container">
-        <div class="header-content">
-          <div class="header-top">
-            <div class="logo-section">
-              <div class="logo-icon">✨</div>
-              <h1>BLUSAS</h1>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap"
+            rel="stylesheet"
+        />
+        <meta name="generator" content={Astro.generator} />
+        <title>{title}</title>
+        <ClientRouter />
+    </head>
+    <body>
+        <header class="main-header">
+            <div class="header-container">
+                <a href="/" class="logo">
+                    <span class="logo-icon">M</span>
+                    <span class="logo-text">
+                        <span class="logo-main">Moncada</span>
+                        <span class="logo-sub">Models</span>
+                    </span>
+                </a>
+
+                <nav class="main-nav">
+                    <a href="/" class="nav-link">Inicio</a>
+                    <a href="/#novedades" class="nav-link">Novedades</a>
+
+                    <div class="nav-dropdown">
+                        <a
+                            href={Astro.originPathname === "/"
+                                ? "/#colecciones"
+                                : "/categories"}
+                            class="nav-link dropdown-trigger"
+                        >
+                            Colecciones
+                            <svg
+                                class="dropdown-icon"
+                                width="12"
+                                height="12"
+                                viewBox="0 0 12 12"
+                                fill="none"
+                            >
+                                <path
+                                    d="M3 4.5L6 7.5L9 4.5"
+                                    stroke="currentColor"
+                                    stroke-width="1.5"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"></path>
+                            </svg>
+                        </a>
+                        <div class="dropdown-menu">
+                            <div class="dropdown-content">
+                                {
+                                    categories.map((category) => (
+                                        <a
+                                            href={`/category/${category.slug}`}
+                                            class="dropdown-item"
+                                        >
+                                            <span class="dropdown-item-title">
+                                                {category.title}
+                                            </span>
+                                            <span class="dropdown-item-count">
+                                                {category.productCount}{" "}
+                                                productos
+                                            </span>
+                                        </a>
+                                    ))
+                                }
+                                <a
+                                    href="/categories"
+                                    class="dropdown-item view-all"
+                                >
+                                    <span class="dropdown-item-title"
+                                        >Todas las Colecciones</span
+                                    >
+                                    <svg
+                                        width="16"
+                                        height="16"
+                                        viewBox="0 0 16 16"
+                                        fill="none"
+                                    >
+                                        <path
+                                            d="M6 12L10 8L6 4"
+                                            stroke="currentColor"
+                                            stroke-width="1.5"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"></path>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="/#newsletter" class="nav-link">Contacto</a>
+                </nav>
+
+                <div class="header-actions">
+                    <button class="icon-btn" aria-label="Buscar">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                    </button>
+                    <button class="icon-btn cart-btn" aria-label="Carrito">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <circle cx="8" cy="21" r="1"></circle>
+                            <circle cx="19" cy="21" r="1"></circle>
+                            <path
+                                d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"
+                            ></path>
+                        </svg>
+                        <span class="cart-badge">0</span>
+                    </button>
+                </div>
+
+                <button class="mobile-menu-btn" aria-label="Menú">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
             </div>
-            <nav class="nav">
-              <a href="/" class="nav-link">Inicio</a>
-              <a href="/categories" class="nav-link">Categorías</a>
-            </nav>
-          </div>
-          <p class="subtitle">Ropa cómoda y elegante para ti</p>
-        </div>
-      </div>
-    </header>
+        </header>
 
-    <main class="container">
-      <slot />
-    </main>
+        <main class="max-w">
+            <slot />
+        </main>
 
-    <footer class="footer">
-      <div class="container">
-        <p>
-          💝 © {new Date().getFullYear()} Tienda de Blusas • Hecho con amor ✨
-        </p>
-      </div>
-    </footer>
-  </body>
+        <footer class="main-footer">
+            <div class="footer-container">
+                <div class="footer-section">
+                    <h3>Moncada Models</h3>
+                    <p>
+                        Elegancia y estilo en cada prenda. Descubre la moda que
+                        te define.
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <h4>Enlaces Rápidos</h4>
+                    <ul>
+                        <li><a href="/">Inicio</a></li>
+                        <li><a href="#colecciones">Colecciones</a></li>
+                        <li><a href="/categories">Categorías</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Ayuda</h4>
+                    <ul>
+                        <li><a href="#envios">Envíos</a></li>
+                        <li><a href="#devoluciones">Devoluciones</a></li>
+                        <li><a href="#contacto">Contacto</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Síguenos</h4>
+                    <div class="social-links">
+                        <a href="#" aria-label="Instagram">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <rect
+                                    width="20"
+                                    height="20"
+                                    x="2"
+                                    y="2"
+                                    rx="5"
+                                    ry="5"></rect>
+                                <path
+                                    d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"
+                                ></path>
+                                <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"
+                                ></line>
+                            </svg>
+                        </a>
+                        <a href="#" aria-label="Facebook">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <path
+                                    d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"
+                                ></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>
+                    &copy; 2025 Moncada Models. Todos los derechos reservados.
+                </p>
+            </div>
+        </footer>
+    </body>
 </html>
 
 <style>
-  :global(body) {
-    margin: 0;
-    min-height: 100vh;
-    font-family:
-      "Poppins",
-      system-ui,
-      -apple-system,
-      sans-serif;
-    background: linear-gradient(135deg, #faf9f7 0%, #f5f1e8 50%, #ede8e0 100%);
-    color: #5a4a42;
-  }
-
-  .header {
-    background: linear-gradient(135deg, #ffffff 0%, #fdf8f3 100%);
-    padding: 2rem 0;
-    border-bottom: 2px solid #e8d5c4;
-    box-shadow: 0 2px 8px rgba(172, 140, 124, 0.1);
-  }
-
-  .header-content {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .header-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 2rem;
-  }
-
-  .nav {
-    display: flex;
-    gap: 2rem;
-  }
-
-  .nav-link {
-    color: #a89080;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 0.95rem;
-    transition: all 0.3s ease;
-    border-bottom: 2px solid transparent;
-  }
-
-  .nav-link:hover {
-    color: #c4a47a;
-    border-bottom-color: #c4a47a;
-  }
-
-  .logo-section {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  .logo-icon {
-    font-size: 2rem;
-  }
-
-  .header h1 {
-    margin: 0;
-    font-size: clamp(1.8rem, 4vw, 2.5rem);
-    font-weight: 700;
-    background: linear-gradient(135deg, #a89080 0%, #c4a47a 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: 0.15em;
-  }
-
-  .subtitle {
-    margin: 0;
-    font-size: 0.95rem;
-    color: #a89080;
-    font-weight: 300;
-    letter-spacing: 0.05em;
-  }
-
-  .container {
-    width: min(1200px, 100% - 2rem);
-    margin-inline: auto;
-  }
-
-  main.container {
-    padding: 3rem 0;
-  }
-
-  .footer {
-    border-top: 2px solid #e8d5c4;
-    padding: 2rem 0;
-    font-size: 0.9rem;
-    color: #a89080;
-    text-align: center;
-    background: linear-gradient(135deg, #fafaf8 0%, #f5f1e8 100%);
-    margin-top: 3rem;
-    font-weight: 300;
-  }
-
-  @media (max-width: 640px) {
-    .header-top {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 1rem;
+    /* Global Styles */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
     }
 
-    .nav {
-      width: 100%;
-      justify-content: flex-start;
-      gap: 1.5rem;
+    body {
+        font-family: "Poppins", sans-serif;
+        background: #f5f1e8;
+        color: #2c2420;
+        line-height: 1.6;
+        overflow-x: hidden;
+    }
+    .max-w {
+        max-width: 1300px;
+        padding: 2rem;
+        margin-inline: auto;
+    }
+    /* Header Styles */
+    .main-header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(196, 164, 122, 0.15);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    .header-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 1rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 3rem;
+    }
+
+    /* Professional Logo Design */
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .logo-icon {
+        width: 42px;
+        height: 42px;
+        background: linear-gradient(135deg, #c4a47a 0%, #a89080 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Playfair Display", serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(196, 164, 122, 0.25);
+        transition: all 0.3s ease;
+    }
+
+    .logo:hover .logo-icon {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(196, 164, 122, 0.35);
+    }
+
+    .logo-text {
+        display: flex;
+        flex-direction: column;
+        line-height: 1.1;
+    }
+
+    .logo-main {
+        font-family: "Playfair Display", serif;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #2c2420;
+        letter-spacing: -0.02em;
+    }
+
+    .logo-sub {
+        font-family: "Poppins", sans-serif;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #c4a47a;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+    }
+
+    /* Navigation */
+    .main-nav {
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+        flex: 1;
+        justify-content: center;
     }
 
     .nav-link {
-      font-size: 0.9rem;
+        color: #5a4a42;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.95rem;
+        letter-spacing: 0.02em;
+        transition: all 0.3s ease;
+        position: relative;
+        padding: 0.5rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
     }
-  }
+
+    .nav-link::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #c4a47a 0%, #a89080 100%);
+        transition: width 0.3s ease;
+    }
+
+    .nav-link:hover {
+        color: #c4a47a;
+    }
+
+    .nav-link:hover::after {
+        width: 100%;
+    }
+
+    .dropdown-icon {
+        transition: transform 0.3s ease;
+    }
+
+    /* Dropdown Menu */
+    .nav-dropdown {
+        position: relative;
+    }
+
+    .dropdown-menu {
+        position: absolute;
+        top: 80%;
+        left: 50%;
+        transform: translateX(-50%) translateY(10px);
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+        opacity: 0;
+        visibility: hidden;
+        transition:
+            opacity 0.3s ease,
+            visibility 0.3s ease,
+            transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transition-delay: 200ms; /* Delay when closing */
+        pointer-events: none;
+        min-width: 280px;
+        margin-top: 0.5rem;
+        border: 1px solid rgba(196, 164, 122, 0.1);
+    }
+
+    .nav-dropdown:hover .dropdown-menu,
+    .dropdown-menu:hover {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(-50%) translateY(0);
+        pointer-events: all;
+        transition-delay: 0s; /* No delay when opening */
+    }
+
+    .nav-dropdown:hover .dropdown-icon {
+        transform: rotate(180deg);
+    }
+
+    .dropdown-content {
+        padding: 0.5rem;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.85rem 1rem;
+        text-decoration: none;
+        color: #5a4a42;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        gap: 1rem;
+    }
+
+    .dropdown-item:hover {
+        background: linear-gradient(
+            135deg,
+            rgba(196, 164, 122, 0.08) 0%,
+            rgba(168, 144, 128, 0.08) 100%
+        );
+        color: #c4a47a;
+    }
+
+    .dropdown-item-title {
+        font-weight: 500;
+        font-size: 0.95rem;
+    }
+
+    .dropdown-item-count {
+        font-size: 0.8rem;
+        color: #a89080;
+        font-weight: 400;
+    }
+
+    .dropdown-item.view-all {
+        margin-top: 0.5rem;
+        border-top: 1px solid rgba(196, 164, 122, 0.15);
+        padding-top: 1rem;
+        color: #c4a47a;
+        font-weight: 600;
+    }
+
+    .dropdown-item.view-all:hover {
+        background: linear-gradient(135deg, #c4a47a 0%, #a89080 100%);
+        color: white;
+    }
+
+    /* Header Actions */
+    .header-actions {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+    }
+
+    .icon-btn {
+        background: transparent;
+        border: 1px solid rgba(196, 164, 122, 0.2);
+        color: #5a4a42;
+        cursor: pointer;
+        padding: 0.65rem;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    .icon-btn:hover {
+        background: linear-gradient(
+            135deg,
+            rgba(196, 164, 122, 0.1) 0%,
+            rgba(168, 144, 128, 0.1) 100%
+        );
+        border-color: #c4a47a;
+        color: #c4a47a;
+        transform: translateY(-2px);
+    }
+
+    .cart-btn {
+        position: relative;
+    }
+
+    .cart-badge {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        background: linear-gradient(135deg, #c4a47a 0%, #a89080 100%);
+        color: white;
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 0.15rem 0.4rem;
+        border-radius: 10px;
+        min-width: 18px;
+        text-align: center;
+    }
+
+    .mobile-menu-btn {
+        display: none;
+        flex-direction: column;
+        gap: 5px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 0.5rem;
+    }
+
+    .mobile-menu-btn span {
+        width: 24px;
+        height: 2px;
+        background: #2c2420;
+        transition: all 0.3s ease;
+        border-radius: 2px;
+    }
+
+    /* Main Content */
+    main {
+        min-height: 60vh;
+    }
+
+    /* Footer Styles */
+    .main-footer {
+        background: #2c2420;
+        color: #f5f1e8;
+        margin-top: 5rem;
+    }
+
+    .footer-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 4rem 2rem 2rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 3rem;
+    }
+
+    .footer-section h3 {
+        font-family: "Playfair Display", serif;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: #c4a47a;
+    }
+
+    .footer-section h4 {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+        color: #c4a47a;
+        font-weight: 600;
+    }
+
+    .footer-section p {
+        color: #d0c4be;
+        line-height: 1.8;
+        font-size: 0.95rem;
+    }
+
+    .footer-section ul {
+        list-style: none;
+    }
+
+    .footer-section ul li {
+        margin-bottom: 0.7rem;
+    }
+
+    .footer-section ul li a {
+        color: #d0c4be;
+        text-decoration: none;
+        transition: color 0.3s ease;
+        font-size: 0.95rem;
+    }
+
+    .footer-section ul li a:hover {
+        color: #c4a47a;
+    }
+
+    .social-links {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .social-links a {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background: rgba(196, 164, 122, 0.1);
+        border-radius: 50%;
+        color: #c4a47a;
+        transition: all 0.3s ease;
+    }
+
+    .social-links a:hover {
+        background: #c4a47a;
+        color: #2c2420;
+        transform: translateY(-3px);
+    }
+
+    .footer-bottom {
+        border-top: 1px solid rgba(196, 164, 122, 0.2);
+        padding: 1.5rem 2rem;
+        text-align: center;
+        margin-top: 2rem;
+    }
+
+    .footer-bottom p {
+        color: #a89080;
+        font-size: 0.9rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 968px) {
+        .main-nav {
+            display: none;
+        }
+
+        .mobile-menu-btn {
+            display: flex;
+        }
+
+        .header-container {
+            padding: 1rem 1.5rem;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            font-size: 1.3rem;
+        }
+
+        .logo-main {
+            font-size: 1.2rem;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .logo-text {
+            display: none;
+        }
+
+        .header-actions {
+            gap: 0.5rem;
+        }
+
+        .footer-container {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            padding: 3rem 1.5rem 1.5rem;
+        }
+    }
 </style>

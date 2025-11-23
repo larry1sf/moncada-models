@@ -38,7 +38,7 @@ import { STRAPI_HOST } from "~/services/consts";
   .categories-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2.5rem;
+    gap: 2rem;
     animation: fadeIn 0.6s ease-out;
   }
 
@@ -56,35 +56,36 @@ import { STRAPI_HOST } from "~/services/consts";
   .category-card {
     display: flex;
     flex-direction: column;
-    border-radius: 1.5rem;
+    border-radius: 16px;
     overflow: hidden;
     text-decoration: none;
-    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    background: white;
-    border: 2px solid rgba(232, 213, 196, 0.4);
-    box-shadow: 0 4px 15px rgba(172, 140, 124, 0.08);
+    transition: var(--transition);
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-md);
     transform: translateY(0);
   }
 
   .category-card:hover {
-    transform: translateY(-8px);
-    border-color: rgba(232, 213, 196, 0.8);
-    box-shadow: 0 12px 32px rgba(172, 140, 124, 0.16);
+    transform: translateY(-12px);
+    border-color: var(--color-accent);
+    box-shadow: var(--shadow-lg);
+    background: var(--color-card-bg-hover);
   }
 
   .card-image {
     position: relative;
     width: 100%;
-    height: 260px;
+    height: 280px;
     overflow: hidden;
-    background: linear-gradient(135deg, #f5f1e8 0%, #ede8e0 100%);
+    background: var(--color-bg-dark);
   }
 
   .card-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.4s ease;
+    transition: transform 0.5s ease;
   }
 
   .category-card:hover .card-image img {
@@ -97,7 +98,7 @@ import { STRAPI_HOST } from "~/services/consts";
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.3);
+    background: rgba(0, 0, 0, 0.4);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -110,23 +111,24 @@ import { STRAPI_HOST } from "~/services/consts";
   }
 
   .view-btn {
-    background: rgba(255, 255, 255, 0.95);
-    color: #5a4a42;
+    background: var(--color-accent);
+    color: white;
     padding: 0.8rem 1.8rem;
     border-radius: 0.75rem;
     font-weight: 600;
     font-size: 0.95rem;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: var(--transition);
+    box-shadow: var(--shadow-md);
   }
 
   .category-card:hover .view-btn {
     transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    background: var(--color-accent-hover);
+    box-shadow: var(--shadow-lg);
   }
 
   .card-content {
-    padding: 2rem;
+    padding: 1.5rem;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
@@ -136,7 +138,7 @@ import { STRAPI_HOST } from "~/services/consts";
     display: flex;
     align-items: center;
     gap: 1rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
   }
 
   .icon {
@@ -146,43 +148,47 @@ import { STRAPI_HOST } from "~/services/consts";
 
   .card-header h3 {
     margin: 0;
-    color: #5a4a42;
-    font-size: 1.4rem;
+    color: var(--color-text-dark);
+    font-size: 1.3rem;
     font-weight: 700;
-    letter-spacing: -0.02em;
+    letter-spacing: 0.02em;
+    font-family: "Playfair Display", serif;
   }
 
   .description {
-    color: #8a7a72;
-    font-size: 0.95rem;
-    line-height: 1.6;
-    margin: 0 0 1.5rem 0;
+    color: var(--color-text-medium);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 0 0 1rem 0;
     flex-grow: 1;
+    font-family: "Poppins", sans-serif;
+    font-weight: 300;
   }
 
   .card-footer {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-top: 1.5rem;
-    border-top: 1px solid rgba(232, 213, 196, 0.3);
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border);
   }
 
   .product-count {
-    color: #a89080;
+    color: var(--color-text-medium);
     font-size: 0.9rem;
     font-weight: 500;
+    font-family: "Poppins", sans-serif;
   }
 
   .arrow {
-    color: #c4a47a;
+    color: var(--color-accent);
     font-size: 1.3rem;
-    transition: all 0.3s ease;
+    transition: var(--transition);
     font-weight: 600;
   }
 
   .category-card:hover .arrow {
-    color: #a89080;
+    color: var(--color-accent-hover);
     transform: translateX(4px);
   }
 

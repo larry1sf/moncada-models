@@ -1,0 +1,32 @@
+---
+import { gets } from "~/services/consts";
+import CardsProducts from "~/components/CardsProducts.astro";
+async function getLastProducts() {
+    return await gets({
+        query: "/api/products?fields[0]=slug&fields[1]=name&fields[2]=description&fields[3]=price&fields[4]=isActive&fields[5]=size&fields[6]=color&fields[7]=texture&populate[images][fields][0]=url&populate[product_category][fields]=slug&sort:desc",
+    });
+}
+const { data } = await getLastProducts();
+const novedades = data;
+---
+
+<section id="novedades" class="novedades-section">
+    <div class="section-header">
+        <h2>Novedades</h2>
+        <p>Descubre las últimas tendencias en moda</p>
+    </div>
+    <div class="novedades-grid">
+        {
+            novedades.length &&
+                novedades.map(({ name, slug, description, price, images }) => (
+                    <CardsProducts
+                        slug={slug}
+                        title={name}
+                        description={description}
+                        price={price}
+                        images={images}
+                    />
+                ))
+        }
+    </div>
+</section>

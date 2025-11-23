@@ -6,14 +6,23 @@
   --color-bg-dark: #ede8e0;
   --color-text-dark: #5a4a42;
   --color-text-medium: #8a7a72;
-  --color-text-light: #a89080;
+  --color-text-light: #706258;
   --color-accent: #c4a47a;
+  --color-accent-hover: #a89080;
   --color-border: #e8d5c4;
-  
+
+  /* CTA Button - Dark Brown */
+  --color-cta-dark: #2c2420;
+  --color-cta-dark-hover: #4a3d36;
+
+  /* Card backgrounds */
+  --color-card-bg: #ffffff;
+  --color-card-bg-hover: #faf9f7;
+
   --shadow-sm: 0 2px 8px rgba(172, 140, 124, 0.1);
   --shadow-md: 0 4px 12px rgba(172, 140, 124, 0.12);
   --shadow-lg: 0 8px 24px rgba(172, 140, 124, 0.18);
-  
+
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -69,6 +78,7 @@ body {
     opacity: 0;
     transform: translateY(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -80,6 +90,7 @@ body {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -87,9 +98,12 @@ body {
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.5;
   }
