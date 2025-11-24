@@ -1,0 +1,129 @@
+---
+import CategoryShowcase from "~/components/CategoryShowcase.astro";
+---
+
+<section id="colecciones" class="categories-section">
+    <div class="section-header">
+        <h2>Nuestras Colecciones</h2>
+        <p>Explora todas nuestras categorías de ropa</p>
+    </div>
+    <CategoryShowcase />
+    <div class="view-more-container">
+        <a href="/categories" class="view-more-btn">
+            Ver Todas las Colecciones
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path
+                    d="M7.5 15L12.5 10L7.5 5"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"></path>
+            </svg>
+        </a>
+    </div>
+</section>
+<style is:global>
+    /* Hero styles moved to Hero.astro */
+    /* Novedades Section */
+    .novedades-section {
+        max-width: 1200px;
+        position: relative;
+        z-index: 10;
+    }
+
+    .novedades-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        animation: fadeIn 0.6s ease-out;
+    }
+    @media (max-width: 768px) {
+        .novedades-grid {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+    }
+    @media (max-width: 640px) {
+        .novedades-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+    }
+
+    .categories-section {
+        margin-top: 5rem;
+    }
+
+    .section-header {
+        margin-bottom: 3rem;
+        text-align: center;
+    }
+
+    .section-header h2 {
+        font-size: clamp(1.8rem, 3vw, 2.4rem);
+        margin: 0 0 0.5rem 0;
+        font-weight: 700;
+        color: #5a4a42;
+    }
+
+    .section-header p {
+        margin: 0;
+        color: #a89080;
+        font-size: 1rem;
+        font-weight: 300;
+        letter-spacing: 0.05em;
+    }
+
+    .view-more-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 3rem;
+    }
+    .view-more-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 2.5rem;
+        background: linear-gradient(
+            135deg,
+            var(--color-accent) 0%,
+            var(--color-accent-hover) 100%
+        );
+        color: white;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1rem;
+        border-radius: 12px;
+        transition: var(--transition);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .view-more-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
+        background: linear-gradient(
+            135deg,
+            var(--color-accent-hover) 0%,
+            var(--color-accent) 100%
+        );
+    }
+
+    .view-more-btn svg {
+        transition: transform 0.3s ease;
+    }
+
+    .view-more-btn:hover svg {
+        transform: translateX(4px);
+    }
+
+    @media (max-width: 640px) {
+        .hero-content {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .hero-image {
+            font-size: 3.5rem;
+        }
+    }
+</style>
