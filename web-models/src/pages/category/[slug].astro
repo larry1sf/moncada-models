@@ -1,37 +1,22 @@
 ---
 import type { GetStaticPaths } from "astro";
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import ProductList from "../../components/ProductList.astro";
-import { categories } from "../../data/categories";
-import { products } from "../../data/products";
-import { STRAPI_HOST } from "~/services/consts";
 import Image from "astro/components/Image.astro";
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import ProductList from "~/components/ProductList.astro";
+import { categories } from "~/data/categories";
+import { products } from "~/data/products";
+import { STRAPI_HOST } from "~/services/consts";
+import AnotherCategories from "~/components/AnotherCategories.astro";
 
 const { slug } = Astro.params;
-
 // Encontrar la categoría
 const category = categories.find((cat) => cat.slug === slug);
-
-if (!category) {
-  return Astro.redirect("/categories");
-}
+if (!category) return Astro.redirect("/categories");
 
 export const getStaticPaths = (() => {
   return categories.map(({ slug }) => ({ params: { slug } }));
 }) satisfies GetStaticPaths;
 
-// Mapear productos a categorías
-const categoryProductsMap: Record<string, string[]> = {
-  vestidos: [
-    "blusa-crema-clasica",
-    "blusa-beige-manga-larga",
-    "blusa-blanca-pura",
-  ],
-  blusas: ["blusa-azul-cielo", "blusa-rosa-suave"],
-  "conjunto-de-dama": ["conjunto-coral"],
-};
-
-// const categoryProducts = categoryProductsMap[category.slug ?? ""] || [];
 const filteredProducts = products.filter(
   (p) => p.product_category.slug === category.slug,
 );
@@ -71,25 +56,12 @@ const filteredProducts = products.filter(
       </div>
     </section>
 
-    <section class="explore-other">
-      <h2>Explora Otras Categorías</h2>
-      <div class="other-categories">
-        {
-          categories
-            .filter((cat) => cat.slug !== slug)
-            .map((cat) => (
-              <a href={`/category/${cat.slug}`} class="other-category-link">
-                <span>{"icon"}</span>
-                <span>{cat.title}</span>
-              </a>
-            ))
-        }
-      </div>
-    </section>
+    <div>
+      <AnotherCategories slug={slug} />
+    </div>
   </div>
 </BaseLayout>
 
-<!-- <style define:vars={{ bgColor: category.color }}> -->
 <style>
   .category-container {
     max-width: 1200px;
