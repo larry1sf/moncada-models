@@ -2,14 +2,18 @@
 export const prerender = false;
 import Image from "astro/components/Image.astro";
 import BaseLayout from "~/layouts/BaseLayout.astro";
+import ProductCard from "~/components/CardsProducts.astro";
 import { getProducts } from "~/services/get-products";
 import { STRAPI_HOST } from "~/services/consts";
 import Toast from "~/components/Toast.astro";
+import AnotherCategories from "~/components/AnotherCategories.astro";
+
 const { slug } = Astro.params;
 if (!slug) return "No tienes un slug";
 const { data: products } = await getProducts();
 const product = products.find((product) => product.slug === slug);
 if (!product) return "Producto no encontrado";
+const relatedProducts = products.filter((product) => product.slug !== slug);
 ---
 
 <script>
@@ -217,28 +221,59 @@ if (!product) return "Producto no encontrado";
     console.log("✅ Quantity buttons setup complete");
   }
 
+  function setupGallery() {
+    const mainImage = document.getElementById("main-image") as HTMLImageElement;
+    const thumbnails = document.querySelectorAll(".thumbnail");
+
+    if (!mainImage || thumbnails.length === 0) return;
+
+    thumbnails.forEach((thumb) => {
+      thumb.addEventListener("click", () => {
+        const newUrl = thumb.getAttribute("data-url");
+        if (!newUrl || mainImage.src.includes(newUrl)) return;
+
+        // 1. Start blur
+        mainImage.style.filter = "blur(10px)";
+        mainImage.style.transition = "filter 0.3s ease";
+
+        // 2. Wait for blur to establish, then swap
+        setTimeout(() => {
+          mainImage.src = newUrl;
+
+          // 3. When new image loads, remove blur
+          mainImage.onload = () => {
+            mainImage.style.filter = "blur(0)";
+          };
+        }, 200);
+      });
+    });
+  }
+
   setupSelection();
   setupAddToCard();
   setupQuantityButtons();
+  setupGallery();
 
   document.addEventListener("astro:after-swap", () => {
     setupSelection();
     setupAddToCard();
     setupQuantityButtons();
+    setupGallery();
   });
 </script>
 
 <BaseLayout title={`${product?.name} - Tienda de Moda`}>
-  <div class="product-container">
+  <section class="product-container">
     <div class="product-wrapper">
-      <div class="product-gallery">
+      <article class="product-gallery">
         <div class="main-image">
           <Image
+            id="main-image"
             transition:name={product.slug}
             src={`${STRAPI_HOST}${product?.images[0]?.url ?? "s"}`}
             alt={product?.name ?? ""}
-            width={600}
-            height={800}
+            width={500}
+            height={700}
             transition:name={`image-${product?.slug}`}
           />
         </div>
@@ -246,7 +281,7 @@ if (!product) return "Producto no encontrado";
           product?.images?.length > 1 && (
             <div class="thumbnails">
               {product.images.map((img) => (
-                <div class="thumbnail">
+                <div class="thumbnail" data-url={`${STRAPI_HOST}${img.url}`}>
                   <Image
                     src={`${STRAPI_HOST}${img.url}`}
                     alt={product.name}
@@ -258,9 +293,9 @@ if (!product) return "Producto no encontrado";
             </div>
           )
         }
-      </div>
+      </article>
 
-      <div class="product-info">
+      <article class="product-info">
         <nav class="breadcrumbs">
           <a href="/">Inicio</a>
           <span class="separator">/</span>
@@ -359,8 +394,27 @@ if (!product) return "Producto no encontrado";
             </button>
           </div>
         </div>
-      </div>
+      </article>
     </div>
+  </section>
+  <section class="product-container">
+    <h3>Productos Relacionados</h3>
+    <div class="product-grid">
+      {
+        relatedProducts?.map(({ name, description, slug, price, images }) => (
+          <ProductCard
+            title={name}
+            description={description}
+            slug={slug}
+            price={price}
+            images={images}
+          />
+        ))
+      }
+    </div>
+  </section>
+  <div style={{ paddingInline: "3rem" }}>
+    <AnotherCategories slug={slug} />
   </div>
 </BaseLayout>
 <Toast />
@@ -374,6 +428,7 @@ if (!product) return "Producto no encontrado";
     font-weight: 500;
   }
 </style>
+
 <style>
   .product-price {
     color: var(--color-text-dark);
@@ -418,14 +473,21 @@ if (!product) return "Producto no encontrado";
   .main-image img {
     width: 100%;
     height: auto;
+    min-height: 700px;
+    max-height: 700px;
     display: block;
+    object-fit: cover;
   }
 
   .thumbnails {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 0.5rem;
+    justify-items: center;
+    /* display: flex;
     gap: 1rem;
-    overflow-x: auto;
-    padding-bottom: 0.5rem;
+    overflow-x: auto; */
+    /* padding-bottom: 0.5rem; */
   }
 
   .thumbnail {
@@ -625,12 +687,14 @@ if (!product) return "Producto no encontrado";
     color: #8a7a72;
   }
 
-  @media (max-width: 768px) {
+  @media (max-width: 1135px) {
     .product-wrapper {
       grid-template-columns: 1fr;
       gap: 2rem;
     }
-
+    .product-wrapper .product-gallery {
+      max-width: none;
+    }
     .product-title {
       font-size: 2rem;
     }
@@ -638,5 +702,26 @@ if (!product) return "Producto no encontrado";
     .product-container {
       padding: 1rem;
     }
+    .main-image img {
+      min-height: auto;
+      max-height: auto;
+    }
+  }
+</style>
+
+<style>
+  .product-container h3 {
+    font-size: 2rem;
+    color: #5a4a42;
+    margin: 0 0 2rem 0;
+    line-height: 1.3;
+  }
+  .product-container .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+    color: var(--color-text-medium);
+    font-size: 1.2em;
   }
 </style>

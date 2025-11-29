@@ -1,0 +1,88 @@
+---
+import { categories } from "~/data/categories";
+interface Props {
+    slug: string;
+}
+const { slug } = Astro.props;
+---
+
+<section class="explore-other">
+    <h2>Explora Otras Categorías</h2>
+    <div class="other-categories">
+        {
+            categories
+                .filter((cat) => cat.slug !== slug)
+                .map((cat) => (
+                    <a
+                        href={`/category/${cat.slug}`}
+                        class="other-category-link"
+                    >
+                        <span>{"icon"}</span>
+                        <span>{cat.title}</span>
+                    </a>
+                ))
+        }
+    </div>
+</section>
+<style>
+    .explore-other {
+        background: linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.7) 0%,
+            rgba(245, 241, 232, 0.7) 100%
+        );
+        border: 2px solid rgba(232, 213, 196, 0.6);
+        border-radius: 1.5rem;
+        padding: 2.5rem;
+        text-align: center;
+    }
+
+    .explore-other h2 {
+        font-size: 1.6rem;
+        margin: 0 0 1.5rem 0;
+        color: #5a4a42;
+        font-weight: 700;
+    }
+
+    .other-categories {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .other-category-link {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.8rem 1.5rem;
+        background: white;
+        border: 2px solid #e8d5c4;
+        border-radius: 0.75rem;
+        text-decoration: none;
+        color: #5a4a42;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .other-category-link:hover {
+        border-color: #c4a47a;
+        background: linear-gradient(135deg, #f5f1e8 0%, #ede8e0 100%);
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+        .explore-other {
+            padding: 1.5rem;
+        }
+
+        .other-categories {
+            flex-direction: column;
+        }
+
+        .other-category-link {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
