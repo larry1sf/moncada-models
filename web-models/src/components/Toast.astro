@@ -1,0 +1,94 @@
+---
+
+---
+
+<div id="toast-container" class="toast-container">
+    <div class="toast-content">
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="toast-icon"
+            ><circle cx="12" cy="12" r="10"></circle><line
+                x1="12"
+                y1="8"
+                x2="12"
+                y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"
+            ></line></svg
+        >
+        <span id="toast-message">Mensaje de alerta</span>
+    </div>
+</div>
+
+<style>
+    .toast-container {
+        position: fixed;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background: #ffffff;
+        color: #5a4a42;
+        padding: 1rem 2rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(90, 74, 66, 0.15);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        z-index: 2000;
+        opacity: 0;
+        transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        border: 1px solid rgba(196, 164, 122, 0.4);
+        font-weight: 500;
+    }
+
+    .toast-container.active {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+
+    .toast-content {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+    .toast-icon {
+        color: #c4a47a;
+    }
+
+    #toast-message {
+        font-weight: 500;
+        font-size: 0.95rem;
+    }
+</style>
+
+<script>
+    function initToast() {
+        const toast = document.getElementById("toast-container");
+        const messageSpan = document.getElementById("toast-message");
+        let timeoutId: any;
+
+        window.addEventListener("showToast", ((e: CustomEvent) => {
+            if (!toast || !messageSpan) return;
+
+            messageSpan.textContent = e.detail.message;
+            toast.classList.add("active");
+
+            if (timeoutId) clearTimeout(timeoutId);
+
+            timeoutId = setTimeout(() => {
+                toast.classList.remove("active");
+            }, 3000);
+        }) as EventListener);
+    }
+
+    // Initialize on load and after Astro swaps
+    initToast();
+    document.addEventListener("astro:after-swap", initToast);
+</script>

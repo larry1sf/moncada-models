@@ -1,0 +1,1044 @@
+---
+import { STRAPI_HOST } from "~/services/consts";
+---
+
+<div
+    data-strapi-host={STRAPI_HOST}
+    class="modal-overlay"
+    id="cart-modal"
+    aria-hidden="true"
+    role="dialog"
+    aria-modal="true"
+>
+    <div class="modal-panel" role="document">
+        <header class="cart-header">
+            <h2 class="cart-title">Tu Carrito</h2>
+            <button
+                class="close-btn"
+                id="close-button"
+                aria-label="Cerrar carrito"
+            >
+                <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </header>
+
+        <div class="cart-body" id="cart-body">
+            <!-- Estado Vacío (oculto por defecto) -->
+            <div
+                class="empty-cart"
+                id="empty-cart-message"
+                style="display: none;"
+            >
+                <p>Tu carrito de compras está vacío.</p>
+                <a href="/categories" class="continue-shopping-btn">
+                    Explorar Colecciones
+                </a>
+            </div>
+
+            <!-- Lista de Items -->
+            <ul class="cart-items" id="cart-items-list">
+                <!-- Los items se renderizarán aquí vía JS -->
+            </ul>
+        </div>
+
+        <div class="cart-footer" id="cart-footer">
+            <div class="cart-summary">
+                <div class="summary-row subtotal">
+                    <span>Subtotal</span>
+                    <span id="cart-subtotal">$0.00</span>
+                </div>
+                <p class="shipping-note">
+                    Impuestos y gastos de envío calculados en el pago.
+                </p>
+            </div>
+            <button class="checkout-btn">
+                <span>Agendar pedido</span>
+                <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    ><line x1="5" y1="12" x2="19" y2="12"></line><polyline
+                        points="12 5 19 12 12 19"></polyline></svg
+                >
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmación para eliminar -->
+<div
+    class="remove-modal-overlay"
+    id="remove-modal"
+    aria-hidden="true"
+    role="dialog"
+    aria-modal="true"
+>
+    <div class="remove-modal-content" role="document">
+        <h3 class="remove-modal-title">Eliminar producto</h3>
+        <p class="remove-modal-description" id="remove-modal-description"></p>
+
+        <div
+            class="remove-quantity-selector"
+            id="quantity-selector-container"
+            style="display: none;"
+        >
+            <label for="remove-quantity" class="quantity-label"
+                >Cantidad a eliminar:</label
+            >
+            <div class="quantity-input-group">
+                <button
+                    type="button"
+                    class="quantity-btn"
+                    id="decrease-qty"
+                    aria-label="Disminuir cantidad"
+                >
+                    <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                </button>
+                <input
+                    type="number"
+                    id="remove-quantity"
+                    class="quantity-input"
+                    min="1"
+                    value="1"
+                    readonly
+                />
+                <button
+                    type="button"
+                    class="quantity-btn"
+                    id="increase-qty"
+                    aria-label="Aumentar cantidad"
+                >
+                    <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                    >
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="remove-modal-actions">
+            <button class="cancel-remove-btn" id="cancel-remove-btn"
+                >Cancelar</button
+            >
+            <button class="confirm-remove-btn" id="confirm-remove-btn"
+                >Eliminar</button
+            >
+        </div>
+    </div>
+</div>
+
+<script>
+    import { formatPriceCOP } from "~/services/consts";
+    interface CartItem {
+        id: string;
+        slug: string;
+        name: string;
+        price: number;
+        quantity: number;
+        image?: string;
+        size?: string;
+        color?: string;
+    }
+
+    // Variables globales para los elementos del DOM
+    let cartModal: Element | null;
+    let modalPanel: Element | null;
+    let closeBtn: Element | null;
+    let cartItemsList: Element | null;
+    let emptyCartMessage: HTMLElement | null;
+    let cartFooter: HTMLElement | null;
+    let cartSubtotal: Element | null;
+    let strapiHost: string | undefined;
+
+    // Función para inicializar referencias del DOM
+    const initDOMReferences = () => {
+        cartModal = document.querySelector("#cart-modal");
+        modalPanel = document.querySelector(".modal-panel");
+        closeBtn = document.querySelector("#close-button");
+        cartItemsList = document.querySelector("#cart-items-list");
+        emptyCartMessage = document.querySelector(
+            "#empty-cart-message",
+        ) as HTMLElement;
+        cartFooter = document.querySelector("#cart-footer") as HTMLElement;
+        cartSubtotal = document.querySelector("#cart-subtotal");
+
+        const modalElement = document.querySelector(
+            "#cart-modal",
+        ) as HTMLElement;
+        strapiHost = modalElement?.dataset?.strapiHost;
+    };
+
+    // Función para obtener el carrito del localStorage
+    const getCart = (): CartItem[] => {
+        try {
+            const cart = localStorage.getItem("cart");
+            return cart ? JSON.parse(cart) : [];
+        } catch (e) {
+            console.error("Error parsing cart from localStorage:", e);
+            return [];
+        }
+    };
+
+    // Función para guardar el carrito
+    const saveCart = (cart: CartItem[]) => {
+        try {
+            localStorage.setItem("cart", JSON.stringify(cart));
+            renderCart();
+            window.dispatchEvent(new Event("cartUpdated"));
+        } catch (e) {
+            console.error("Error saving cart to localStorage:", e);
+        }
+    };
+
+    // Variables para el modal de eliminación
+    let currentRemoveId: string | null = null;
+    let currentRemoveMaxQty: number = 1;
+
+    // Función para eliminar item (ahora acepta cantidad opcional)
+    const removeItem = (id: string, quantityToRemove?: number) => {
+        console.log("removeItem called with:", { id, quantityToRemove });
+        const currentCart = getCart();
+
+        if (quantityToRemove && quantityToRemove > 0) {
+            // Eliminar cantidad parcial
+            const updatedCart = currentCart
+                .map((item) => {
+                    const itemId = `${item.name}-${item.size}-${item.color}`;
+                    if (itemId === id) {
+                        const newQuantity = item.quantity - quantityToRemove;
+                        if (newQuantity <= 0) return null; // Marcar para eliminar
+                        return { ...item, quantity: newQuantity };
+                    }
+                    return item;
+                })
+                .filter((item) => item !== null) as CartItem[]; // Solo filtrar nulos
+
+            saveCart(updatedCart);
+        } else {
+            // Eliminar completamente
+            const updatedCart = currentCart.filter(
+                ({ name, color, size }) => `${name}-${size}-${color}` !== id,
+            );
+            saveCart(updatedCart);
+        }
+    };
+
+    // Función para abrir el modal de confirmación de eliminación
+    const openRemoveModal = (
+        id: string,
+        itemName: string,
+        quantity: number,
+    ) => {
+        currentRemoveId = id;
+        currentRemoveMaxQty = quantity;
+
+        const removeModal = document.getElementById("remove-modal");
+        const description = document.getElementById("remove-modal-description");
+        const quantitySelector = document.getElementById(
+            "quantity-selector-container",
+        );
+        const quantityInput = document.getElementById(
+            "remove-quantity",
+        ) as HTMLInputElement;
+
+        if (
+            !removeModal ||
+            !description ||
+            !quantitySelector ||
+            !quantityInput
+        ) {
+            return;
+        }
+
+        // Configurar descripción
+        if (quantity > 1) {
+            description.textContent = `¿Cuántas unidades de "${itemName}" deseas eliminar?`;
+            quantitySelector.style.display = "block";
+            quantityInput.value = "1";
+            quantityInput.max = quantity.toString();
+        } else {
+            description.textContent = `¿Estás seguro de que deseas eliminar "${itemName}" del carrito?`;
+            quantitySelector.style.display = "none";
+        }
+
+        // Mostrar modal
+        removeModal.classList.add("active");
+        document.body.style.overflow = "hidden";
+    };
+
+    // Función para cerrar el modal de eliminación
+    const closeRemoveModal = () => {
+        const removeModal = document.getElementById("remove-modal");
+        if (!removeModal) return;
+
+        removeModal.classList.remove("active");
+        document.body.style.overflow = "";
+        currentRemoveId = null;
+        currentRemoveMaxQty = 1;
+    };
+
+    // Función para confirmar eliminación
+    const confirmRemove = () => {
+        if (!currentRemoveId) return;
+
+        const quantityInput = document.getElementById(
+            "remove-quantity",
+        ) as HTMLInputElement;
+
+        let quantityToRemove = 1;
+
+        if (currentRemoveMaxQty > 1 && quantityInput) {
+            quantityToRemove = parseInt(quantityInput.value);
+            if (isNaN(quantityToRemove) || quantityToRemove < 1)
+                quantityToRemove = 1;
+            if (quantityToRemove > currentRemoveMaxQty)
+                quantityToRemove = currentRemoveMaxQty;
+        } else {
+            quantityToRemove = currentRemoveMaxQty; // Si es 1 o no hay input, eliminar todo (que es 1)
+        }
+
+        removeItem(currentRemoveId, quantityToRemove);
+        closeRemoveModal();
+    };
+
+    // Función principal de renderizado
+    const renderCart = () => {
+        const cart = getCart();
+
+        if (
+            !cartItemsList ||
+            !emptyCartMessage ||
+            !cartFooter ||
+            !cartSubtotal
+        ) {
+            initDOMReferences();
+            if (
+                !cartItemsList ||
+                !emptyCartMessage ||
+                !cartFooter ||
+                !cartSubtotal
+            ) {
+                return;
+            }
+        }
+
+        // Limpiar lista actual
+        cartItemsList.innerHTML = "";
+
+        if (cart.length === 0) {
+            emptyCartMessage.style.display = "flex";
+            cartItemsList.innerHTML = "";
+            cartFooter.style.display = "none";
+        } else {
+            emptyCartMessage.style.display = "none";
+            cartFooter.style.display = "block";
+
+            // Calcular subtotal
+            const total = cart.reduce(
+                (sum, item) => sum + item?.price * item?.quantity,
+                0,
+            );
+            cartSubtotal.textContent = `$${formatPriceCOP(total) ?? "0"} Cop`;
+
+            // Generar HTML para cada item
+            cart.forEach((item) => {
+                if (!item) return;
+                const li = document.createElement("li");
+                li.className = "cart-item";
+
+                const imageUrl = item?.image
+                    ? strapiHost
+                        ? strapiHost + item.image
+                        : item.image
+                    : "";
+
+                li.innerHTML = `
+                    <div class="item-image-container">
+                        ${
+                            imageUrl
+                                ? `<img src="${imageUrl}" alt="${item.name}" class="item-image" />`
+                                : `<div class="item-placeholder"></div>`
+                        }
+                    </div>
+                    <div class="item-details">
+                        <div class="item-header">
+                            <h3 class="item-name">${item?.name}</h3>
+                            <p class="item-price">$${formatPriceCOP(item?.price)} Cop</p>
+                        </div>
+                        ${item?.size ? `<p class="item-size">Talla: ${item?.size}</p>` : ""}
+                        ${item?.color ? `<p class="item-color">Color: ${item?.color}</p>` : ""}
+                        <div class="item-controls">
+                            <div class="quantity-control">
+                                <span class="qty-label">Cantidad:</span>
+                                <span class="qty-value">${item?.quantity}</span>
+                            </div>
+                            <button class="remove-btn " data-id="${item?.name}-${item?.size}-${item?.color}" data-name="${item?.name}" data-quantity="${item?.quantity}">
+                                Eliminar 
+                            </button>
+                        </div>
+                    </div>
+                `;
+                cartItemsList?.appendChild(li);
+            });
+
+            // Agregar event listeners a los botones de eliminar
+            const removeButtons = cartItemsList.querySelectorAll(".remove-btn");
+            removeButtons.forEach((btn) => {
+                btn.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    const target = e.currentTarget as HTMLElement;
+                    const id = target.dataset.id;
+                    const name = target.dataset.name || "este producto";
+                    const quantity = parseInt(target.dataset.quantity || "1");
+
+                    if (id) {
+                        openRemoveModal(id, name, quantity);
+                    }
+                });
+            });
+        }
+    };
+
+    const openCart = () => {
+        renderCart(); // Renderizar al abrir
+        cartModal?.classList.add("active");
+        modalPanel?.classList.add("active");
+        document.body.style.overflow = "hidden";
+    };
+
+    const closeCart = () => {
+        modalPanel?.classList.remove("active");
+        modalPanel?.classList.add("closing");
+
+        setTimeout(() => {
+            cartModal?.classList.remove("active");
+            modalPanel?.classList.remove("closing");
+            document.body.style.overflow = "";
+        }, 400);
+    };
+
+    // Función de inicialización completa
+    const initCart = () => {
+        initDOMReferences();
+
+        // Event Listeners para cerrar
+        // Usar replaceWith para eliminar listeners anteriores si existen (evitar duplicados)
+        const closeBtnEl = document.querySelector("#close-button");
+        if (closeBtnEl) {
+            const newCloseBtn = closeBtnEl.cloneNode(true);
+            closeBtnEl.parentNode?.replaceChild(newCloseBtn, closeBtnEl);
+            newCloseBtn.addEventListener("click", closeCart);
+            closeBtn = newCloseBtn as Element;
+        }
+
+        cartModal?.addEventListener("click", (e) => {
+            if (e.target === cartModal) closeCart();
+        });
+
+        // Event listeners para el modal de eliminación
+        const cancelRemoveBtn = document.getElementById("cancel-remove-btn");
+        const confirmRemoveBtn = document.getElementById("confirm-remove-btn");
+        const removeModalOverlay = document.getElementById("remove-modal");
+        const decreaseBtn = document.getElementById("decrease-qty");
+        const increaseBtn = document.getElementById("increase-qty");
+        const quantityInput = document.getElementById(
+            "remove-quantity",
+        ) as HTMLInputElement;
+
+        // Limpiar listeners anteriores clonando nodos
+        if (cancelRemoveBtn) {
+            const newBtn = cancelRemoveBtn.cloneNode(true);
+            cancelRemoveBtn.parentNode?.replaceChild(newBtn, cancelRemoveBtn);
+            newBtn.addEventListener("click", closeRemoveModal);
+        }
+
+        if (confirmRemoveBtn) {
+            const newBtn = confirmRemoveBtn.cloneNode(true);
+            confirmRemoveBtn.parentNode?.replaceChild(newBtn, confirmRemoveBtn);
+            newBtn.addEventListener("click", confirmRemove);
+        }
+
+        if (removeModalOverlay) {
+            // No clonamos el overlay porque contiene el contenido, solo nos aseguramos de no duplicar lógica si fuera posible,
+            // pero el click outside es seguro de añadir múltiples veces si verificamos target, aunque mejor limpiar.
+            // Para simplificar, asumimos que initCart se llama en transiciones limpias.
+            // Pero para los botones de cantidad es CRÍTICO clonar para limpiar listeners viejos.
+        }
+
+        // Controles de cantidad - REFACTORIZADO Y LIMPIO
+        if (decreaseBtn && quantityInput) {
+            const newDecrease = decreaseBtn.cloneNode(true);
+            decreaseBtn.parentNode?.replaceChild(newDecrease, decreaseBtn);
+
+            newDecrease.addEventListener("click", () => {
+                let currentValue = parseInt(quantityInput.value);
+                if (isNaN(currentValue)) currentValue = 1;
+
+                if (currentValue > 1) {
+                    quantityInput.value = (currentValue - 1).toString();
+                }
+            });
+        }
+
+        if (increaseBtn && quantityInput) {
+            const newIncrease = increaseBtn.cloneNode(true);
+            increaseBtn.parentNode?.replaceChild(newIncrease, increaseBtn);
+
+            newIncrease.addEventListener("click", () => {
+                let currentValue = parseInt(quantityInput.value);
+                if (isNaN(currentValue)) currentValue = 1;
+
+                const maxValue = parseInt(quantityInput.max) || 999;
+
+                if (currentValue < maxValue) {
+                    quantityInput.value = (currentValue + 1).toString();
+                }
+            });
+        }
+
+        // Listener para ESC
+        const escHandler = (e: KeyboardEvent) => {
+            if (e.key === "Escape") {
+                const removeModal = document.getElementById("remove-modal");
+                if (removeModal?.classList.contains("active")) {
+                    closeRemoveModal();
+                } else if (cartModal?.classList.contains("active")) {
+                    closeCart();
+                }
+            }
+        };
+
+        document.removeEventListener("keydown", escHandler);
+        document.addEventListener("keydown", escHandler);
+
+        // Custom event to open cart
+        // Remover listener anterior para evitar duplicados es difícil con funciones anónimas o referencias perdidas.
+        // Mejor usar una propiedad en window o similar, o confiar en que Astro limpia scripts.
+        // Pero para eventos globales, mejor ser precavidos.
+        document.removeEventListener("openCartModal", openCart);
+        document.addEventListener("openCartModal", openCart);
+
+        window.removeEventListener("cartUpdated", renderCart);
+        window.addEventListener("cartUpdated", renderCart);
+
+        // Renderizar el carrito al cargar
+        renderCart();
+    };
+
+    // Inicializar cuando el DOM esté listo
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initCart);
+    } else {
+        initCart();
+    }
+
+    // Reinicializar después de navegaciones de Astro
+    document.addEventListener("astro:page-load", () => {
+        initCart();
+    });
+</script>
+
+<style>
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 2000;
+        background-color: rgba(44, 36, 32, 0.4);
+        backdrop-filter: blur(4px);
+        opacity: 0;
+        visibility: hidden;
+        transition:
+            opacity 0.4s ease,
+            visibility 0.4s ease;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .modal-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .modal-panel {
+        width: 100%;
+        max-width: 650px;
+        height: 100%;
+        background: #fff;
+        box-shadow: -4px 0 24px rgba(0, 0, 0, 0.1);
+        transform: translateX(100%);
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .modal-panel.active {
+        transform: translateX(0);
+    }
+
+    .modal-panel.closing {
+        transform: translateX(100%);
+    }
+
+    /* Header */
+    .cart-header {
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid var(--color-border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #fff;
+    }
+
+    .cart-title {
+        font-family: "Poppins", "Playfair Display", serif;
+        font-size: 1.5rem;
+        color: var(--color-text-dark);
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        color: var(--color-text-medium);
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 50%;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .close-btn:hover {
+        background-color: var(--color-bg-light);
+        color: var(--color-text-dark);
+        transform: rotate(90deg);
+    }
+
+    /* Body */
+    .cart-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0;
+    }
+
+    .empty-cart {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        text-align: center;
+        color: var(--color-text-medium);
+    }
+
+    .continue-shopping-btn {
+        margin-top: 1.5rem;
+        color: var(--color-cta-dark);
+        text-decoration: underline;
+        font-weight: 500;
+        text-underline-offset: 4px;
+        transition: color 0.2s;
+    }
+
+    .continue-shopping-btn:hover {
+        color: var(--color-accent);
+    }
+
+    .cart-items {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    /* Estilos dinámicos para items generados por JS */
+    :global(.cart-item) {
+        display: flex;
+        gap: 1.5rem;
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid var(--color-bg-light);
+        transition: background-color 0.2s;
+    }
+
+    :global(.cart-item:hover) {
+        background-color: #faf9f7;
+    }
+
+    :global(.item-image-container) {
+        width: 90px;
+        height: 120px;
+        flex-shrink: 0;
+        background-color: var(--color-bg-light);
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    :global(.item-image) {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    :global(.item-placeholder) {
+        width: 100%;
+        height: 100%;
+        background-color: #e5e5e5;
+    }
+
+    :global(.item-details) {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding-block: 0.25rem;
+    }
+
+    :global(.item-header) {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    :global(.item-name) {
+        font-family: "Poppins", serif;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--color-text-dark);
+        margin: 0;
+        line-height: 1.3;
+    }
+
+    :global(.item-price) {
+        font-family: "Playfair Display", sans-serif;
+        font-weight: 600;
+        font-size: 1.4rem;
+        color: var(--color-text-dark);
+        margin: 0;
+        white-space: nowrap;
+    }
+
+    :global(.item-size) {
+        font-size: 0.9rem;
+        color: var(--color-text-medium);
+        margin: 0.25rem 0 0 0;
+    }
+
+    :global(.item-color) {
+        font-size: 0.9rem;
+        color: var(--color-text-medium);
+        margin: 0.25rem 0 0 0;
+    }
+
+    :global(.item-controls) {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+    }
+
+    :global(.quantity-control) {
+        font-size: 0.9rem;
+        color: var(--color-text-medium);
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    :global(.qty-value) {
+        font-weight: 600;
+        color: var(--color-text-dark);
+    }
+
+    :global(.remove-btn) {
+        padding: 0.75rem 1.5rem;
+        border-radius: 6px;
+        font-family: "Poppins", sans-serif;
+        font-weight: 500;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+        background-color: #ef4444;
+        color: #fff;
+    }
+
+    :global(.remove-btn:hover) {
+        background-color: rgb(244, 52, 52);
+    }
+
+    :global(.remove-btn:active) {
+        transform: scale(0.95);
+    }
+
+    /* Footer */
+    .cart-footer {
+        padding: 1.5rem 2rem;
+        background: #fff;
+        border-top: 1px solid var(--color-border);
+    }
+
+    .cart-summary {
+        margin-bottom: 1.5rem;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .summary-row.subtotal {
+        font-family: "Poppins", serif;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--color-text-dark);
+
+        & span:nth-child(2) {
+            font-family: "Playfair Display", serif;
+            font-weight: 700;
+            font-size: 1.4rem;
+        }
+    }
+
+    .shipping-note {
+        font-size: 0.85rem;
+        color: var(--color-text-medium);
+        margin: 0;
+    }
+
+    .checkout-btn {
+        width: 100%;
+        background-color: var(--color-cta-dark);
+        color: #fff;
+        border: none;
+        padding: 1rem;
+        font-family: "Poppins", sans-serif;
+        font-weight: 500;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        border-radius: 4px;
+    }
+
+    .checkout-btn:hover {
+        background-color: var(--color-cta-dark-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(44, 36, 32, 0.2);
+    }
+    .checkout-btn svg {
+        transition: transform 0.3s ease;
+    }
+    .checkout-btn:hover svg {
+        transform: translateX(3px);
+    }
+    /* Scrollbar for cart body */
+    .cart-body::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .cart-body::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .cart-body::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.1);
+        border-radius: 3px;
+    }
+
+    @media (max-width: 480px) {
+        .modal-panel {
+            max-width: 100%;
+        }
+
+        .cart-header,
+        .cart-footer,
+        :global(.cart-item) {
+            padding-inline: 1.5rem;
+        }
+    }
+
+    /* Modal de eliminación */
+    .remove-modal-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 2100;
+        background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        visibility: hidden;
+        transition:
+            opacity 0.3s ease,
+            visibility 0.3s ease;
+    }
+
+    .remove-modal-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .remove-modal-content {
+        background: #fff;
+        border-radius: 12px;
+        padding: 2rem;
+        max-width: 450px;
+        width: 90%;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        transform: scale(0.9);
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .remove-modal-overlay.active .remove-modal-content {
+        transform: scale(1);
+    }
+
+    .remove-modal-title {
+        font-family: "Poppins", serif;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--color-text-dark);
+        margin: 0 0 1rem 0;
+    }
+
+    .remove-modal-description {
+        font-size: 1rem;
+        color: var(--color-text-medium);
+        margin: 0 0 1.5rem 0;
+        line-height: 1.5;
+    }
+
+    .remove-quantity-selector {
+        margin-bottom: 1.5rem;
+    }
+
+    .quantity-label {
+        display: block;
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: var(--color-text-dark);
+        margin-bottom: 0.75rem;
+    }
+
+    .quantity-input-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        justify-content: center;
+    }
+
+    .quantity-btn {
+        width: 40px;
+        height: 40px;
+        border: 1px solid var(--color-border);
+        background: #fff;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        color: var(--color-text-dark);
+    }
+
+    .quantity-btn:hover {
+        background-color: var(--color-bg-light);
+        border-color: var(--color-text-medium);
+    }
+
+    .quantity-btn:active {
+        transform: scale(0.95);
+    }
+
+    .quantity-input {
+        width: 80px;
+        height: 40px;
+        text-align: center;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border: 1px solid var(--color-border);
+        border-radius: 6px;
+        background: var(--color-bg-light);
+        color: var(--color-text-dark);
+    }
+
+    .remove-modal-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+    }
+
+    .cancel-remove-btn,
+    .confirm-remove-btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 6px;
+        font-family: "Poppins", sans-serif;
+        font-weight: 500;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+    }
+
+    .cancel-remove-btn {
+        background: var(--color-bg-light);
+        color: var(--color-text-dark);
+    }
+
+    .cancel-remove-btn:hover {
+        background: #e0e0e0;
+    }
+
+    .confirm-remove-btn {
+        background: #ef4444;
+        color: #fff;
+    }
+
+    .confirm-remove-btn:hover {
+        background: #dc2626;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+</style>

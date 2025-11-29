@@ -2,6 +2,7 @@
 import "../styles/global.css";
 import { ClientRouter } from "astro:transitions";
 import { categories } from "../data/categories";
+import ModalCart from "~/components/ModalCart.astro";
 
 interface Props {
     title: string;
@@ -10,7 +11,94 @@ interface Props {
 const { title } = Astro.props;
 ---
 
-<!doctype html>
+<script>
+    interface CartItem {
+        id: string;
+        name: string;
+        price: number;
+        quantity: number;
+    }
+
+    // Función para actualizar el contador del carrito
+    const updateCartCounter = () => {
+        const quantityDisplay = document.querySelector("#cart-quantity");
+        if (!quantityDisplay) return;
+
+        try {
+            const cart = JSON.parse(
+                window.localStorage.getItem("cart") || "[]",
+            ) as CartItem[];
+            const totalQuantity = cart.reduce(
+                (acc, item) => acc + item?.quantity,
+                0,
+            );
+            quantityDisplay.textContent = totalQuantity.toString();
+        } catch (e) {
+            console.error("Error updating cart counter:", e);
+            quantityDisplay.textContent = "0";
+        }
+    };
+
+    // Función para cerrar el modal
+    const handleClose = () => {
+        const cartModal = document.querySelector(".modal-overlay");
+        const modalContent = cartModal?.children[0];
+        modalContent?.classList.remove("active");
+        modalContent?.classList.add("close");
+
+        setTimeout(() => {
+            cartModal?.classList.remove("active");
+            modalContent?.classList.remove("close");
+        }, 300);
+    };
+
+    // Función para configurar el botón del carrito
+    function setupCartButton() {
+        const cartBtn = document.querySelector("#cart-btn");
+        const cartModal = document.querySelector(".modal-overlay");
+        const modalContent = cartModal?.children[0];
+
+        if (!cartBtn) return;
+
+        // Asegurar que el modal esté cerrado al configurar
+        if (cartModal?.classList.contains("active")) {
+            handleClose();
+        }
+
+        // Limpiar listeners anteriores clonando el botón
+        const newCartBtn = cartBtn.cloneNode(true);
+        cartBtn.parentNode?.replaceChild(newCartBtn, cartBtn);
+
+        // Agregar nuevo listener
+        newCartBtn.addEventListener("click", () => {
+            const isActive = cartModal?.classList.contains("active");
+            if (!isActive) {
+                // Abrir modal usando el evento personalizado
+                document.dispatchEvent(new Event("openCartModal"));
+            } else {
+                handleClose();
+            }
+        });
+    }
+
+    // Función de inicialización completa
+    const initCartUI = () => {
+        updateCartCounter();
+        setupCartButton();
+    };
+
+    // Inicializar cuando el DOM esté listo
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", initCartUI);
+    } else initCartUI();
+
+    // Reinicializar después de navegaciones de Astro
+    document.addEventListener("astro:page-load", initCartUI);
+
+    // Actualizar contador cuando cambie el carrito
+    window.addEventListener("cartUpdated", updateCartCounter);
+</script>
+
 <html lang="es">
     <head>
         <meta charset="UTF-8" />
@@ -25,6 +113,8 @@ const { title } = Astro.props;
         <ClientRouter />
     </head>
     <body>
+        <ModalCart />
+
         <header class="main-header">
             <div class="header-container">
                 <a href="/" class="logo">
@@ -125,7 +215,11 @@ const { title } = Astro.props;
                             <path d="m21 21-4.35-4.35"></path>
                         </svg>
                     </button>
-                    <button class="icon-btn cart-btn" aria-label="Carrito">
+                    <button
+                        id="cart-btn"
+                        class="icon-btn cart-btn"
+                        aria-label="Carrito"
+                    >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="20"
@@ -143,7 +237,7 @@ const { title } = Astro.props;
                                 d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"
                             ></path>
                         </svg>
-                        <span class="cart-badge">0</span>
+                        <span id="cart-quantity" class="cart-badge">0</span>
                     </button>
                 </div>
 
@@ -154,6 +248,110 @@ const { title } = Astro.props;
                 </button>
             </div>
         </header>
+
+        <div class="mobile-nav-overlay"></div>
+        <nav class="mobile-nav">
+            <div class="mobile-nav-header">
+                <span class="mobile-nav-title">Menú</span>
+                <button class="mobile-nav-close" aria-label="Cerrar menú">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        ><path d="M18 6 6 18"></path><path d="m6 6 18 12"
+                        ></path></svg
+                    >
+                </button>
+            </div>
+            <div class="mobile-nav-content">
+                <a href="/" class="mobile-nav-link">Inicio</a>
+                <a href="/#novedades" class="mobile-nav-link">Novedades</a>
+
+                <div class="mobile-nav-group">
+                    <button class="mobile-nav-link group-trigger">
+                        Colecciones
+                        <svg
+                            class="group-icon"
+                            width="16"
+                            height="16"
+                            viewBox="0 0 12 12"
+                            fill="none"
+                        >
+                            <path
+                                d="M3 4.5L6 7.5L9 4.5"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"></path>
+                        </svg>
+                    </button>
+                    <div class="mobile-nav-submenu">
+                        {
+                            categories.map((category) => (
+                                <a
+                                    href={`/category/${category.slug}`}
+                                    class="mobile-submenu-item"
+                                >
+                                    {category.title}
+                                </a>
+                            ))
+                        }
+                        <a
+                            href="/categories"
+                            class="mobile-submenu-item view-all"
+                        >
+                            Ver todas
+                        </a>
+                    </div>
+                </div>
+
+                <a href="/#newsletter" class="mobile-nav-link">Contacto</a>
+            </div>
+        </nav>
+
+        <script>
+            const mobileBtn = document.querySelector(".mobile-menu-btn");
+            const mobileNav = document.querySelector(".mobile-nav");
+            const overlay = document.querySelector(".mobile-nav-overlay");
+            const closeBtn = document.querySelector(".mobile-nav-close");
+            const groupTrigger = document.querySelector(".group-trigger");
+            const submenu = document.querySelector(".mobile-nav-submenu");
+            const groupIcon = document.querySelector(".group-icon");
+
+            function toggleMenu() {
+                mobileNav?.classList.toggle("active");
+                overlay?.classList.toggle("active");
+                document.body.style.overflow = mobileNav?.classList.contains(
+                    "active",
+                )
+                    ? "hidden"
+                    : "";
+            }
+
+            mobileBtn?.addEventListener("click", toggleMenu);
+            closeBtn?.addEventListener("click", toggleMenu);
+            overlay?.addEventListener("click", toggleMenu);
+
+            // Submenu toggle
+            groupTrigger?.addEventListener("click", () => {
+                submenu?.classList.toggle("active");
+                groupIcon?.classList.toggle("rotate");
+            });
+
+            // Close menu when clicking a link
+            const mobileLinks = document.querySelectorAll(
+                ".mobile-nav-link:not(.group-trigger), .mobile-submenu-item",
+            );
+            mobileLinks.forEach((link) => {
+                link.addEventListener("click", toggleMenu);
+            });
+        </script>
 
         <main class="max-w">
             <slot />
@@ -528,7 +726,7 @@ const { title } = Astro.props;
         font-weight: 600;
         padding: 0.15rem 0.4rem;
         border-radius: 10px;
-        min-width: 18px;
+        min-width: 25px;
         text-align: center;
     }
 
@@ -685,5 +883,157 @@ const { title } = Astro.props;
             gap: 2rem;
             padding: 3rem 1.5rem 1.5rem;
         }
+    }
+    /* Mobile Menu Styles */
+    .mobile-nav-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(44, 36, 32, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 1001;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .mobile-nav-overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .mobile-nav {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 85%;
+        max-width: 400px;
+        height: 100%;
+        background: #f5f1e8;
+        z-index: 1002;
+        transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: -5px 0 30px rgba(0, 0, 0, 0.15);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .mobile-nav.active {
+        right: 0;
+    }
+
+    .mobile-nav-header {
+        padding: 1.5rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(196, 164, 122, 0.15);
+    }
+
+    .mobile-nav-title {
+        font-family: "Playfair Display", serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2c2420;
+    }
+
+    .mobile-nav-close {
+        background: transparent;
+        border: none;
+        color: #5a4a42;
+        cursor: pointer;
+        padding: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.3s ease;
+    }
+
+    .mobile-nav-close:hover {
+        color: #c4a47a;
+    }
+
+    .mobile-nav-content {
+        padding: 2rem;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .mobile-nav-link {
+        font-family: "Playfair Display", serif;
+        font-size: 1.25rem;
+        color: #2c2420;
+        text-decoration: none;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(196, 164, 122, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: color 0.3s ease;
+        background: none;
+        border-left: none;
+        border-right: none;
+        border-top: none;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+    }
+
+    .mobile-nav-link:hover {
+        color: #c4a47a;
+    }
+
+    .mobile-nav-submenu {
+        display: none;
+        flex-direction: column;
+        padding-left: 1rem;
+        margin-top: 0.5rem;
+        gap: 0.5rem;
+    }
+
+    .mobile-nav-submenu.active {
+        display: flex;
+        animation: slideDown 0.3s ease forwards;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .mobile-submenu-item {
+        font-family: "Poppins", sans-serif;
+        font-size: 1rem;
+        color: #5a4a42;
+        text-decoration: none;
+        padding: 0.5rem 0;
+        transition: color 0.3s ease;
+    }
+
+    .mobile-submenu-item:hover {
+        color: #c4a47a;
+    }
+
+    .mobile-submenu-item.view-all {
+        color: #c4a47a;
+        font-weight: 500;
+        margin-top: 0.5rem;
+    }
+
+    .group-icon {
+        transition: transform 0.3s ease;
+    }
+
+    .group-icon.rotate {
+        transform: rotate(180deg);
     }
 </style>

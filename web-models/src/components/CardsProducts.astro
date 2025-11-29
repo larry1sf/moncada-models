@@ -29,10 +29,12 @@ let image = images.length
         />
     </div>
     <div class="product-info">
-        <h3>{title ?? "Chaqueta Premium"}</h3>
-        <p class="product-description">
-            {description ?? "Elegancia y calidez"}
-        </p>
+        <div>
+            <h3>{title ?? "Chaqueta Premium"}</h3>
+            <p class="product-description">
+                {description ?? "Elegancia y calidez"}
+            </p>
+        </div>
         <div class="product-footer">
             <span class="product-price">${formatPriceCOP(price)}{" "} Cop</span>
             <button class="add-to-cart">
@@ -68,6 +70,8 @@ let image = images.length
         position: relative;
         box-shadow: var(--shadow-md);
         text-decoration: none;
+        display: flex;
+        flex-direction: column;
     }
 
     .product-card:hover {
@@ -132,6 +136,10 @@ let image = images.length
     }
 
     .product-info {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
         padding: 1.5rem;
         display: flex;
         flex-direction: column;
