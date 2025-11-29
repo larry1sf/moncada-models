@@ -172,54 +172,6 @@ import { STRAPI_HOST } from "~/services/consts";
                     id="select-all-qty"
                     aria-label="Seleccionar todos"
                     title="Eliminar todos"
-                >
-                    Todos
-                </button>
-            </div>
-        </div>
-
-        <div class="remove-modal-actions">
-            <button class="cancel-remove-btn" id="cancel-remove-btn"
-                >Cancelar</button
-            >
-            <button class="confirm-remove-btn" id="confirm-remove-btn"
-                >Eliminar</button
-            >
-        </div>
-    </div>
-</div>
-
-<!-- Modal de confirmación para vaciar carrito -->
-<div
-    class="remove-modal-overlay"
-    id="clear-cart-modal"
-    aria-hidden="true"
-    role="dialog"
-    aria-modal="true"
->
-    <div class="remove-modal-content" role="document">
-        <h3 class="remove-modal-title">Vaciar Carrito</h3>
-        <p class="remove-modal-description">
-            ¿Estás seguro de que deseas eliminar todos los productos del
-            carrito? Esta acción no se puede deshacer.
-        </p>
-
-        <div class="remove-modal-actions">
-            <button class="cancel-remove-btn" id="cancel-clear-btn"
-                >Cancelar</button
-            >
-            <button class="confirm-remove-btn danger" id="confirm-clear-btn"
-                >Vaciar Carrito</button
-            >
-        </div>
-    </div>
-</div>
-
-<script>
-    import { formatPriceCOP } from "~/services/consts";
-    interface CartItem {
-        id: string;
-        slug: string;
         name: string;
         price: number;
         quantity: number;
@@ -984,6 +936,14 @@ import { STRAPI_HOST } from "~/services/consts";
         color: white;
         transform: translateY(-1px);
         box-shadow: 0 2px 8px rgba(211, 47, 47, 0.3);
+    }
+
+    .clear-cart-btn svg {
+        transition: transform 0.3s ease;
+    }
+
+    .clear-cart-btn:hover svg {
+        transform: rotate(10deg);
     }
 
     .all-btn {

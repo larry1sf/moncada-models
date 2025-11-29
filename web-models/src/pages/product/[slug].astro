@@ -76,10 +76,8 @@ const relatedProducts = products.filter((product) => product.slug !== slug);
     const addToCartBtn = document.querySelector(".add-to-cart-btn");
     const quantityDisplay = document.querySelector("#counter-quantity");
 
-    // 1) Función que será llamada desde el evento
-    function updateCart(e: CustomEvent) {
-      const { product, quantity } = e.detail;
-
+    // 1) Función para actualizar el carrito en localStorage
+    function addToCart(product: Product, quantity: number) {
       if (!product || !product.size || !product.color) return;
 
       const cart = JSON.parse(
@@ -105,10 +103,7 @@ const relatedProducts = products.filter((product) => product.slug !== slug);
       localStorage.setItem("cart", JSON.stringify(cart));
     }
 
-    // 2) Escuchar el evento global SOLO UNA VEZ
-    window.addEventListener("cartUpdated", updateCart as EventListener);
-
-    // 3) Click del botón → dispara el evento
+    // 2) Click del botón → actualiza LS y luego dispara evento
     addToCartBtn?.addEventListener("click", () => {
       const quantity = parseInt(quantityDisplay?.innerText || "1");
       const product = JSON.parse(addToCartBtn.dataset.product) as Product;
@@ -125,6 +120,10 @@ const relatedProducts = products.filter((product) => product.slug !== slug);
         return;
       }
 
+      // Actualizar localStorage primero
+      addToCart(product, quantity);
+
+      // Notificar que el carrito ha sido actualizado
       window.dispatchEvent(
         new CustomEvent("cartUpdated", {
           detail: {
