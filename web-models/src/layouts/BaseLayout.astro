@@ -3,11 +3,11 @@ import "../styles/global.css";
 import { ClientRouter } from "astro:transitions";
 import { categories } from "../data/categories";
 import ModalCart from "~/components/ModalCart.astro";
-
+import { STRAPI_HOST } from "~/services/consts";
 interface Props {
     title: string;
 }
-
+import { products } from "~/data/products";
 const { title } = Astro.props;
 ---
 
@@ -115,7 +115,12 @@ const { title } = Astro.props;
     <body>
         <ModalCart />
 
-        <header class="main-header">
+        <header
+            data-strapi-host={STRAPI_HOST}
+            data-products={JSON.stringify(products)}
+            data-products-results="[]"
+            class="main-header"
+        >
             <div class="header-container">
                 <a href="/" class="logo">
                     <span class="logo-icon">M</span>
@@ -199,22 +204,34 @@ const { title } = Astro.props;
                 </nav>
 
                 <div class="header-actions">
-                    <button class="icon-btn" aria-label="Buscar">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="20"
-                            height="20"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
+                    <div class="search-container">
+                        <input
+                            type="text"
+                            class="search-input"
+                            placeholder="Buscar..."
+                            aria-label="Buscar productos"
+                        />
+                        <button
+                            class="icon-btn search-trigger"
+                            aria-label="Buscar"
                         >
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <path d="m21 21-4.35-4.35"></path>
-                        </svg>
-                    </button>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                        </button>
+                        <div class="search-results-dropdown"></div>
+                    </div>
                     <button
                         id="cart-btn"
                         class="icon-btn cart-btn"
@@ -247,8 +264,8 @@ const { title } = Astro.props;
                     <span></span>
                 </button>
             </div>
+            <div class="search-overlay"></div>
         </header>
-
         <div class="mobile-nav-overlay"></div>
         <nav class="mobile-nav">
             <div class="mobile-nav-header">
@@ -316,40 +333,217 @@ const { title } = Astro.props;
         </nav>
 
         <script>
-            const mobileBtn = document.querySelector(".mobile-menu-btn");
-            const mobileNav = document.querySelector(".mobile-nav");
-            const overlay = document.querySelector(".mobile-nav-overlay");
-            const closeBtn = document.querySelector(".mobile-nav-close");
-            const groupTrigger = document.querySelector(".group-trigger");
-            const submenu = document.querySelector(".mobile-nav-submenu");
-            const groupIcon = document.querySelector(".group-icon");
+            document.addEventListener("astro:page-load", () => {
+                const mobileBtn = document.querySelector(".mobile-menu-btn");
+                const mobileNav = document.querySelector(".mobile-nav");
+                const overlay = document.querySelector(".mobile-nav-overlay");
+                const closeBtn = document.querySelector(".mobile-nav-close");
+                const groupTrigger = document.querySelector(".group-trigger");
+                const submenu = document.querySelector(".mobile-nav-submenu");
+                const groupIcon = document.querySelector(".group-icon");
+                const mainHeader = document.querySelector(
+                    ".main-header",
+                ) as HTMLElement;
 
-            function toggleMenu() {
-                mobileNav?.classList.toggle("active");
-                overlay?.classList.toggle("active");
-                document.body.style.overflow = mobileNav?.classList.contains(
-                    "active",
-                )
-                    ? "hidden"
-                    : "";
-            }
+                if (!mainHeader) return;
 
-            mobileBtn?.addEventListener("click", toggleMenu);
-            closeBtn?.addEventListener("click", toggleMenu);
-            overlay?.addEventListener("click", toggleMenu);
+                const productsData = mainHeader.dataset.products;
+                const strapiHostData = mainHeader.dataset.strapiHost;
 
-            // Submenu toggle
-            groupTrigger?.addEventListener("click", () => {
-                submenu?.classList.toggle("active");
-                groupIcon?.classList.toggle("rotate");
-            });
+                const products = productsData ? JSON.parse(productsData) : [];
+                const strapiHost = strapiHostData || "";
 
-            // Close menu when clicking a link
-            const mobileLinks = document.querySelectorAll(
-                ".mobile-nav-link:not(.group-trigger), .mobile-submenu-item",
-            );
-            mobileLinks.forEach((link) => {
-                link.addEventListener("click", toggleMenu);
+                function toggleMenu() {
+                    mobileNav?.classList.toggle("active");
+                    overlay?.classList.toggle("active");
+                    document.body.style.overflow =
+                        mobileNav?.classList.contains("active") ? "hidden" : "";
+                }
+
+                mobileBtn?.addEventListener("click", toggleMenu);
+                closeBtn?.addEventListener("click", toggleMenu);
+                overlay?.addEventListener("click", toggleMenu);
+
+                // Submenu toggle
+                groupTrigger?.addEventListener("click", () => {
+                    submenu?.classList.toggle("active");
+                    groupIcon?.classList.toggle("rotate");
+                });
+
+                // Close menu when clicking a link
+                const mobileLinks = document.querySelectorAll(
+                    ".mobile-nav-link:not(.group-trigger), .mobile-submenu-item",
+                );
+                mobileLinks.forEach((link) => {
+                    link.addEventListener("click", toggleMenu);
+                });
+
+                // Search functionality
+                const searchContainer =
+                    document.querySelector(".search-container");
+                const searchTrigger = document.querySelector(".search-trigger");
+                const searchInput = document.querySelector(
+                    ".search-input",
+                ) as HTMLInputElement | null;
+                const searchOverlay = document.querySelector(".search-overlay");
+                const searchResultsDropdown = document.querySelector(
+                    ".search-results-dropdown",
+                );
+
+                if (
+                    searchTrigger &&
+                    searchInput &&
+                    searchContainer &&
+                    searchOverlay &&
+                    searchResultsDropdown
+                ) {
+                    const closeSearch = () => {
+                        searchContainer.classList.remove("active");
+                        searchOverlay.classList.remove("active");
+                        searchResultsDropdown.classList.remove("active");
+                        document.body.style.overflow = "";
+                    };
+
+                    const openSearch = () => {
+                        searchContainer.classList.add("active");
+                        searchOverlay.classList.add("active");
+                        searchInput.focus();
+                        document.body.style.overflow = "hidden"; // Prevent scrolling
+                        // Trigger search if there's already text
+                        if (searchInput.value.trim() !== "") {
+                            search();
+                        }
+                    };
+
+                    interface SearchProduct {
+                        slug: string;
+                        name: string;
+                        price: number;
+                        images: { url: string }[];
+                    }
+
+                    const renderResults = (results: SearchProduct[]) => {
+                        searchResultsDropdown.innerHTML = "";
+                        if (results.length === 0) {
+                            if (searchInput.value.trim() !== "") {
+                                searchResultsDropdown.innerHTML = `
+                                <div class="no-results">
+                                    No se encontraron productos
+                                </div>
+                            `;
+                                searchResultsDropdown.classList.add("active");
+                            } else {
+                                searchResultsDropdown.classList.remove(
+                                    "active",
+                                );
+                            }
+                            return;
+                        }
+
+                        const html = results
+                            .map(
+                                (product) => `
+                        <a href="/product/${product.slug}" class="search-result-item">
+                            <div class="search-result-image-wrapper">
+                                <img src="${strapiHost}${product.images[0]?.url || "/placeholder.jpg"}" alt="${product.name}" class="search-result-thumb" />
+                            </div>
+                            <div class="search-result-info">
+                                <span class="search-result-category">${"Producto"}</span>
+                                <span class="search-result-title">${product.name}</span>
+                                <span class="search-result-price">$${product.price.toLocaleString()}</span>
+                            </div>
+                            <div class="search-result-action">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                            </div>
+                        </a>
+                    `,
+                            )
+                            .join("");
+
+                        searchResultsDropdown.innerHTML = html;
+                        searchResultsDropdown.classList.add("active");
+                    };
+
+                    const search = () => {
+                        const query = searchInput.value.toLowerCase().trim();
+                        if (query === "") {
+                            searchResultsDropdown.classList.remove("active");
+                            return;
+                        }
+
+                        const result = products.filter((product) =>
+                            product.name.toLowerCase().includes(query),
+                        );
+
+                        // Update dataset for potential other uses
+                        if (mainHeader) {
+                            mainHeader.dataset.productsResults =
+                                JSON.stringify(result);
+                        }
+
+                        renderResults(result);
+                    };
+
+                    searchTrigger.addEventListener("click", (e) => {
+                        if (
+                            searchContainer.classList.contains("active") &&
+                            searchInput.value.trim() !== ""
+                        ) {
+                            // If active and has value, maybe just focus input or ensure results are shown
+                            searchInput.focus();
+                            search();
+                        } else {
+                            e.preventDefault();
+                            if (searchContainer.classList.contains("active")) {
+                                closeSearch();
+                            } else {
+                                openSearch();
+                            }
+                        }
+                    });
+
+                    // Handle input typing
+                    searchInput.addEventListener("input", search);
+
+                    // Handle input focus
+                    searchInput.addEventListener("focus", () => {
+                        if (searchInput.value.trim() !== "") {
+                            search();
+                        }
+                    });
+
+                    // Handle Enter key
+                    searchInput.addEventListener("keypress", (e) => {
+                        if (e.key === "Enter") {
+                            search();
+                        }
+                    });
+
+                    // Close search when clicking outside
+                    searchOverlay.addEventListener("click", closeSearch);
+
+                    document.addEventListener("click", (e) => {
+                        const target = e.target as Node;
+                        // Don't close if clicking inside search container or dropdown
+                        if (
+                            !searchContainer.contains(target) &&
+                            !searchOverlay.contains(target) &&
+                            searchContainer.classList.contains("active")
+                        ) {
+                            closeSearch();
+                        }
+                    });
+
+                    // Handle Escape key
+                    document.addEventListener("keydown", (e) => {
+                        if (
+                            e.key === "Escape" &&
+                            searchContainer.classList.contains("active")
+                        ) {
+                            closeSearch();
+                        }
+                    });
+                }
             });
         </script>
 
@@ -484,6 +678,7 @@ const { title } = Astro.props;
     }
 
     .header-container {
+        position: relative; /* Anchor for absolute positioning of search input */
         max-width: 1400px;
         margin: 0 auto;
         padding: 1rem 2rem;
@@ -701,6 +896,107 @@ const { title } = Astro.props;
         align-items: center;
         justify-content: center;
         position: relative;
+    }
+
+    /* Search Animation */
+    .search-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .search-input:focus {
+        outline: none;
+        box-shadow: 0 4px 15px rgba(196, 164, 122, 0.15);
+    }
+
+    .search-trigger {
+        z-index: 2;
+        background: transparent; /* Ensure background matches header if needed */
+    }
+
+    .search-container.active .search-trigger {
+        background: #c4a47a; /* Solid color for better contrast */
+        color: white;
+        border-color: #c4a47a;
+        position: relative;
+        z-index: 2002; /* Highest priority */
+        box-shadow: 0 0 15px rgba(196, 164, 122, 0.5); /* Glow effect */
+    }
+
+    /* Search Overlay */
+    .search-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(
+            0,
+            0,
+            0,
+            0.5
+        ); /* Slightly darker, neutral black for better contrast */
+        backdrop-filter: blur(2px);
+        z-index: 1500; /* High z-index to cover everything else in header */
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        pointer-events: none;
+    }
+
+    .search-overlay.active {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: all; /* Block clicks when visible */
+    }
+
+    /* Ensure search input is above overlay */
+    .search-container {
+        position: static; /* Let input be relative to header-container */
+    }
+
+    .search-input {
+        position: absolute;
+        right: 70px; /* Start near the search button */
+        top: 50%;
+        transform: translateY(-50%);
+        width: 0;
+        opacity: 0;
+        visibility: hidden;
+        background: white;
+        border: 1px solid #c4a47a;
+        padding: 0;
+        border-radius: 12px;
+        font-family: "Poppins", sans-serif;
+        font-size: 1.1rem;
+        color: #5a4a42;
+        /* Transition: width/opacity smooth, visibility delayed on close */
+        transition:
+            width 0.3s cubic-bezier(0.24, 0.93, 0.39, 0.87),
+            opacity 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+            padding 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+            visibility 0s linear 0.3s;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        z-index: 2001;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+    .search-container.active .search-input {
+        width: calc(85%); /* Expand to cover almost the entire header */
+        max-width: 100%;
+        opacity: 1;
+        visibility: visible;
+        padding: 0.65rem 1.5rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+
+        /* Reset transition delay for visibility */
+        transition:
+            width 0.2s cubic-bezier(0.24, 0.93, 0.39, 0.87),
+            opacity 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+            padding 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+            visibility 0s linear 0s;
     }
 
     .icon-btn:hover {
@@ -1037,5 +1333,226 @@ const { title } = Astro.props;
 
     .group-icon.rotate {
         transform: rotate(180deg);
+    }
+    /* Search Results Dropdown */
+    /* .search-container must remain static for input animation to work relative to header-container */
+
+    .search-results-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 70px;
+        width: calc(85%);
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        margin-top: 1rem;
+        border: 1px solid rgba(196, 164, 122, 0.1);
+        max-height: 450px;
+        overflow-y: auto;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(10px);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 2002;
+        padding: 0.5rem;
+    }
+
+    .search-results-dropdown.active {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    /* Custom Scrollbar */
+    .search-results-dropdown::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .search-results-dropdown::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .search-results-dropdown::-webkit-scrollbar-thumb {
+        background: rgba(196, 164, 122, 0.3);
+        border-radius: 10px;
+    }
+
+    .search-result-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        text-decoration: none;
+        color: #2c2420;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 12px;
+        margin-bottom: 0.5rem;
+        border: 1px solid transparent;
+        background: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .search-result-item:hover {
+        background: #faf9f6;
+        border-color: rgba(196, 164, 122, 0.2);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+    }
+
+    .search-result-image-wrapper {
+        position: relative;
+        width: 64px;
+        height: 84px;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #f5f5f5;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .search-result-thumb {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .search-result-item:hover .search-result-thumb {
+        transform: scale(1.1);
+    }
+
+    .search-result-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        justify-content: center;
+    }
+
+    .search-result-category {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #a89080;
+        font-weight: 500;
+    }
+
+    .search-result-title {
+        font-family: "Playfair Display", serif;
+        font-size: 1.1rem;
+        font-weight: 600;
+        line-height: 1.2;
+        color: #2c2420;
+        transition: color 0.3s ease;
+    }
+
+    .search-result-item:hover .search-result-title {
+        color: #c4a47a;
+    }
+
+    .search-result-price {
+        font-family: "Poppins", sans-serif;
+        font-size: 0.95rem;
+        color: #c4a47a;
+        font-weight: 600;
+        margin-top: 0.1rem;
+    }
+
+    .search-result-action {
+        color: #d0c4be;
+        transition: all 0.3s ease;
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+
+    .search-result-item:hover .search-result-action {
+        opacity: 1;
+        transform: translateX(0);
+        color: #c4a47a;
+    }
+
+    .no-results {
+        padding: 2rem;
+        text-align: center;
+        color: #a89080;
+        font-size: 0.95rem;
+        font-style: italic;
+    }
+
+    @media (max-width: 768px) {
+        .search-results-dropdown {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            right: 0;
+            width: 100%;
+            border-radius: 0 0 16px 16px;
+            margin-top: 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            max-height: 60vh;
+        }
+    }
+</style>
+
+<style>
+    /* ITEM GENERAL */
+    /* ITEM GENERAL */
+    :global(.search-result-item) {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 12px;
+        text-decoration: none;
+        color: #2c2420; /* Brand Dark Brown */
+        border-bottom: 1px solid rgba(196, 164, 122, 0.2); /* Brand Border */
+        transition: all 0.2s ease;
+        border-radius: 8px;
+    }
+
+    /* Hover suave */
+    :global(.search-result-item:hover) {
+        background-color: rgba(196, 164, 122, 0.15); /* Light Gold Accent */
+    }
+
+    /* MINIATURA */
+    :global(.search-result-image-wrapper) {
+        width: 80px;
+        height: 80px;
+        flex-shrink: 0;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    :global(.search-result-image-wrapper img) {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* INFORMACIÓN */
+    :global(.search-result-info) {
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Categoría */
+    :global(.search-result-category) {
+        font-size: 13px;
+        color: #a89080; /* Brand Secondary Accent */
+    }
+
+    /* Título */
+    :global(.search-result-title) {
+        font-size: 16px;
+        font-weight: 700;
+        color: #2c2420; /* Brand Dark Brown */
+    }
+
+    /* Precio */
+    :global(.search-result-price) {
+        font-size: 15px;
+        font-weight: 600;
+        color: #c4a47a; /* Brand Gold */
+        margin-top: 4px;
     }
 </style>
