@@ -2,18 +2,18 @@
 export const prerender = false;
 import Image from "astro/components/Image.astro";
 import BaseLayout from "~/layouts/BaseLayout.astro";
-import ProductCard from "~/components/CardsProducts.astro";
 import { getProducts } from "~/services/get-products";
 import { STRAPI_HOST } from "~/services/consts";
 import Toast from "~/components/Toast.astro";
 import AnotherCategories from "~/components/AnotherCategories.astro";
+import ProductRelationated from "~/components/ProductRelationated.astro";
 
 const { slug } = Astro.params;
 if (!slug) return "No tienes un slug";
+
 const { data: products } = await getProducts();
 const product = products.find((product) => product.slug === slug);
 if (!product) return "Producto no encontrado";
-const relatedProducts = products.filter((product) => product.slug !== slug);
 ---
 
 <script>
@@ -396,23 +396,8 @@ const relatedProducts = products.filter((product) => product.slug !== slug);
       </article>
     </div>
   </section>
-  <section class="product-container">
-    <h3>Productos Relacionados</h3>
-    <div class="product-grid">
-      {
-        relatedProducts?.map(({ name, description, slug, price, images }) => (
-          <ProductCard
-            title={name}
-            description={description}
-            slug={slug}
-            price={price}
-            images={images}
-          />
-        ))
-      }
-    </div>
-  </section>
-  <div style={{ paddingInline: "3rem" }}>
+  <ProductRelationated product={product} />
+  <div class="category-container">
     <AnotherCategories slug={slug} />
   </div>
 </BaseLayout>
@@ -559,7 +544,7 @@ const relatedProducts = products.filter((product) => product.slug !== slug);
     color: #8a7a72;
     line-height: 1.7;
     margin-bottom: 2.5rem;
-    font-size: 1.05rem;
+    font-size: 1.2rem;
   }
 
   .options-section {
@@ -567,7 +552,7 @@ const relatedProducts = products.filter((product) => product.slug !== slug);
   }
 
   .options-section h3 {
-    font-size: 1rem;
+    font-size: 1.3rem;
     color: #5a4a42;
     margin: 0 0 0.8rem 0;
     font-weight: 600;
@@ -588,7 +573,7 @@ const relatedProducts = products.filter((product) => product.slug !== slug);
     cursor: pointer;
     transition: all 0.3s ease;
     font-family: inherit;
-    font-size: 0.95rem;
+    font-size: 1.05rem;
   }
 
   .option-btn:hover {
@@ -709,18 +694,24 @@ const relatedProducts = products.filter((product) => product.slug !== slug);
 </style>
 
 <style>
-  .product-container h3 {
-    font-size: 2rem;
-    color: #5a4a42;
-    margin: 0 0 2rem 0;
-    line-height: 1.3;
+  .category-container {
+    margin-inline: 3rem;
   }
-  .product-container .product-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
-    gap: 2rem;
-    margin-bottom: 2rem;
-    color: var(--color-text-medium);
-    font-size: 1.2em;
+  @media (max-width: 1135px) {
+    .category-container {
+      margin-inline: 1rem;
+      margin-top: 1.5rem;
+    }
+  }
+  @media (0px<= width <= 500px) {
+    .actions {
+      flex-wrap: wrap;
+    }
+    .actions .quantity-container {
+      height: auto !important;
+      justify-content: center;
+      width: 100%;
+      padding: 1rem !important;
+    }
   }
 </style>

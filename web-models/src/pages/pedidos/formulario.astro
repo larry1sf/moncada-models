@@ -206,29 +206,9 @@ import BaseLayout from "~/layouts/BaseLayout.astro";
                                     <strong>Efectivo contra entrega</strong>
                                     <small>Paga cuando recibes tu pedido</small>
                                 </div>
-                                <div
-                                    class="select-option"
-                                    data-value="transferencia"
-                                >
-                                    <strong>Transferencia bancaria</strong>
-                                    <small
-                                        >Pago mediante transferencia electrónica</small
-                                    >
-                                </div>
-                                <div class="select-option" data-value="tarjeta">
-                                    <strong>Tarjeta de crédito/débito</strong>
-                                    <small>Pago seguro con tarjeta</small>
-                                </div>
                                 <div class="select-option" data-value="nequi">
                                     <strong>Nequi</strong>
                                     <small>Pago rápido con Nequi</small>
-                                </div>
-                                <div
-                                    class="select-option"
-                                    data-value="daviplata"
-                                >
-                                    <strong>Daviplata</strong>
-                                    <small>Pago fácil con Daviplata</small>
                                 </div>
                             </div>
                         </div>
@@ -383,17 +363,14 @@ import BaseLayout from "~/layouts/BaseLayout.astro";
 </BaseLayout>
 
 <script>
-    import { formatPriceCOP } from "~/services/consts";
+    import { formatPriceCOP, posts } from "~/services/consts";
 
     // Form state
     let currentStep = 1;
     const totalSteps = 3;
 
-    // Strapi Host (passed from frontmatter would be better, but for client script we can define or use relative)
-    // Since we can't easily pass the server variable to this script tag without define:vars which might break other things,
-    // we'll assume the image URLs in cart are either full URLs or need the host.
-    // Based on ModalCart, we might need the host.
-    const STRAPI_HOST = "http://localhost:1337"; // Fallback or matching consts
+    // Strapi Host
+    const STRAPI_HOST = "http://localhost:1337";
 
     // LocalStorage keys
     const STORAGE_KEY = "orderFormData";
@@ -646,6 +623,16 @@ import BaseLayout from "~/layouts/BaseLayout.astro";
                 // Update hidden input
                 hiddenInput.value = value;
 
+                // Dispatch change event so listeners can pick it up
+                hiddenInput.dispatchEvent(
+                    new Event("change", { bubbles: true }),
+                );
+
+                // Explicitly update summary if we are on the last step
+                if (currentStep === 3) {
+                    updateSummary();
+                }
+
                 // Update placeholder text
                 if (placeholder) {
                     placeholder.textContent = text;
@@ -815,7 +802,6 @@ import BaseLayout from "~/layouts/BaseLayout.astro";
             document.getElementById("summary-address")!.textContent =
                 addressInput.value || "-";
 
-            // Format date
             if (dateInput.value) {
                 const date = new Date(dateInput.value);
                 document.getElementById("summary-date")!.textContent =
@@ -931,7 +917,7 @@ import BaseLayout from "~/layouts/BaseLayout.astro";
     });
 
     // Handle form submission
-    btnSubmit.addEventListener("click", () => {
+    btnSubmit.addEventListener("click", async () => {
         if (validateStep(currentStep)) {
             // Verify cart has products before submitting
             const cart = JSON.parse(localStorage.getItem("cart") || "[]");
@@ -976,7 +962,13 @@ import BaseLayout from "~/layouts/BaseLayout.astro";
                 daviplata: "Daviplata",
             };
 
-            // Create order object
+            // Calculate Total
+            const total = cart.reduce(
+                (sum: number, item: any) => sum + item.price * item.quantity,
+                0,
+            );
+
+            // Create order object for LocalStorage (keep existing logic)
             const order = {
                 timestamp: Date.now(),
                 fullname,
@@ -989,33 +981,80 @@ import BaseLayout from "~/layouts/BaseLayout.astro";
                 products: cart,
             };
 
-            // Save order to orders list
+            // Save order to orders list (LocalStorage)
             const orders = JSON.parse(localStorage.getItem("orders") || "[]");
             orders.push(order);
             localStorage.setItem("orders", JSON.stringify(orders));
 
-            // Clear the cart
-            localStorage.removeItem("cart");
+            // Send to Strapi
+            try {
+                // Disable button to prevent double submit
+                btnSubmit.disabled = true;
+                btnSubmit.textContent = "Enviando...";
 
-            // Dispatch event to update cart counter and any other listeners
-            window.dispatchEvent(new Event("cartUpdated"));
+                // Generate a reference ID
+                const reference = `ORD-${Date.now()}`;
+
+                // Clean phone number (keep only digits)
+                const numberClient =
+                    parseInt(phone.replace(/\D/g, ""), 10) || 0;
+
+                const strapiData = {
+                    data: {
+                        reference,
+                        nameClient: fullname,
+                        numberClient,
+                        typeDelivery:
+                            shipping === "nacional"
+                                ? "Nacional"
+                                : "Internacional",
+                        buyMethod: paymentMap[payment] || payment,
+                        address,
+                        dateDelivery: deliveryDate,
+                        totalDelivery: total,
+                        email: email || undefined,
+                    },
+                };
+
+                await posts({ query: "/api/orders", body: strapiData });
+            } catch (error) {
+                console.error("Error sending order to Strapi:", error);
+                alert(
+                    "Hubo un error al enviar tu pedido. Por favor, inténtalo de nuevo o contáctanos.",
+                );
+                btnSubmit.disabled = false;
+                btnSubmit.textContent = "Finalizar Pedido";
+                return; // Stop execution if Strapi fails
+            }
 
             // Clear saved form data
             clearSavedData();
 
             // Show success modal
             successModal.classList.add("show");
+
+            // Reset button state (though modal is showing)
+            btnSubmit.disabled = false;
+            btnSubmit.textContent = "Finalizar Pedido";
         }
     });
 
     // Handle success modal buttons
     document.getElementById("btn-home")?.addEventListener("click", () => {
+        // Clear the cart
+        localStorage.removeItem("cart");
+        window.dispatchEvent(new Event("cartUpdated"));
+
         window.location.href = "/";
     });
 
     document
         .getElementById("btn-close-modal")
         ?.addEventListener("click", () => {
+            // Clear the cart
+            localStorage.removeItem("cart");
+            window.dispatchEvent(new Event("cartUpdated"));
+
             successModal.classList.remove("show");
             // Optional: Reset form or redirect to a specific state if needed
             // For now, just closing the modal. The user is still on step 3.
