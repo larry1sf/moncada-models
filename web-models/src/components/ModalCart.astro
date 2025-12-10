@@ -389,6 +389,37 @@ import { STRAPI_HOST } from "~/services/consts";
         closeRemoveModal();
     };
 
+    // --- Lógica para Vaciar Carrito ---
+    const openClearCartModal = () => {
+        const clearModal = document.getElementById("clear-cart-modal");
+        if (clearModal) {
+            clearModal.classList.add("active");
+            document.body.style.overflow = "hidden";
+        }
+    };
+
+    const closeClearCartModal = () => {
+        const clearModal = document.getElementById("clear-cart-modal");
+        if (clearModal) {
+            clearModal.classList.remove("active");
+            // Solo restaurar overflow si no hay otro modal activo (aunque aquí el modal principal sigue activo por debajo, pero esto es safe)
+            // En este caso, como el modal del carrito está debajo, quizás no queramos restaurar el overflow a 'auto', sino mantenerlo 'hidden' porque el carrito sigue abierto.
+            // El carrito maneja el overflow hidden. Al cerrar este modal secundario, seguimos en el carrito.
+            // Verifica si el carrito está abierto antes de resetear overflow.
+            if (!cartModal?.classList.contains("active")) {
+                 document.body.style.overflow = "";
+            }
+            // NOTA: Si el carrito está abierto, NO quitamos el overflow:hidden.
+        }
+    };
+
+    const confirmClearCart = () => {
+        localStorage.removeItem("cart");
+        renderCart();
+        window.dispatchEvent(new Event("cartUpdated"));
+        closeClearCartModal();
+    };
+
     // Función principal de renderizado
     const renderCart = () => {
         const cart = getCart();
@@ -597,31 +628,42 @@ import { STRAPI_HOST } from "~/services/consts";
             });
         }
 
-        // Botón "Vaciar Carrito"
+        // Botón "Vaciar Carrito" (Abre el modal)
         const clearCartBtn = document.getElementById("clear-cart-btn");
         if (clearCartBtn) {
             const newClearBtn = clearCartBtn.cloneNode(true);
             clearCartBtn.parentNode?.replaceChild(newClearBtn, clearCartBtn);
 
             newClearBtn.addEventListener("click", () => {
-                if (
-                    confirm(
-                        "¿Estás seguro de que deseas vaciar todo el carrito?",
-                    )
-                ) {
-                    localStorage.removeItem("cart");
-                    renderCart();
-                    window.dispatchEvent(new Event("cartUpdated"));
-                }
+               openClearCartModal();
             });
+        }
+
+        // Listeners para confirmar/cancelar vaciado de carrito
+        const cancelClearBtn = document.getElementById("cancel-clear-btn");
+        const confirmClearBtn = document.getElementById("confirm-clear-btn");
+        
+        if (cancelClearBtn) {
+            const newBtn = cancelClearBtn.cloneNode(true);
+            cancelClearBtn.parentNode?.replaceChild(newBtn, cancelClearBtn);
+            newBtn.addEventListener("click", closeClearCartModal);
+        }
+
+        if (confirmClearBtn) {
+             const newBtn = confirmClearBtn.cloneNode(true);
+             confirmClearBtn.parentNode?.replaceChild(newBtn, confirmClearBtn);
+             newBtn.addEventListener("click", confirmClearCart);
         }
 
         // Listener para ESC
         const escHandler = (e: KeyboardEvent) => {
             if (e.key === "Escape") {
                 const removeModal = document.getElementById("remove-modal");
+                const clearCartModal = document.getElementById("clear-cart-modal");
                 if (removeModal?.classList.contains("active")) {
                     closeRemoveModal();
+                } else if (clearCartModal?.classList.contains("active")) {
+                    closeClearCartModal();
                 } else if (cartModal?.classList.contains("active")) {
                     closeCart();
                 }
