@@ -13,6 +13,19 @@ export async function gets({ query }: { query: string }): Promise<StrapiResponse
     })
     return await res.json() as StrapiResponse<ProductAttributes>
 }
+export async function posts({ query, body }: { query: string, body: any }) {
+    let url = `${STRAPI_HOST}${query}`
+
+    const res = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${STRAPI_API_TOKEN}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+    })
+    return await res.json()
+}
 export function formatPriceCOP(price: number | string): string {
     // Convertir a string y limpiar caracteres que no sean dígitos o punto
     const cleanValue = String(price).replace(/[^0-9.]/g, "");

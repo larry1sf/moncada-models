@@ -95,12 +95,13 @@
       "inversedBy": "products"
     },
     "description": {
-      "type": "string",
+      "type": "text",
       "pluginOptions": {
         "i18n": {
           "localized": true
         }
       },
+      "maxLength": 150,
       "required": true
     },
     "slug": {

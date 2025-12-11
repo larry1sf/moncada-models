@@ -1,0 +1,2035 @@
+---
+export const prerender = true;
+import BaseLayout from "~/layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Realizar Pedido - Moncada Models">
+    <div class="form-page">
+        <div class="form-container">
+            <!-- Progress Bar -->
+            <div class="progress-wrapper">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <div class="progress-steps">
+                    <div class="step-indicator active" data-step="1">
+                        <span class="step-number">1</span>
+                        <span class="step-label">Datos Personales</span>
+                    </div>
+                    <div class="step-indicator" data-step="2">
+                        <span class="step-number">2</span>
+                        <span class="step-label">Pedido</span>
+                    </div>
+                    <div class="step-indicator" data-step="3">
+                        <span class="step-number">3</span>
+                        <span class="step-label">Confirmación</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Steps -->
+            <form id="order-form" class="order-form">
+                <!-- Step 1: Personal Data -->
+                <div class="form-step active" data-step="1">
+                    <div class="step-header">
+                        <h2>Datos Personales</h2>
+                        <p>Ingresa tu información de contacto</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fullname"
+                            >Nombre Completo <span class="required">*</span
+                            ></label
+                        >
+                        <input
+                            type="text"
+                            id="fullname"
+                            name="fullname"
+                            placeholder="Ej: María González"
+                            required
+                        />
+                        <span class="error-message"
+                            >Este campo es requerido</span
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone"
+                            >Teléfono <span class="required">*</span></label
+                        >
+                        <input
+                            type="tel"
+                            id="phone"
+                            name="phone"
+                            placeholder="Ej: +57 300 123 4567"
+                            required
+                        />
+                        <span class="error-message"
+                            >Este campo es requerido</span
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Correo Electrónico (Opcional)</label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="Ej: maria@example.com"
+                        />
+                    </div>
+                </div>
+
+                <!-- Step 2: Order Details -->
+                <div class="form-step" data-step="2">
+                    <div class="step-header">
+                        <h2>Datos del Pedido</h2>
+                        <p>Información sobre el envío</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label
+                            >Tipo de Envío <span class="required">*</span
+                            ></label
+                        >
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input
+                                    type="radio"
+                                    name="shipping"
+                                    value="nacional"
+                                    required
+                                />
+                                <span class="radio-custom"></span>
+                                <span class="radio-text">
+                                    <strong>Nacional</strong>
+                                    <small>Envío dentro de Colombia</small>
+                                </span>
+                            </label>
+                            <label class="radio-label">
+                                <input
+                                    type="radio"
+                                    name="shipping"
+                                    value="internacional"
+                                />
+                                <span class="radio-custom"></span>
+                                <span class="radio-text">
+                                    <strong>Internacional</strong>
+                                    <small>Envío fuera de Colombia</small>
+                                </span>
+                            </label>
+                        </div>
+                        <span class="error-message"
+                            >Selecciona un tipo de envío</span
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="address"
+                            >Dirección <span class="required">*</span></label
+                        >
+                        <textarea
+                            id="address"
+                            name="address"
+                            rows="4"
+                            placeholder="Ej: Calle 123 #45-67, Apto 301, Bogotá, Colombia"
+                            required></textarea>
+                        <span class="error-message"
+                            >Este campo es requerido</span
+                        >
+                    </div>
+                </div>
+
+                <!-- Step 3: Confirmation -->
+                <div class="form-step" data-step="3">
+                    <div class="step-header">
+                        <h2>Confirmación</h2>
+                        <p>Finaliza tu pedido</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="delivery-date"
+                            >Fecha y Hora de Entrega <span class="required"
+                                >*</span
+                            ></label
+                        >
+                        <input
+                            type="datetime-local"
+                            id="delivery-date"
+                            name="delivery-date"
+                            required
+                        />
+                        <span class="error-message"
+                            >Este campo es requerido</span
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label
+                            >Método de Pago <span class="required">*</span
+                            ></label
+                        >
+                        <!-- Hidden input to store the selected value -->
+                        <input
+                            type="hidden"
+                            id="payment"
+                            name="payment"
+                            required
+                        />
+
+                        <!-- Custom Dropdown -->
+                        <div class="custom-select" id="payment-select">
+                            <div class="select-trigger">
+                                <span class="select-placeholder"
+                                    >Selecciona un método de pago</span
+                                >
+                                <svg
+                                    class="select-arrow"
+                                    width="12"
+                                    height="12"
+                                    viewBox="0 0 12 12"
+                                    fill="none"
+                                >
+                                    <path
+                                        d="M3 4.5L6 7.5L9 4.5"
+                                        stroke="currentColor"
+                                        stroke-width="1.5"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"></path>
+                                </svg>
+                            </div>
+                            <div class="select-menu">
+                                <div
+                                    class="select-option"
+                                    data-value="efectivo"
+                                >
+                                    <strong>Efectivo contra entrega</strong>
+                                    <small>Paga cuando recibes tu pedido</small>
+                                </div>
+                                <div class="select-option" data-value="nequi">
+                                    <strong>Nequi</strong>
+                                    <small>Pago rápido con Nequi</small>
+                                </div>
+                            </div>
+                        </div>
+                        <span class="error-message"
+                            >Selecciona un método de pago</span
+                        >
+                    </div>
+
+                    <!-- Order Summary -->
+                    <div class="order-summary">
+                        <h3>Resumen del Pedido</h3>
+
+                        <!-- Products List -->
+                        <div class="summary-products" id="summary-products">
+                            <!-- Products will be injected here via JS -->
+                        </div>
+
+                        <div class="summary-divider"></div>
+
+                        <!-- Order Details -->
+                        <div class="summary-details-grid">
+                            <div class="summary-item">
+                                <span class="summary-label">Nombre</span>
+                                <span class="summary-value" id="summary-name"
+                                    >-</span
+                                >
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">Teléfono</span>
+                                <span class="summary-value" id="summary-phone"
+                                    >-</span
+                                >
+                            </div>
+                            <div
+                                class="summary-item"
+                                id="summary-email-item"
+                                style="display: none;"
+                            >
+                                <span class="summary-label">Email</span>
+                                <span class="summary-value" id="summary-email"
+                                    >-</span
+                                >
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">Envío</span>
+                                <span
+                                    class="summary-value"
+                                    id="summary-shipping">-</span
+                                >
+                            </div>
+                            <div class="summary-item">
+                                <span class="summary-label">Pago</span>
+                                <span class="summary-value" id="summary-payment"
+                                    >-</span
+                                >
+                            </div>
+                            <div class="summary-item full-width">
+                                <span class="summary-label">Dirección</span>
+                                <span class="summary-value" id="summary-address"
+                                    >-</span
+                                >
+                            </div>
+                            <div class="summary-item full-width">
+                                <span class="summary-label"
+                                    >Fecha de Entrega</span
+                                >
+                                <span class="summary-value" id="summary-date"
+                                    >-</span
+                                >
+                            </div>
+                        </div>
+
+                        <div class="summary-divider"></div>
+
+                        <!-- Total -->
+                        <div class="summary-total-row">
+                            <span class="summary-total-label"
+                                >Total a Pagar</span
+                            >
+                            <span class="summary-total-value" id="summary-total"
+                                >$0 COP</span
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="form-navigation">
+                    <button
+                        type="button"
+                        class="btn-secondary"
+                        id="btn-prev"
+                        style="display: none;"
+                    >
+                        Regresar
+                    </button>
+                    <button type="button" class="btn-primary" id="btn-next">
+                        Continuar
+                    </button>
+                    <button
+                        type="button"
+                        class="btn-primary"
+                        id="btn-submit"
+                        style="display: none;"
+                    >
+                        Finalizar Pedido
+                    </button>
+                </div>
+            </form>
+
+            <!-- Success Message -->
+            <div class="success-modal" id="success-modal">
+                <div class="success-content">
+                    <div class="success-icon">
+                        <svg
+                            width="80"
+                            height="80"
+                            viewBox="0 0 80 80"
+                            fill="none"
+                        >
+                            <circle
+                                cx="40"
+                                cy="40"
+                                r="38"
+                                stroke="#c4a47a"
+                                stroke-width="4"></circle>
+                            <path
+                                d="M25 40L35 50L55 30"
+                                stroke="#c4a47a"
+                                stroke-width="4"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"></path>
+                        </svg>
+                    </div>
+                    <h2>¡Tu pedido ha sido agendado con éxito!</h2>
+                    <p>
+                        Gracias por tu compra. Nos pondremos en contacto contigo
+                        pronto.
+                    </p>
+                    <div class="success-actions">
+                        <button id="btn-home" class="btn-primary"
+                            >Volver al Inicio</button
+                        >
+                        <button id="btn-close-modal" class="btn-secondary"
+                            >Cerrar</button
+                        >
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</BaseLayout>
+
+<script>
+    import { formatPriceCOP, posts } from "~/services/consts";
+
+    // Form state
+    let currentStep = 1;
+    const totalSteps = 3;
+
+    // Strapi Host
+    const STRAPI_HOST = "http://localhost:1337";
+
+    // LocalStorage keys
+    const STORAGE_KEY = "orderFormData";
+    const STEP_KEY = "orderFormStep";
+
+    // DOM elements
+    const form = document.getElementById("order-form") as HTMLFormElement;
+    const btnNext = document.getElementById("btn-next") as HTMLButtonElement;
+    const btnPrev = document.getElementById("btn-prev") as HTMLButtonElement;
+    const btnSubmit = document.getElementById(
+        "btn-submit",
+    ) as HTMLButtonElement;
+    const progressFill = document.getElementById(
+        "progress-fill",
+    ) as HTMLDivElement;
+    const successModal = document.getElementById(
+        "success-modal",
+    ) as HTMLDivElement;
+
+    // Save form data to localStorage
+    function saveFormData() {
+        const formData: Record<string, string> = {};
+
+        // Save text inputs
+        const fullname = (
+            document.getElementById("fullname") as HTMLInputElement
+        )?.value;
+        const phone = (document.getElementById("phone") as HTMLInputElement)
+            ?.value;
+        const email = (document.getElementById("email") as HTMLInputElement)
+            ?.value;
+        const address = (
+            document.getElementById("address") as HTMLTextAreaElement
+        )?.value;
+        const deliveryDate = (
+            document.getElementById("delivery-date") as HTMLInputElement
+        )?.value;
+        const payment = (document.getElementById("payment") as HTMLInputElement)
+            ?.value;
+
+        // Save shipping radio selection
+        const shipping = (
+            document.querySelector(
+                'input[name="shipping"]:checked',
+            ) as HTMLInputElement
+        )?.value;
+
+        if (fullname) formData.fullname = fullname;
+        if (phone) formData.phone = phone;
+        if (email) formData.email = email;
+        if (address) formData.address = address;
+        if (deliveryDate) formData.deliveryDate = deliveryDate;
+        if (payment) formData.payment = payment;
+        if (shipping) formData.shipping = shipping;
+
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+    }
+
+    // Load form data from localStorage
+    function loadFormData() {
+        const savedData = localStorage.getItem(STORAGE_KEY);
+        if (!savedData) return;
+
+        try {
+            const formData = JSON.parse(savedData);
+
+            // Restore text inputs
+            if (formData.fullname) {
+                (
+                    document.getElementById("fullname") as HTMLInputElement
+                ).value = formData.fullname;
+            }
+            if (formData.phone) {
+                (document.getElementById("phone") as HTMLInputElement).value =
+                    formData.phone;
+            }
+            if (formData.email) {
+                (document.getElementById("email") as HTMLInputElement).value =
+                    formData.email;
+            }
+            if (formData.address) {
+                (
+                    document.getElementById("address") as HTMLTextAreaElement
+                ).value = formData.address;
+            }
+            if (formData.deliveryDate) {
+                (
+                    document.getElementById("delivery-date") as HTMLInputElement
+                ).value = formData.deliveryDate;
+            }
+
+            // Restore shipping radio
+            if (formData.shipping) {
+                const shippingRadio = document.querySelector(
+                    `input[name="shipping"][value="${formData.shipping}"]`,
+                ) as HTMLInputElement;
+                if (shippingRadio) shippingRadio.checked = true;
+            }
+
+            // Restore payment dropdown
+            if (formData.payment) {
+                const paymentInput = document.getElementById(
+                    "payment",
+                ) as HTMLInputElement;
+                const customSelect = document.getElementById("payment-select");
+                const placeholder = customSelect?.querySelector(
+                    ".select-placeholder",
+                );
+                const option = customSelect?.querySelector(
+                    `[data-value="${formData.payment}"]`,
+                );
+
+                if (paymentInput) paymentInput.value = formData.payment;
+                if (placeholder && option) {
+                    const text =
+                        option.querySelector("strong")?.textContent || "";
+                    placeholder.textContent = text;
+                    placeholder.classList.add("selected");
+                }
+            }
+        } catch (e) {
+            console.error("Error loading form data:", e);
+        }
+    }
+
+    // Save current step
+    function saveCurrentStep() {
+        localStorage.setItem(STEP_KEY, currentStep.toString());
+    }
+
+    // Load saved step
+    function loadSavedStep() {
+        const savedStep = localStorage.getItem(STEP_KEY);
+        if (savedStep) {
+            const step = parseInt(savedStep, 10);
+            if (step >= 1 && step <= totalSteps) {
+                currentStep = step;
+            }
+        }
+    }
+
+    // Clear saved data (call after successful submission)
+    function clearSavedData() {
+        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(STEP_KEY);
+    }
+
+    // Setup auto-save on input changes
+    function setupAutoSave() {
+        form.addEventListener("input", saveFormData);
+        form.addEventListener("change", saveFormData);
+    }
+
+    // Check if cart has products
+    function hasCartProducts(): boolean {
+        try {
+            const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+            return cart.length > 0;
+        } catch {
+            return false;
+        }
+    }
+
+    // Show cart empty warning
+    function showCartEmptyWarning() {
+        const formContainer = document.querySelector(
+            ".form-container",
+        ) as HTMLElement;
+        if (!formContainer) return;
+
+        const warning = document.createElement("div");
+        warning.className = "cart-empty-warning";
+        warning.innerHTML = `
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                <path d="M12 9V13M12 17H12.01M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <h2>Carrito Vacío</h2>
+            <p>No puedes realizar un pedido sin productos en tu carrito.</p>
+            <p>Por favor, agrega productos antes de continuar.</p>
+            <a href="/categories" class="btn-primary">Ver Collecciones</a>
+        `;
+
+        formContainer.innerHTML = "";
+        formContainer.appendChild(warning);
+    }
+
+    // Initialize form
+    function initForm() {
+        // Check if cart has products first
+        if (!hasCartProducts()) {
+            showCartEmptyWarning();
+            return;
+        }
+
+        // Load saved step first
+        loadSavedStep();
+
+        updateProgress();
+        updateButtons();
+
+        // Set minimum date for delivery (at least 1 day from now)
+        const deliveryInput = document.getElementById(
+            "delivery-date",
+        ) as HTMLInputElement;
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1); // Minimum 1 day from now
+        tomorrow.setHours(0, 0, 0, 0); // Start of tomorrow
+        deliveryInput.min = tomorrow.toISOString().slice(0, 16);
+
+        // Initialize custom payment dropdown
+        initPaymentDropdown();
+
+        // Load saved form data
+        loadFormData();
+
+        // Show the current step (in case we loaded a saved step)
+        showStep(currentStep);
+
+        // Add input listeners to save data
+        setupAutoSave();
+    }
+
+    // Custom dropdown for payment method
+    function initPaymentDropdown() {
+        const customSelect = document.getElementById("payment-select");
+        const trigger = customSelect?.querySelector(".select-trigger");
+        const menu = customSelect?.querySelector(".select-menu");
+        const options = customSelect?.querySelectorAll(".select-option");
+        const hiddenInput = document.getElementById(
+            "payment",
+        ) as HTMLInputElement;
+        const placeholder = customSelect?.querySelector(".select-placeholder");
+
+        if (!customSelect || !trigger || !menu || !options || !hiddenInput)
+            return;
+
+        // Toggle dropdown
+        trigger.addEventListener("click", (e) => {
+            e.stopPropagation();
+            customSelect.classList.toggle("open");
+        });
+
+        // Select option
+        options.forEach((option) => {
+            option.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const value = option.getAttribute("data-value") || "";
+                const text = option.querySelector("strong")?.textContent || "";
+
+                // Update hidden input
+                hiddenInput.value = value;
+
+                // Dispatch change event so listeners can pick it up
+                hiddenInput.dispatchEvent(
+                    new Event("change", { bubbles: true }),
+                );
+
+                // Explicitly update summary if we are on the last step
+                if (currentStep === 3) {
+                    updateSummary();
+                }
+
+                // Update placeholder text
+                if (placeholder) {
+                    placeholder.textContent = text;
+                    placeholder.classList.add("selected");
+                }
+
+                // Remove error if present
+                const formGroup = customSelect.closest(".form-group");
+                formGroup?.classList.remove("has-error");
+
+                // Close dropdown
+                customSelect.classList.remove("open");
+
+                // Save to localStorage
+                saveFormData();
+            });
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener("click", (e) => {
+            if (!customSelect.contains(e.target as Node)) {
+                customSelect.classList.remove("open");
+            }
+        });
+    }
+
+    // Update progress bar
+    function updateProgress() {
+        const progress = (currentStep / totalSteps) * 100;
+        progressFill.style.width = `${progress}%`;
+
+        // Update step indicators
+        document
+            .querySelectorAll(".step-indicator")
+            .forEach((indicator, index) => {
+                const stepNum = index + 1;
+                if (stepNum < currentStep) {
+                    indicator.classList.add("completed");
+                    indicator.classList.remove("active");
+                } else if (stepNum === currentStep) {
+                    indicator.classList.add("active");
+                    indicator.classList.remove("completed");
+                } else {
+                    indicator.classList.remove("active", "completed");
+                }
+            });
+    }
+
+    // Update navigation buttons
+    function updateButtons() {
+        btnPrev.style.display = currentStep > 1 ? "block" : "none";
+
+        if (currentStep === totalSteps) {
+            btnNext.style.display = "none";
+            btnSubmit.style.display = "block";
+        } else {
+            btnNext.style.display = "block";
+            btnSubmit.style.display = "none";
+        }
+    }
+
+    // Validate current step
+    function validateStep(step: number): boolean {
+        const currentStepEl = document.querySelector(
+            `.form-step[data-step="${step}"]`,
+        ) as HTMLElement;
+        const inputs = currentStepEl.querySelectorAll(
+            "input[required], textarea[required], select[required]",
+        );
+        let isValid = true;
+
+        inputs.forEach((input) => {
+            const inputEl = input as
+                | HTMLInputElement
+                | HTMLTextAreaElement
+                | HTMLSelectElement;
+            const formGroup = inputEl.closest(".form-group") as HTMLElement;
+
+            if (inputEl.type === "radio") {
+                const radioGroup = currentStepEl.querySelector(
+                    `input[name="${inputEl.name}"]:checked`,
+                );
+                const radioFormGroup = currentStepEl
+                    .querySelector(`input[name="${inputEl.name}"]`)
+                    ?.closest(".form-group") as HTMLElement;
+
+                if (!radioGroup && radioFormGroup) {
+                    radioFormGroup.classList.add("has-error");
+                    isValid = false;
+                } else if (radioFormGroup) {
+                    radioFormGroup.classList.remove("has-error");
+                }
+            } else if (!inputEl.value.trim()) {
+                formGroup?.classList.add("has-error");
+                isValid = false;
+            } else {
+                formGroup?.classList.remove("has-error");
+            }
+        });
+
+        return isValid;
+    }
+
+    // Show step with animation
+    function showStep(step: number) {
+        const steps = document.querySelectorAll(".form-step");
+
+        steps.forEach((stepEl, index) => {
+            const stepNum = index + 1;
+            if (stepNum === step) {
+                stepEl.classList.add("active");
+            } else {
+                stepEl.classList.remove("active");
+            }
+        });
+
+        updateProgress();
+        updateButtons();
+        updateSummary();
+
+        // Scroll to top of form
+        document
+            .querySelector(".form-container")
+            ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    // Update order summary
+    function updateSummary() {
+        if (currentStep === 3) {
+            const nameInput = document.getElementById(
+                "fullname",
+            ) as HTMLInputElement;
+            const phoneInput = document.getElementById(
+                "phone",
+            ) as HTMLInputElement;
+            const emailInput = document.getElementById(
+                "email",
+            ) as HTMLInputElement;
+            const addressInput = document.getElementById(
+                "address",
+            ) as HTMLTextAreaElement;
+            const dateInput = document.getElementById(
+                "delivery-date",
+            ) as HTMLInputElement;
+            const paymentInput = document.getElementById(
+                "payment",
+            ) as HTMLInputElement;
+            const shippingInput = document.querySelector(
+                'input[name="shipping"]:checked',
+            ) as HTMLInputElement;
+
+            // Update text fields
+            document.getElementById("summary-name")!.textContent =
+                nameInput.value || "-";
+            document.getElementById("summary-phone")!.textContent =
+                phoneInput.value || "-";
+
+            // Handle optional email field
+            const emailItem = document.getElementById("summary-email-item");
+            if (emailInput.value.trim()) {
+                document.getElementById("summary-email")!.textContent =
+                    emailInput.value;
+                if (emailItem) emailItem.style.display = "flex";
+            } else {
+                if (emailItem) emailItem.style.display = "none";
+            }
+            document.getElementById("summary-address")!.textContent =
+                addressInput.value || "-";
+
+            if (dateInput.value) {
+                const date = new Date(dateInput.value);
+                document.getElementById("summary-date")!.textContent =
+                    date.toLocaleString("es-CO", {
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                    });
+            } else {
+                document.getElementById("summary-date")!.textContent = "-";
+            }
+
+            // Update shipping
+            document.getElementById("summary-shipping")!.textContent =
+                shippingInput
+                    ? shippingInput.value === "nacional"
+                        ? "Nacional"
+                        : "Internacional"
+                    : "-";
+
+            // Update payment
+            const paymentMap: Record<string, string> = {
+                efectivo: "Efectivo contra entrega",
+                transferencia: "Transferencia bancaria",
+                tarjeta: "Tarjeta de crédito/débito",
+                nequi: "Nequi",
+                daviplata: "Daviplata",
+            };
+            document.getElementById("summary-payment")!.textContent =
+                paymentInput.value
+                    ? paymentMap[paymentInput.value] || paymentInput.value
+                    : "-";
+
+            // Render Products from Cart
+            renderCartSummary();
+        }
+    }
+
+    function renderCartSummary() {
+        const productsContainer = document.getElementById("summary-products");
+        const totalElement = document.getElementById("summary-total");
+
+        if (!productsContainer || !totalElement) return;
+
+        try {
+            const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+            if (cart.length === 0) {
+                productsContainer.innerHTML =
+                    '<p class="empty-summary">No hay productos en el carrito</p>';
+                totalElement.textContent = "$0 COP";
+                return;
+            }
+
+            let total = 0;
+            let html = "";
+
+            cart.forEach((item: any) => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+
+                const imageUrl = item.image
+                    ? item.image.startsWith("http")
+                        ? item.image
+                        : `${STRAPI_HOST}${item.image}`
+                    : "";
+
+                html += `
+                    <div class="summary-product-item">
+                        <div class="summary-product-image">
+                            ${imageUrl ? `<img src="${imageUrl}" alt="${item.name}">` : '<div class="placeholder"></div>'}
+                            <span class="summary-product-qty">${item.quantity}</span>
+                        </div>
+                        <div class="summary-product-details">
+                            <span class="summary-product-name">${item.name}</span>
+                            <span class="summary-product-meta">
+                                ${item.size ? `Talla: ${item.size}` : ""} 
+                                ${item.color ? `| ${item.color}` : ""}
+                            </span>
+                            <span class="summary-product-meta">
+                                <strong>Cantidad: ${item.quantity}</strong>
+                            </span>
+                        </div>
+                        <span class="summary-product-price">${formatPriceCOP(itemTotal)} COP</span>
+                    </div>
+                `;
+            });
+
+            productsContainer.innerHTML = html;
+            totalElement.textContent = `${formatPriceCOP(total)} COP`;
+        } catch (e) {
+            console.error("Error rendering cart summary:", e);
+            productsContainer.innerHTML =
+                '<p class="error-summary">Error al cargar productos</p>';
+        }
+    }
+    btnNext.addEventListener("click", () => {
+        if (validateStep(currentStep)) {
+            if (currentStep < totalSteps) {
+                currentStep++;
+                saveCurrentStep();
+                showStep(currentStep);
+            }
+        }
+    });
+
+    // Handle previous button
+    btnPrev.addEventListener("click", () => {
+        if (currentStep > 1) {
+            currentStep--;
+            saveCurrentStep();
+            showStep(currentStep);
+        }
+    });
+
+    // Handle form submission
+    btnSubmit.addEventListener("click", async () => {
+        if (validateStep(currentStep)) {
+            // Verify cart has products before submitting
+            const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+            if (cart.length === 0) {
+                alert(
+                    "No puedes realizar un pedido sin productos en el carrito. Por favor, agrega productos antes de continuar.",
+                );
+                window.location.href = "/productos";
+                return;
+            }
+
+            // Collect all form data
+            const fullname = (
+                document.getElementById("fullname") as HTMLInputElement
+            ).value;
+            const phone = (document.getElementById("phone") as HTMLInputElement)
+                .value;
+            const email = (document.getElementById("email") as HTMLInputElement)
+                .value;
+            const address = (
+                document.getElementById("address") as HTMLTextAreaElement
+            ).value;
+            const deliveryDate = (
+                document.getElementById("delivery-date") as HTMLInputElement
+            ).value;
+            const payment = (
+                document.getElementById("payment") as HTMLInputElement
+            ).value;
+            const shipping = (
+                document.querySelector(
+                    'input[name="shipping"]:checked',
+                ) as HTMLInputElement
+            )?.value;
+
+            // Payment method mapping
+            const paymentMap: Record<string, string> = {
+                efectivo: "Efectivo contra entrega",
+                transferencia: "Transferencia bancaria",
+                tarjeta: "Tarjeta de crédito/débito",
+                nequi: "Nequi",
+                daviplata: "Daviplata",
+            };
+
+            // Calculate Total
+            const total = cart.reduce(
+                (sum: number, item: any) => sum + item.price * item.quantity,
+                0,
+            );
+
+            // Create order object for LocalStorage (keep existing logic)
+            const order = {
+                timestamp: Date.now(),
+                fullname,
+                phone,
+                email: email || undefined,
+                address,
+                deliveryDate,
+                payment: paymentMap[payment] || payment,
+                shipping,
+                products: cart,
+            };
+
+            // Save order to orders list (LocalStorage)
+            const orders = JSON.parse(localStorage.getItem("orders") || "[]");
+            orders.push(order);
+            localStorage.setItem("orders", JSON.stringify(orders));
+
+            // Send to Strapi
+            try {
+                // Disable button to prevent double submit
+                btnSubmit.disabled = true;
+                btnSubmit.textContent = "Enviando...";
+
+                // Generate a reference ID
+                const reference = `ORD-${Date.now()}`;
+
+                // Clean phone number (keep only digits)
+                const numberClient =
+                    parseInt(phone.replace(/\D/g, ""), 10) || 0;
+
+                const strapiData = {
+                    data: {
+                        reference,
+                        nameClient: fullname,
+                        numberClient,
+                        typeDelivery:
+                            shipping === "nacional"
+                                ? "Nacional"
+                                : "Internacional",
+                        buyMethod: paymentMap[payment] || payment,
+                        address,
+                        dateDelivery: deliveryDate,
+                        totalDelivery: total,
+                        email: email || undefined,
+                    },
+                };
+
+                await posts({ query: "/api/orders", body: strapiData });
+            } catch (error) {
+                console.error("Error sending order to Strapi:", error);
+                alert(
+                    "Hubo un error al enviar tu pedido. Por favor, inténtalo de nuevo o contáctanos.",
+                );
+                btnSubmit.disabled = false;
+                btnSubmit.textContent = "Finalizar Pedido";
+                return; // Stop execution if Strapi fails
+            }
+
+            // Clear saved form data
+            clearSavedData();
+
+            // Show success modal
+            successModal.classList.add("show");
+
+            // Reset button state (though modal is showing)
+            btnSubmit.disabled = false;
+            btnSubmit.textContent = "Finalizar Pedido";
+        }
+    });
+
+    // Handle success modal buttons
+    document.getElementById("btn-home")?.addEventListener("click", () => {
+        // Clear the cart
+        localStorage.removeItem("cart");
+        window.dispatchEvent(new Event("cartUpdated"));
+
+        window.location.href = "/";
+    });
+
+    document
+        .getElementById("btn-close-modal")
+        ?.addEventListener("click", () => {
+            // Clear the cart
+            localStorage.removeItem("cart");
+            window.dispatchEvent(new Event("cartUpdated"));
+
+            successModal.classList.remove("show");
+            // Optional: Reset form or redirect to a specific state if needed
+            // For now, just closing the modal. The user is still on step 3.
+            // Maybe better to reload or reset form?
+            // Let's reload to clear state visually as data is already cleared
+            window.location.reload();
+        });
+
+    // Remove error on input
+    form.addEventListener("input", (e) => {
+        const target = e.target as HTMLElement;
+        if (
+            target.classList.contains("form-control") ||
+            target.tagName === "INPUT" ||
+            target.tagName === "TEXTAREA" ||
+            target.tagName === "SELECT"
+        ) {
+            const formGroup = target.closest(".form-group");
+            formGroup?.classList.remove("has-error");
+        }
+    });
+
+    // Initialize on load
+    initForm();
+
+    // Listen for cart updates
+    window.addEventListener("cartUpdated", () => {
+        // Check if cart became empty
+        if (!hasCartProducts()) {
+            // Cart is now empty, show warning
+            showCartEmptyWarning();
+        } else if (currentStep === 3) {
+            // Cart still has products, just update summary
+            renderCartSummary();
+        }
+    });
+
+    // Listen for input changes to update summary in real-time
+    const inputs = form.querySelectorAll("input, textarea, select");
+    inputs.forEach((input) => {
+        input.addEventListener("input", () => {
+            if (currentStep === 3) updateSummary();
+        });
+        input.addEventListener("change", () => {
+            if (currentStep === 3) updateSummary();
+        });
+    });
+
+    // Handle step indicator clicks
+    document.querySelectorAll(".step-indicator").forEach((indicator) => {
+        indicator.addEventListener("click", () => {
+            const targetStep = parseInt(
+                indicator.getAttribute("data-step") || "1",
+                10,
+            );
+
+            // If clicking the same step, do nothing
+            if (targetStep === currentStep) return;
+
+            // If going back, allow it
+            if (targetStep < currentStep) {
+                currentStep = targetStep;
+                saveCurrentStep();
+                showStep(currentStep);
+                return;
+            }
+
+            // If going forward, validate current step
+            // We only allow going to the next immediate step if current is valid
+            // Or if we want to allow jumping, we must validate all intermediate steps
+            // For simplicity and better UX, let's just check if we can move from current to target
+            // But usually, you can only move to the next step if current is valid.
+            // If user tries to jump from 1 to 3, we should validate 1 and 2.
+
+            // Let's implement sequential validation
+            let canMove = true;
+            for (let i = currentStep; i < targetStep; i++) {
+                if (!validateStep(i)) {
+                    canMove = false;
+                    // Show error on the first invalid step found (which is 'i')
+                    // But we are currently on 'currentStep'.
+                    // If we are on 1 and click 3, and 1 is invalid, we stay on 1 and show errors.
+                    // If 1 is valid but 2 is invalid (which shouldn't happen if we haven't visited 2 yet, but maybe we did),
+                    // we should probably stop at 2.
+
+                    // Actually, if we are on 1, we can only go to 2.
+                    // If we are on 1 and click 3, we should check 1. If 1 is valid, we go to 2. Then user sees 2.
+                    // Jumping 1 -> 3 directly might be confusing if 2 is empty.
+
+                    // Let's restrict: can only click next step if current is valid.
+                    // Can click any previous step.
+                    // Can click any future step ONLY if all previous steps are valid/completed?
+                    // A simpler approach: You can only click steps that you have already "reached" or "completed"?
+                    // But the user request implies they want to use it for navigation.
+
+                    // Let's stick to: Validate current step. If valid, allow moving to targetStep IF targetStep is just currentStep + 1.
+                    // If targetStep > currentStep + 1, we could either disallow or try to validate intermediate.
+
+                    // Let's try to validate from currentStep up to targetStep - 1
+                    break;
+                }
+            }
+
+            // Improved logic:
+            // If target > current:
+            // Validate current step. If invalid, stop.
+            // If valid, check if target is current + 1. If so, go.
+            // If target > current + 1, check if intermediate steps are valid?
+            // Actually, usually you can't jump over steps.
+            // So let's allow clicking ONLY if targetStep <= currentStep + 1 AND validateStep(currentStep) is true.
+
+            if (targetStep > currentStep) {
+                // Check if we are trying to skip steps
+                // For this form, let's enforce sequential progress
+                if (targetStep !== currentStep + 1) {
+                    // If trying to jump more than 1 step, check if intermediate steps are effectively "done" or just disallow
+                    // For now, let's just validate the current step and if valid, allow moving to next.
+                    // If user clicks 3 while on 1, and 1 is valid, we could move to 2 (as a courtesy) or just do nothing.
+                    // Let's move to the next available step if valid.
+
+                    if (validateStep(currentStep)) {
+                        // If current is valid, we can advance.
+                        // If target is 3 and we are on 1, we should probably go to 2 first.
+                        currentStep++;
+                        saveCurrentStep();
+                        showStep(currentStep);
+                    }
+                } else {
+                    // Target is immediate next
+                    if (validateStep(currentStep)) {
+                        currentStep = targetStep;
+                        saveCurrentStep();
+                        showStep(currentStep);
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+<style>
+    /* Page Container */
+    .form-page {
+        min-height: 80vh;
+        padding: 4rem 2rem;
+    }
+
+    .form-container {
+        max-width: 800px;
+        margin: 0 auto;
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 3rem;
+        box-shadow: var(--shadow-lg);
+        position: relative;
+    }
+
+    /* Progress Bar */
+    .progress-wrapper {
+        margin-bottom: 3rem;
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 6px;
+        background: rgba(196, 164, 122, 0.2);
+        border-radius: 3px;
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #c4a47a 0%, #a89080 100%);
+        width: 33.33%;
+        transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Step Indicators */
+    .progress-steps {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    .step-indicator {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+        flex: 1;
+        flex: 1;
+        opacity: 0.5;
+        transition: opacity 0.3s ease;
+        cursor: pointer;
+    }
+
+    .step-indicator.active,
+    .step-indicator.completed {
+        opacity: 1;
+    }
+
+    .step-number {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: rgba(196, 164, 122, 0.2);
+        color: var(--color-text-medium);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+
+    .step-indicator.active .step-number {
+        background: linear-gradient(135deg, #c4a47a 0%, #a89080 100%);
+        color: white;
+        transform: scale(1.1);
+    }
+
+    .step-indicator.completed .step-number {
+        background: var(--color-accent);
+        color: white;
+    }
+
+    .step-label {
+        font-size: 0.85rem;
+        color: var(--color-text-medium);
+        text-align: center;
+        font-weight: 500;
+    }
+
+    .step-indicator.active .step-label {
+        color: var(--color-text-dark);
+        font-weight: 600;
+    }
+
+    /* Form Steps */
+    .order-form {
+        position: relative;
+    }
+
+    .form-step {
+        display: none;
+        animation: slideInRight 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .form-step.active {
+        display: block;
+    }
+
+    /* Step Header */
+    .step-header {
+        margin-bottom: 2.5rem;
+        text-align: center;
+    }
+
+    .step-header h2 {
+        font-family: "Playfair Display", serif;
+        font-size: 2rem;
+        color: var(--color-text-dark);
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+    }
+
+    .step-header p {
+        color: var(--color-text-medium);
+        font-size: 1rem;
+    }
+
+    /* Form Groups */
+    .form-group {
+        margin-bottom: 2rem;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        color: var(--color-text-dark);
+        margin-bottom: 0.75rem;
+        font-size: 0.95rem;
+    }
+
+    .required {
+        color: #d32f2f;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="tel"],
+    .form-group input[type="email"],
+    .form-group input[type="datetime-local"],
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 0.95rem 1.25rem;
+        border: 2px solid rgba(196, 164, 122, 0.25);
+        border-radius: 8px;
+        font-size: 1rem;
+        font-family: "Poppins", sans-serif;
+        color: var(--color-text-dark);
+        background: #faf9f7;
+        transition: all 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: var(--color-accent);
+        background: white;
+        box-shadow: 0 0 0 3px rgba(196, 164, 122, 0.1);
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    /* Radio Buttons */
+    .radio-group {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .radio-label {
+        display: flex;
+        align-items: center;
+        padding: 1.25rem;
+        border: 2px solid rgba(196, 164, 122, 0.25);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: #faf9f7;
+    }
+
+    .radio-label:hover {
+        border-color: var(--color-accent);
+        background: white;
+    }
+
+    .radio-label input[type="radio"] {
+        display: none;
+    }
+
+    .radio-custom {
+        width: 22px;
+        height: 22px;
+        border: 2px solid rgba(196, 164, 122, 0.5);
+        border-radius: 50%;
+        margin-right: 1rem;
+        position: relative;
+        flex-shrink: 0;
+        transition: all 0.3s ease;
+    }
+
+    .radio-label input[type="radio"]:checked + .radio-custom {
+        border-color: var(--color-accent);
+    }
+
+    .radio-label input[type="radio"]:checked + .radio-custom::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--color-accent);
+    }
+
+    .radio-text {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .radio-text strong {
+        color: var(--color-text-dark);
+        font-size: 1rem;
+    }
+
+    .radio-text small {
+        color: var(--color-text-medium);
+        font-size: 0.875rem;
+    }
+
+    /* Custom Dropdown Styles */
+    .custom-select {
+        position: relative;
+        width: 100%;
+    }
+
+    .select-trigger {
+        width: 100%;
+        padding: 0.95rem 1.25rem;
+        border: 2px solid rgba(196, 164, 122, 0.25);
+        border-radius: 8px;
+        background: #faf9f7;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: all 0.3s ease;
+        user-select: none;
+    }
+
+    .select-trigger:hover {
+        border-color: var(--color-accent);
+        background: white;
+    }
+
+    .custom-select.open .select-trigger {
+        border-color: var(--color-accent);
+        background: white;
+        box-shadow: 0 0 0 3px rgba(196, 164, 122, 0.1);
+    }
+
+    .select-placeholder {
+        font-size: 1rem;
+        color: var(--color-text-medium);
+        font-family: "Poppins", sans-serif;
+    }
+
+    .select-placeholder.selected {
+        color: var(--color-text-dark);
+        font-weight: 500;
+    }
+
+    .select-arrow {
+        flex-shrink: 0;
+        color: var(--color-text-medium);
+        transition: transform 0.3s ease;
+    }
+
+    .custom-select.open .select-arrow {
+        transform: rotate(180deg);
+        color: var(--color-accent);
+    }
+
+    .select-menu {
+        position: absolute;
+        top: calc(100% + 0.5rem);
+        left: 0;
+        right: 0;
+        background: white;
+        border: 2px solid var(--color-accent);
+        border-radius: 8px;
+        box-shadow: 0 8px 24px rgba(196, 164, 122, 0.2);
+        z-index: 100;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .custom-select.open .select-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    .select-option {
+        padding: 1rem 1.25rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border-bottom: 1px solid rgba(196, 164, 122, 0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .select-option:last-child {
+        border-bottom: none;
+    }
+
+    .select-option:hover {
+        background: linear-gradient(
+            135deg,
+            rgba(196, 164, 122, 0.08) 0%,
+            rgba(168, 144, 128, 0.08) 100%
+        );
+    }
+
+    .select-option strong {
+        color: var(--color-text-dark);
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .select-option small {
+        color: var(--color-text-medium);
+        font-size: 0.875rem;
+    }
+
+    /* Error state for custom select */
+    .form-group.has-error .select-trigger {
+        border-color: #d32f2f;
+    }
+
+    /* Error States */
+    .error-message {
+        display: none;
+        color: #d32f2f;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+    }
+
+    .form-group.has-error input,
+    .form-group.has-error select,
+    .form-group.has-error textarea,
+    .form-group.has-error .radio-label {
+        border-color: #d32f2f;
+    }
+
+    .form-group.has-error .error-message {
+        display: block;
+    }
+
+    /* Order Summary */
+    .order-summary {
+        background: linear-gradient(
+            135deg,
+            rgba(196, 164, 122, 0.08) 0%,
+            rgba(168, 144, 128, 0.08) 100%
+        );
+        padding: 1.5rem;
+        border-radius: 12px;
+        margin-top: 2rem;
+        border: 1px solid rgba(196, 164, 122, 0.2);
+    }
+
+    .order-summary h3 {
+        font-family: "Playfair Display", serif;
+        font-size: 1.25rem;
+        color: var(--color-text-dark);
+        margin-bottom: 1rem;
+        font-weight: 600;
+    }
+
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(196, 164, 122, 0.15);
+    }
+
+    .summary-item:last-child {
+        border-bottom: none;
+    }
+
+    .summary-label {
+        color: var(--color-text-medium);
+        font-weight: 500;
+    }
+
+    .summary-value {
+        color: var(--color-text-dark);
+        font-weight: 600;
+    }
+
+    /* Navigation Buttons */
+    .form-navigation {
+        display: flex;
+        gap: 1rem;
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 1px solid rgba(196, 164, 122, 0.15);
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        flex: 1;
+        padding: 1.2rem 2rem;
+        border: none;
+        border-radius: 8px;
+        font-family: "Poppins", sans-serif;
+        font-size: 1rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background: var(--color-cta-dark);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: var(--color-cta-dark-hover);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .btn-secondary {
+        background: transparent;
+        color: var(--color-cta-dark);
+        border: 2px solid var(--color-cta-dark);
+    }
+
+    .btn-secondary:hover {
+        background: var(--color-cta-dark);
+        color: white;
+    }
+
+    /* Success Modal */
+    .success-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(44, 36, 32, 0.9);
+        backdrop-filter: blur(8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.4s ease;
+    }
+
+    .success-modal.show {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .success-content {
+        background: white;
+        padding: 3rem 2.5rem;
+        border-radius: 16px;
+        text-align: center;
+        max-width: 500px;
+        animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .success-icon {
+        margin-bottom: 1.5rem;
+        animation: checkmark 0.6s ease 0.3s both;
+    }
+
+    .success-content h2 {
+        font-family: "Playfair Display", serif;
+        font-size: 2rem;
+        color: var(--color-text-dark);
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+
+    .success-content p {
+        color: var(--color-text-medium);
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+    }
+
+    .success-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+    }
+
+    .success-actions button {
+        min-width: 140px;
+        padding: 1rem 1.5rem;
+    }
+
+    @media (max-width: 480px) {
+        .success-actions {
+            flex-direction: column;
+        }
+
+        .success-actions button {
+            width: 100%;
+        }
+    }
+
+    /* Animations */
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes scaleIn {
+        from {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    @keyframes checkmark {
+        0% {
+            transform: scale(0) rotate(-45deg);
+            opacity: 0;
+        }
+        50% {
+            transform: scale(1.2) rotate(0deg);
+        }
+        100% {
+            transform: scale(1) rotate(0deg);
+            opacity: 1;
+        }
+    }
+
+    /* Cart Empty Warning */
+    :global(.cart-empty-warning) {
+        text-align: center;
+        padding: 4rem 2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    :global(.cart-empty-warning svg) {
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    :global(.cart-empty-warning h2) {
+        font-family: "Playfair Display", serif;
+        font-size: 2rem;
+        color: var(--color-text-dark);
+        margin: 0;
+    }
+
+    :global(.cart-empty-warning p) {
+        color: var(--color-text-medium);
+        font-size: 1.1rem;
+        margin: 0;
+        max-width: 500px;
+    }
+
+    :global(.cart-empty-warning .btn-primary) {
+        margin-top: 1rem;
+        padding: 1rem 2rem;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .form-container {
+            padding: 2rem 1.5rem;
+        }
+
+        .step-header h2 {
+            font-size: 1.75rem;
+        }
+
+        .progress-steps {
+            gap: 0.5rem;
+        }
+
+        .step-label {
+            font-size: 0.75rem;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            font-size: 0.85rem;
+        }
+
+        .form-navigation {
+            flex-direction: column;
+        }
+
+        .btn-primary,
+        .btn-secondary {
+            width: 100%;
+        }
+
+        .radio-group {
+            gap: 0.75rem;
+        }
+
+        .radio-label {
+            padding: 1rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .form-page {
+            padding: 2rem 1rem;
+        }
+
+        .step-label {
+            display: none;
+        }
+
+        .success-content {
+            padding: 2rem 1.5rem;
+        }
+
+        .success-content h2 {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+
+<style>
+    /* Order Summary Styles */
+    .order-summary {
+        background: #faf9f7;
+        border-radius: 12px;
+        padding: 2rem;
+        margin-top: 1rem;
+        border: 1px solid rgba(196, 164, 122, 0.2);
+    }
+
+    .order-summary h3 {
+        font-family: "Playfair Display", serif;
+        color: var(--color-text-dark);
+        margin-bottom: 1.5rem;
+        font-size: 1.5rem;
+        text-align: center;
+    }
+
+    .summary-products {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    :global(.summary-product-item) {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    :global(.summary-product-item:last-child) {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    :global(.summary-product-image) {
+        position: relative;
+        width: 60px;
+        height: 60px;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        flex-shrink: 0;
+    }
+
+    :global(.summary-product-image img) {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    :global(.summary-product-qty) {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: var(--color-accent);
+        color: white;
+        font-size: 0.7rem;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+    }
+
+    :global(.summary-product-details) {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+
+    :global(.summary-product-name) {
+        font-weight: 600;
+        color: var(--color-text-dark);
+        font-size: 0.95rem;
+    }
+
+    :global(.summary-product-meta) {
+        font-size: 0.8rem;
+        color: var(--color-text-medium);
+    }
+
+    :global(.summary-product-price) {
+        font-weight: 600;
+        color: var(--color-text-dark);
+        font-size: 0.95rem;
+    }
+
+    .summary-divider {
+        height: 1px;
+        background: rgba(196, 164, 122, 0.3);
+        margin: 1.5rem 0;
+    }
+
+    .summary-details-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .summary-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .summary-item.full-width {
+        grid-column: span 2;
+    }
+
+    .summary-label {
+        font-size: 0.8rem;
+        color: var(--color-text-medium);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .summary-value {
+        font-weight: 500;
+        color: var(--color-text-dark);
+        font-size: 0.95rem;
+    }
+
+    .summary-total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 0.5rem;
+    }
+
+    .summary-total-label {
+        font-family: "Playfair Display", serif;
+        font-size: 1.25rem;
+        color: var(--color-text-dark);
+    }
+
+    .summary-total-value {
+        font-family: "Playfair Display", serif;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--color-accent);
+    }
+
+    @media (max-width: 600px) {
+        .summary-details-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .summary-item.full-width {
+            grid-column: span 1;
+        }
+    }
+</style>
