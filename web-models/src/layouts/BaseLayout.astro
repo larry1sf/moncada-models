@@ -460,7 +460,7 @@ const { title } = Astro.props;
                                 (product) => `
                         <a href="/product/${product.slug}" class="search-result-item">
                             <div class="search-result-image-wrapper">
-                                <img src="${strapiHost}${product.images[0]?.url || "/placeholder.jpg"}" alt="${product.name}" class="search-result-thumb" />
+                                <img src="${product.images[0]?.url || "/placeholder.jpg"}" alt="${product.name}" class="search-result-thumb" />
                             </div>
                             <div class="search-result-info">
                                 <span class="search-result-category">${"Producto"}</span>
