@@ -1,6 +1,7 @@
 ---
 export const prerender = true;
 import BaseLayout from "~/layouts/BaseLayout.astro";
+import { STRAPI_HOST } from "~/services/consts";
 ---
 
 <BaseLayout title="Realizar Pedido - Moncada Models">
@@ -28,7 +29,7 @@ import BaseLayout from "~/layouts/BaseLayout.astro";
             </div>
 
             <!-- Form Steps -->
-            <form id="order-form" class="order-form">
+            <form id="order-form" class="order-form" data-host={STRAPI_HOST}>
                 <!-- Step 1: Personal Data -->
                 <div class="form-step active" data-step="1">
                     <div class="step-header">
@@ -366,7 +367,7 @@ import BaseLayout from "~/layouts/BaseLayout.astro";
     import { formatPriceCOP, posts } from "~/services/consts";
 
     // Strapi Host
-    const STRAPI_HOST = "http://localhost:1337";
+    const STRAPI_HOST = (document.querySelector("form.order-form")?.dataset?.host);
 
     // LocalStorage keys
     const STORAGE_KEY = "orderFormData";

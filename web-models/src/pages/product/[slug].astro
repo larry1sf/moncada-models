@@ -3,7 +3,6 @@ export const prerender = false;
 import Image from "astro/components/Image.astro";
 import BaseLayout from "~/layouts/BaseLayout.astro";
 import { getProducts } from "~/services/get-products";
-import { STRAPI_HOST } from "~/services/consts";
 import Toast from "~/components/Toast.astro";
 import AnotherCategories from "~/components/AnotherCategories.astro";
 import ProductRelationated from "~/components/ProductRelationated.astro";
@@ -278,7 +277,7 @@ if (!product) return "Producto no encontrado";
           <Image
             id="main-image"
             transition:name={product.slug}
-            src={`${STRAPI_HOST}${product?.images[0]?.url ?? "s"}`}
+            src={product?.images[0]?.url}
             alt={product?.name ?? ""}
             width={500}
             height={700}
@@ -289,9 +288,9 @@ if (!product) return "Producto no encontrado";
           product?.images?.length > 1 && (
             <div class="thumbnails">
               {product.images.map((img) => (
-                <div class="thumbnail" data-url={`${STRAPI_HOST}${img.url}`}>
+                <div class="thumbnail" data-url={img.url}>
                   <Image
-                    src={`${STRAPI_HOST}${img.url}`}
+                    src={img.url}
                     alt={product.name}
                     width={100}
                     height={100}

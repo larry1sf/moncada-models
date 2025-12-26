@@ -78,11 +78,11 @@
     position: relative;
     z-index: 1;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 2fr;
     gap: 2rem;
     align-items: center;
   }
-
+  
   .newsletter-text h2 {
     margin: 0 0 0.75rem 0;
     color: var(--color-cream);
@@ -149,7 +149,8 @@
     box-shadow: var(--shadow-md);
   }
 
-  @media (max-width: 768px) {
+
+  @media (max-width: 900px) {
     .newsletter-content {
       grid-template-columns: 1fr;
     }

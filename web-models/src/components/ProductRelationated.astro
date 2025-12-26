@@ -13,6 +13,7 @@ let { data: relatedProducts } = await getProductsCategories({
     productCategory,
 });
 relatedProducts = relatedProducts.filter(({ slug }) => slug !== product.slug);
+if(!relatedProducts.length) return;
 ---
 
 <section class="product-container">

@@ -1,7 +1,6 @@
 ---
 import Image from "astro/components/Image.astro";
 import { categories } from "../data/categories";
-import { STRAPI_HOST } from "~/services/consts";
 ---
 
 <section class="categories-grid">
@@ -10,7 +9,7 @@ import { STRAPI_HOST } from "~/services/consts";
       <a href={`/category/${category.slug}`} class="category-card">
         <div class="card-image">
           <Image
-            src={`${STRAPI_HOST}${category.image.url}`}
+            src={category.image.url}
             alt={category.title}
             width={300}
             height={300}

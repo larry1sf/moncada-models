@@ -1,11 +1,10 @@
 ---
-import { STRAPI_HOST } from "~/services/consts";
 import type { Category } from "~/data/categories";
 import Image from "astro/components/Image.astro";
 
 type Props = Category;
 
-const { id, slug, title, description, image, productCount } = Astro.props;
+const { slug, title, description, image, productCount } = Astro.props;
 ---
 
 <a href={`/category/${slug}`} class="category-card">
@@ -14,7 +13,7 @@ const { id, slug, title, description, image, productCount } = Astro.props;
       width={300}
       height={300}
       transition:name={slug}
-      src={`${STRAPI_HOST}${image.url}`}
+      src={image.url}
       alt={title}
       loading="lazy"
     />
@@ -23,7 +22,6 @@ const { id, slug, title, description, image, productCount } = Astro.props;
 
   <div class="card-content">
     <div class="card-header">
-      <span class="category-icon">{"icon"}</span>
       <h3>{title}</h3>
     </div>
 

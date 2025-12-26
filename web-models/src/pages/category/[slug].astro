@@ -5,7 +5,6 @@ import BaseLayout from "~/layouts/BaseLayout.astro";
 import ProductList from "~/components/ProductList.astro";
 import { categories } from "~/data/categories";
 import { products } from "~/data/products";
-import { STRAPI_HOST } from "~/services/consts";
 import AnotherCategories from "~/components/AnotherCategories.astro";
 
 const { slug } = Astro.params;
@@ -30,7 +29,7 @@ const filteredProducts = products.filter(
           height={300}
           width={1600}
           transition:name={slug}
-          src={`${STRAPI_HOST}${category.image.url}`}
+          src={category.image.url}
           alt={category.title}
         />
         <div class="hero-overlay"></div>
