@@ -9,7 +9,7 @@ importers:
   .:
     dependencies:
       '@astrojs/node':
-        specifier: ^9.5.1
+        specifier: 9.5.1
         version: 9.5.1(astro@5.15.9(@types/node@24.10.1)(rollup@4.53.3)(typescript@5.9.3))
       astro:
         specifier: 5.15.9
