@@ -795,10 +795,16 @@ import { STRAPI_HOST } from "~/services/consts";
                 };
 
                 // WhatsApp Logic
+                const fechaColombia = (date:Date) => new Intl.DateTimeFormat("es-CO", {
+                timeZone: "America/Bogota",
+                dateStyle: "full",
+                timeStyle: "short"
+                }).format(date);
+
                 const reference = `ORD-${Date.now()}`;
                 const productLines = cart.map(item => `• *${item.quantity}x* ${item.name} - ${formatPriceCOP(item.price * item.quantity)}`).join("\n");
                 
-                const message = `*Nuevo Pedido*\nRef: ${reference}\nCliente: ${fullname}\nTel: ${phone}\nDirección: ${address}\nPago: ${paymentMap[payment] || payment}\nEntregar: ${deliveryDate}\n\n*Productos:*\n${productLines}\n\n*Total: ${formatPriceCOP(total)}*`;
+                const message = `*Nuevo Pedido*\nRef: ${reference}\nCliente: ${fullname}\nTel: ${phone}\nDirección: ${address}\nPago: ${paymentMap[payment] || payment}\nEntregar: ${fechaColombia(deliveryDate.concat("Z"))}\n\n*Productos:*\n${productLines}\n\n*Total: ${formatPriceCOP(total)}*`;
                 
                 // Save Order Local
                 const order = { timestamp: Date.now(), fullname, phone, address, total, products: cart, reference };
