@@ -24,18 +24,20 @@
 </section>
 
 <script>
-  const newsletter = document.getElementById("newsletter");
+  document.addEventListener("astro:page-load", () => {
+    const newsletter = document.getElementById("newsletter");
 
-  if (newsletter) {
-    newsletter.addEventListener("mousemove", (e) => {
-      const rect = newsletter.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
+    if (newsletter) {
+      newsletter.addEventListener("mousemove", (e) => {
+        const rect = newsletter.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
 
-      newsletter.style.setProperty("--mouse-x", `${x}px`);
-      newsletter.style.setProperty("--mouse-y", `${y}px`);
-    });
-  }
+        newsletter.style.setProperty("--mouse-x", `${x}px`);
+        newsletter.style.setProperty("--mouse-y", `${y}px`);
+      });
+    }
+  });
 </script>
 
 <style>

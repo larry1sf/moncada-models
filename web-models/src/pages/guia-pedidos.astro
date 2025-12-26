@@ -1,0 +1,580 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const steps = [
+    {
+        number: "01",
+        title: "EXPLORA LO EXTRAORDINARIO",
+        description:
+            "Tu estilo no conoce límites. Navega nuestra colección curada y encuentra esa pieza que habla tu mismo idioma.",
+        icon: "search",
+    },
+    {
+        number: "02",
+        title: "DEFINE TU ESENCIA",
+        description:
+            "Selecciona cada detalle. Talla, color, textura. Hazlo tuyo antes de que sea tuyo.",
+        icon: "selection",
+    },
+    {
+        number: "03",
+        title: "CONFIRMACIÓN SEGURA",
+        description:
+            "Checkout simplificado. Tu seguridad es nuestra prioridad, tu tiempo nuestro tesoro.",
+        icon: "check",
+    },
+    {
+        number: "04",
+        title: "RECIBE LA MAGIA",
+        description:
+            "El momento de la verdad. Un empaque premium, una prenda perfecta. Directo a tu puerta.",
+        icon: "box",
+    },
+];
+---
+
+<BaseLayout title="Guía de Compra | Moncada Models">
+    <div class="page-wrapper-light">
+        <!-- New Hero Section (Aligned with Home Page) -->
+        <section class="hero-section-light">
+            <div class="container-hero">
+                <div class="hero-content-light">
+                    <span class="badge-light">MANUAL DE ESTILO</span>
+                    <h1>
+                        TU CAMINO A LA <br /><span class="text-highlight-light"
+                            >ELEGANCIA</span
+                        >
+                    </h1>
+                    <p>
+                        Una guía paso a paso para adquirir las prendas que
+                        transformarán tu guardarropa.
+                    </p>
+                    <div class="scroll-indicator-light">
+                        <a href="#guide">Comenzar el viaje</a>
+                        <div class="line"></div>
+                    </div>
+                </div>
+
+                <div class="hero-visual-light">
+                    <div class="image-container-light">
+                        <!-- Standard 'Frame' style from Home -->
+                        <div class="image-frame-light"></div>
+                        <img
+                            src="/hero-pedidos.png"
+                            alt="Fashion Guide"
+                            class="hero-img-light"
+                        />
+                        <!-- Unique Guide Tag -->
+                        <div class="floating-tag-light">
+                            <span class="tag-label">Guía en</span>
+                            <span class="tag-value">4 Pasos</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="timeline-section-light">
+            <div class="container">
+                <div class="timeline-line-light" id="guide"></div>
+
+                {
+                    steps.map((step, index) => (
+                        <div
+                            class={`timeline-item ${index % 2 === 0 ? "left" : "right"}`}
+                        >
+                            <div class="timeline-number-light">
+                                {step.number}
+                            </div>
+                            <div class="timeline-content-light">
+                                <h3>{step.title}</h3>
+                                <div class="separator-light" />
+                                <p>{step.description}</p>
+                            </div>
+                        </div>
+                    ))
+                }
+            </div>
+        </section>
+
+        <section class="final-cta-light">
+            <div class="cta-content">
+                <div class="cta-decorator">
+                    <svg
+                        width="60"
+                        height="20"
+                        viewBox="0 0 60 20"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
+                        <path
+                            d="M0 10H25M35 10H60M27 10C27 11.6569 28.3431 13 30 13C31.6569 13 33 11.6569 33 10C33 8.34315 31.6569 7 30 7C28.3431 7 27 8.34315 27 10Z"
+                            stroke="#c4a47a"
+                            stroke-width="1.5"></path>
+                    </svg>
+                </div>
+                <p class="cta-quote">
+                    "No esperes una ocasión especial. <br />
+                    <span class="highlight-text">Tú eres la ocasión.</span>"
+                </p>
+                <div class="cta-buttons">
+                    <a href="/categories" class="btn-primary-light"
+                        >IR A COLECCIONES</a
+                    >
+                    <a href="/contacto" class="btn-secondary-light"
+                        >¿NECESITAS AYUDA?</a
+                    >
+                </div>
+            </div>
+        </section>
+    </div>
+</BaseLayout>
+
+<style>
+    /* Full Light Theme Implementation */
+
+    .page-wrapper-light {
+        background-color: var(--color-bg-light, #f5f1e8);
+        color: var(--color-text-dark, #2c2420);
+        overflow-x: hidden;
+    }
+
+    /* Hero Section Light (Matched to Home) */
+    .hero-section-light {
+        padding: 5rem 2rem;
+        min-height: 85vh;
+        display: flex;
+        align-items: center;
+        position: relative;
+    }
+
+    .container-hero {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6rem;
+        align-items: center;
+        width: 100%;
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-content-light {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 2rem;
+    }
+
+    .badge-light {
+        display: inline-block;
+        padding: 0.6rem 1.2rem;
+        background: var(--color-cta-dark, #2c2420);
+        color: #fff;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        width: fit-content;
+        font-family: "Poppins", sans-serif;
+    }
+
+    .hero-content-light h1 {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(3.5rem, 5vw, 5.5rem);
+        line-height: 1.1;
+        margin: 0;
+        font-weight: 700;
+        color: var(--color-cta-dark, #2c2420);
+    }
+
+    .text-highlight-light {
+        color: var(--color-accent, #c4a47a);
+        font-style: italic;
+    }
+
+    .hero-content-light p {
+        font-size: 1.2rem;
+        color: var(--color-text-medium, #5a4a42);
+        max-width: 450px;
+        line-height: 1.8;
+        font-family: "Poppins", sans-serif;
+    }
+    .scroll-indicator-light a {
+        color: var(--color-accent, #c4a47a);
+        text-decoration: none;
+    }
+    .scroll-indicator-light {
+        margin-top: 1rem;
+        width: fit-content;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        color: var(--color-accent, #c4a47a);
+        font-size: 0.85rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .scroll-indicator-light .line {
+        width: 60px;
+        height: 2px;
+        background: var(--color-accent, #c4a47a);
+        transition: width 0.3s ease;
+    }
+
+    .scroll-indicator-light:hover .line {
+        width: 90px;
+    }
+
+    .hero-visual-light {
+        position: relative;
+        display: flex;
+        justify-content: center;
+    }
+
+    .image-container-light {
+        position: relative;
+        width: 100%;
+        max-width: 500px;
+    }
+
+    .image-frame-light {
+        position: absolute;
+        top: -20px;
+        right: -20px;
+        width: 100%;
+        height: 100%;
+        border: 2px solid var(--color-accent, #c4a47a);
+        z-index: 0;
+    }
+
+    .hero-img-light {
+        width: 100%;
+        height: auto;
+        display: block;
+        object-fit: cover;
+        position: relative;
+        z-index: 1;
+        box-shadow: 0 20px 40px rgba(44, 36, 32, 0.1);
+    }
+
+    .floating-tag-light {
+        position: absolute;
+        bottom: 40px;
+        left: -30px;
+        background: #fff;
+        padding: 1.5rem;
+        z-index: 2;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 120px;
+        border: 1px solid rgba(196, 164, 122, 0.2);
+    }
+
+    .tag-label {
+        font-size: 0.8rem;
+        color: var(--color-text-medium, #8a7a72);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 0.2rem;
+    }
+
+    .tag-value {
+        font-family: "Playfair Display", serif;
+        font-size: 1.6rem;
+        color: var(--color-cta-dark, #2c2420);
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    /* Timeline Section Light */
+    .timeline-section-light {
+        padding: 4rem 2rem 1rem 2rem;
+        background: var(--color-bg-light, #f5f1e8);
+        position: relative;
+    }
+
+    .container {
+        position: relative;
+    }
+
+    .timeline-line-light {
+        position: absolute;
+        left: 50%;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: rgba(196, 164, 122, 0.3); /* Subtle gold line */
+        transform: translateX(-50%);
+    }
+
+    .timeline-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8rem;
+        position: relative;
+    }
+
+    .timeline-item.right {
+        flex-direction: row-reverse;
+    }
+
+    .timeline-number-light {
+        font-family: "Playfair Display", serif;
+        font-size: 8rem;
+        font-weight: 700;
+        color: var(--color-accent, #c4a47a); /* High contrast Gold */
+        line-height: 1;
+        width: 45%; /* Balances the content */
+        text-align: center;
+        opacity: 1; /* Fully visible */
+        position: relative; /* Static position in flex */
+        z-index: 2;
+    }
+
+    .timeline-item.left .timeline-number-light {
+        text-align: right; /* Points to center */
+        padding-right: 4rem;
+    }
+
+    @media (width >= 900px) {
+        .timeline-item.right .timeline-number-light {
+            text-align: left; /* Points to center */
+            padding-left: 4rem;
+        }
+    }
+    .timeline-content-light {
+        width: 45%;
+        position: relative;
+        z-index: 1;
+        background: white; /* Clean card look */
+        padding: 2.5rem;
+        border-radius: 4px;
+        box-shadow: 0 10px 30px rgba(196, 164, 122, 0.08); /* Soft warm shadow */
+        border: 1px solid rgba(196, 164, 122, 0.15);
+    }
+
+    .timeline-item.left .timeline-content-light {
+        /* text-align: right; - Removed for better readability in card */
+    }
+
+    .timeline-item::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        width: 16px;
+        height: 16px;
+        background: #fff;
+        border: 4px solid #c4a47a;
+        border-radius: 50%;
+        transform: translateX(-50%);
+        z-index: 2;
+    }
+
+    .timeline-content-light h3 {
+        font-family: "Playfair Display", serif;
+        font-size: 1.8rem;
+        color: var(--color-cta-dark, #2c2420);
+        margin-bottom: 1rem;
+        letter-spacing: 0.02em;
+    }
+
+    .separator-light {
+        width: 40px;
+        height: 3px;
+        background: var(--color-accent, #c4a47a);
+        margin-bottom: 1.5rem;
+        display: inline-block;
+    }
+
+    .timeline-content-light p {
+        font-size: 1.05rem;
+        color: var(--color-text-dark, #5a4a42);
+        line-height: 1.7;
+    }
+
+    .cta-decorator {
+        margin-bottom: 3rem;
+        opacity: 0.8;
+    }
+
+    .cta-quote {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(2rem, 5vw, 3.4rem);
+        line-height: 1.1;
+        color: var(--color-cta-dark, #2c2420);
+        margin-bottom: 5rem;
+        font-style: italic;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        text-wrap: balance;
+    }
+
+    .cta-quote .highlight-text {
+        color: var(--color-accent, #c4a47a);
+        font-weight: 700;
+        position: relative;
+        display: inline-block;
+        padding: 0 0.5rem;
+    }
+
+    .cta-quote .highlight-text::after {
+        content: "";
+        position: absolute;
+        bottom: 12px;
+        left: 0;
+        width: 100%;
+        height: 25%;
+        background: rgba(196, 164, 122, 0.12);
+        z-index: -1;
+        transform: rotate(-0.5deg);
+    }
+
+    /* Final CTA Light */
+    .final-cta-light {
+        padding: 6rem 2rem;
+        margin: 3rem;
+        background: #fff;
+        text-align: center;
+        border-top: 1px solid rgba(196, 164, 122, 0.1);
+        position: relative;
+    }
+
+    .cta-content {
+        margin: 0 auto;
+    }
+
+    .cta-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 2.5rem;
+    }
+
+    .btn-primary-light {
+        padding: 1.25rem 3.5rem;
+        background: var(--color-cta-dark, #2c2420);
+        color: #fff;
+        text-decoration: none;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        border: 1px solid var(--color-cta-dark, #2c2420);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        font-size: 0.85rem;
+        border-radius: 2px;
+    }
+
+    .btn-primary-light:hover {
+        background: #4a3d36;
+        border-color: #4a3d36;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(44, 36, 32, 0.15);
+    }
+
+    .btn-secondary-light {
+        padding: 1.25rem 3.5rem;
+        background: transparent;
+        color: var(--color-cta-dark, #2c2420);
+        text-decoration: none;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        border: 1px solid var(--color-cta-dark, #2c2420);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        font-size: 0.85rem;
+        border-radius: 2px;
+    }
+
+    .btn-secondary-light:hover {
+        background: var(--color-cta-dark, #2c2420);
+        color: #fff;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(44, 36, 32, 0.1);
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+        .container-hero {
+            grid-template-columns: 1fr;
+            gap: 4rem;
+            text-align: center;
+        }
+
+        .hero-content-light {
+            align-items: center;
+            padding: 2rem 0;
+        }
+
+        .scroll-indicator-light {
+            display: none;
+        }
+
+        .hero-img-light {
+            max-height: 50vh;
+        }
+
+        .image-frame-light {
+            display: none;
+        }
+
+        .floating-tag-light {
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: -20px;
+        }
+
+        .timeline-line-light {
+            left: 20px;
+        }
+
+        .timeline-item {
+            flex-direction: column;
+            align-items: flex-start;
+            padding-left: 50px;
+            margin-bottom: 4rem;
+        }
+
+        .timeline-item.right {
+            flex-direction: column;
+        }
+
+        .timeline-item::after {
+            left: 20px;
+        }
+
+        .timeline-content-light {
+            width: 100%;
+        }
+
+        .timeline-number-light {
+            font-size: 5rem;
+            width: 100%;
+            text-align: left !important;
+            padding: 0;
+            margin-bottom: 1rem;
+            /* Reset positioning for mobile to ensure standard flow */
+            position: relative;
+            top: auto;
+            left: auto;
+            right: auto;
+            z-index: 1;
+        }
+
+        .final-cta-light {
+            padding: 8rem 1.5rem;
+        }
+
+        .cta-buttons {
+            flex-direction: column;
+            gap: 1rem;
+        }
+    }
+</style>

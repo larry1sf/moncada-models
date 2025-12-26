@@ -19,7 +19,7 @@ if (!product) return "Producto no encontrado";
 <script>
   function setupSelection() {
     const buttonSendCart = document.querySelector(".add-to-cart-btn");
-    const product = JSON.parse(buttonSendCart?.dataset.product);
+    const product = JSON.parse(buttonSendCart?.dataset?.product);
     const selectedSize = document.querySelectorAll(".size-btn");
     const selectedColor = document.querySelectorAll(".color-btn");
 
@@ -32,7 +32,7 @@ if (!product) return "Producto no encontrado";
       const clicked = e.currentTarget;
       selectedSize.forEach((s) => s.classList.remove("active"));
       clicked.classList.add("active");
-      valueSize = clicked.innerText;
+      valueSize = clicked.innerText.trim();
       product.size = valueSize;
       updateDataset();
     }
@@ -41,7 +41,7 @@ if (!product) return "Producto no encontrado";
       const clicked = e.currentTarget;
       selectedColor.forEach((s) => s.classList.remove("active"));
       clicked.classList.add("active");
-      valueColor = clicked.innerText;
+      valueColor = clicked.innerText.trim();
       product.color = valueColor;
       updateDataset();
     }
@@ -77,6 +77,7 @@ if (!product) return "Producto no encontrado";
     const quantityDisplay = document.querySelector("#counter-quantity");
 
     // 1) Función para actualizar el carrito en localStorage
+    // 1) Función para actualizar el carrito en localStorage
     function addToCart(product: Product, quantity: number) {
       if (!product || !product.size || !product.color) return;
 
@@ -84,18 +85,31 @@ if (!product) return "Producto no encontrado";
         localStorage.getItem("cart") || "[]",
       ) as CartItem[];
 
-      const existingItemIndex = cart.findIndex(
-        (item) =>
-          item.name === product.name &&
-          (!product.size || item.size === product.size) &&
-          (!product.color || item.color === product.color),
-      );
+      const normalize = (str: string | null) => (str ? str.trim() : null);
+
+      const pName = normalize(product.name);
+      const pSize = normalize(product.size);
+      const pColor = normalize(product.color);
+
+      const existingItemIndex = cart.findIndex((item) => {
+        const iName = normalize(item.name);
+        const iSize = normalize(item.size);
+        const iColor = normalize(item.color);
+
+        return (
+          iName === pName &&
+          (!pSize || iSize === pSize) &&
+          (!pColor || iColor === pColor)
+        );
+      });
 
       if (existingItemIndex !== -1) {
         cart[existingItemIndex].quantity += quantity;
       } else {
         cart.push({
           ...product,
+          size: pSize,
+          color: pColor,
           quantity,
         });
       }
@@ -248,12 +262,7 @@ if (!product) return "Producto no encontrado";
     });
   }
 
-  setupSelection();
-  setupAddToCard();
-  setupQuantityButtons();
-  setupGallery();
-
-  document.addEventListener("astro:after-swap", () => {
+  document.addEventListener("astro:page-load", () => {
     setupSelection();
     setupAddToCard();
     setupQuantityButtons();

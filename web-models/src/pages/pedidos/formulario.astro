@@ -365,58 +365,47 @@ import BaseLayout from "~/layouts/BaseLayout.astro";
 <script>
     import { formatPriceCOP, posts } from "~/services/consts";
 
-    // Form state
-    let currentStep = 1;
-    const totalSteps = 3;
-
     // Strapi Host
     const STRAPI_HOST = "http://localhost:1337";
 
     // LocalStorage keys
     const STORAGE_KEY = "orderFormData";
     const STEP_KEY = "orderFormStep";
+    const ORDERS_KEY = "orders";
 
-    // DOM elements
-    const form = document.getElementById("order-form") as HTMLFormElement;
-    const btnNext = document.getElementById("btn-next") as HTMLButtonElement;
-    const btnPrev = document.getElementById("btn-prev") as HTMLButtonElement;
-    const btnSubmit = document.getElementById(
-        "btn-submit",
-    ) as HTMLButtonElement;
-    const progressFill = document.getElementById(
-        "progress-fill",
-    ) as HTMLDivElement;
-    const successModal = document.getElementById(
-        "success-modal",
-    ) as HTMLDivElement;
+    // Form state
+    let currentStep = 1;
+    const totalSteps = 3;
 
-    // Save form data to localStorage
+    // DOM elements (initially null)
+    let form;
+    let btnNext;
+    let btnPrev;
+    let btnSubmit;
+    let progressFill;
+    let successModal;
+
+    // --- Helper Functions ---
+
     function saveFormData() {
-        const formData: Record<string, string> = {};
+        if (!form) return;
+        const formData = {};
 
-        // Save text inputs
-        const fullname = (
-            document.getElementById("fullname") as HTMLInputElement
-        )?.value;
-        const phone = (document.getElementById("phone") as HTMLInputElement)
-            ?.value;
-        const email = (document.getElementById("email") as HTMLInputElement)
-            ?.value;
-        const address = (
-            document.getElementById("address") as HTMLTextAreaElement
-        )?.value;
-        const deliveryDate = (
-            document.getElementById("delivery-date") as HTMLInputElement
-        )?.value;
-        const payment = (document.getElementById("payment") as HTMLInputElement)
-            ?.value;
+        // Helper to safely get value
+        const getVal = (id) => {
+            const el = document.getElementById(id);
+            return el ? el.value : "";
+        };
 
-        // Save shipping radio selection
-        const shipping = (
-            document.querySelector(
-                'input[name="shipping"]:checked',
-            ) as HTMLInputElement
-        )?.value;
+        const fullname = getVal("fullname");
+        const phone = getVal("phone");
+        const email = getVal("email");
+        const address = getVal("address");
+        const deliveryDate = getVal("delivery-date");
+        const payment = getVal("payment");
+
+        const shippingEl = document.querySelector('input[name="shipping"]:checked');
+        const shipping = shippingEl ? shippingEl.value : "";
 
         if (fullname) formData.fullname = fullname;
         if (phone) formData.phone = phone;
@@ -429,64 +418,38 @@ import BaseLayout from "~/layouts/BaseLayout.astro";
         localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
     }
 
-    // Load form data from localStorage
     function loadFormData() {
         const savedData = localStorage.getItem(STORAGE_KEY);
         if (!savedData) return;
 
         try {
             const formData = JSON.parse(savedData);
+            
+            const setVal = (id, val) => {
+                const el = document.getElementById(id);
+                if (el && val) el.value = val;
+            };
 
-            // Restore text inputs
-            if (formData.fullname) {
-                (
-                    document.getElementById("fullname") as HTMLInputElement
-                ).value = formData.fullname;
-            }
-            if (formData.phone) {
-                (document.getElementById("phone") as HTMLInputElement).value =
-                    formData.phone;
-            }
-            if (formData.email) {
-                (document.getElementById("email") as HTMLInputElement).value =
-                    formData.email;
-            }
-            if (formData.address) {
-                (
-                    document.getElementById("address") as HTMLTextAreaElement
-                ).value = formData.address;
-            }
-            if (formData.deliveryDate) {
-                (
-                    document.getElementById("delivery-date") as HTMLInputElement
-                ).value = formData.deliveryDate;
-            }
+            setVal("fullname", formData.fullname);
+            setVal("phone", formData.phone);
+            setVal("email", formData.email);
+            setVal("address", formData.address);
+            setVal("delivery-date", formData.deliveryDate);
 
-            // Restore shipping radio
             if (formData.shipping) {
-                const shippingRadio = document.querySelector(
-                    `input[name="shipping"][value="${formData.shipping}"]`,
-                ) as HTMLInputElement;
+                const shippingRadio = document.querySelector(`input[name="shipping"][value="${formData.shipping}"]`);
                 if (shippingRadio) shippingRadio.checked = true;
             }
 
-            // Restore payment dropdown
             if (formData.payment) {
-                const paymentInput = document.getElementById(
-                    "payment",
-                ) as HTMLInputElement;
+                setVal("payment", formData.payment);
+                // Update dropdown UI
                 const customSelect = document.getElementById("payment-select");
-                const placeholder = customSelect?.querySelector(
-                    ".select-placeholder",
-                );
-                const option = customSelect?.querySelector(
-                    `[data-value="${formData.payment}"]`,
-                );
-
-                if (paymentInput) paymentInput.value = formData.payment;
+                const placeholder = customSelect?.querySelector(".select-placeholder");
+                const option = customSelect?.querySelector(`[data-value="${formData.payment}"]`);
+                
                 if (placeholder && option) {
-                    const text =
-                        option.querySelector("strong")?.textContent || "";
+                    const text = option.querySelector("strong")?.textContent || "";
                     placeholder.textContent = text;
                     placeholder.classList.add("selected");
                 }
@@ -496,12 +459,10 @@ import BaseLayout from "~/layouts/BaseLayout.astro";
         }
     }
 
-    // Save current step
     function saveCurrentStep() {
         localStorage.setItem(STEP_KEY, currentStep.toString());
     }
 
-    // Load saved step
     function loadSavedStep() {
         const savedStep = localStorage.getItem(STEP_KEY);
         if (savedStep) {
@@ -512,20 +473,18 @@ import BaseLayout from "~/layouts/BaseLayout.astro";
         }
     }
 
-    // Clear saved data (call after successful submission)
     function clearSavedData() {
         localStorage.removeItem(STORAGE_KEY);
         localStorage.removeItem(STEP_KEY);
     }
 
-    // Setup auto-save on input changes
     function setupAutoSave() {
+        if (!form) return;
         form.addEventListener("input", saveFormData);
         form.addEventListener("change", saveFormData);
     }
 
-    // Check if cart has products
-    function hasCartProducts(): boolean {
+    function hasCartProducts() {
         try {
             const cart = JSON.parse(localStorage.getItem("cart") || "[]");
             return cart.length > 0;
@@ -534,323 +493,32 @@ import BaseLayout from "~/layouts/BaseLayout.astro";
         }
     }
 
-    // Show cart empty warning
     function showCartEmptyWarning() {
-        const formContainer = document.querySelector(
-            ".form-container",
-        ) as HTMLElement;
+        const formContainer = document.querySelector(".form-container");
         if (!formContainer) return;
 
-        const warning = document.createElement("div");
-        warning.className = "cart-empty-warning";
-        warning.innerHTML = `
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-                <path d="M12 9V13M12 17H12.01M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <h2>Carrito Vacío</h2>
-            <p>No puedes realizar un pedido sin productos en tu carrito.</p>
-            <p>Por favor, agrega productos antes de continuar.</p>
-            <a href="/categories" class="btn-primary">Ver Collecciones</a>
+        formContainer.innerHTML = `
+            <div class="cart-empty-warning">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 9V13M12 17H12.01M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <h2>Carrito Vacío</h2>
+                <p>No puedes realizar un pedido sin productos en tu carrito.</p>
+                <p>Por favor, agrega productos antes de continuar.</p>
+                <a href="/categories" class="btn-primary">Ver Colecciones</a>
+            </div>
         `;
-
-        formContainer.innerHTML = "";
-        formContainer.appendChild(warning);
-    }
-
-    // Initialize form
-    function initForm() {
-        // Check if cart has products first
-        if (!hasCartProducts()) {
-            showCartEmptyWarning();
-            return;
-        }
-
-        // Load saved step first
-        loadSavedStep();
-
-        updateProgress();
-        updateButtons();
-
-        // Set minimum date for delivery (at least 1 day from now)
-        const deliveryInput = document.getElementById(
-            "delivery-date",
-        ) as HTMLInputElement;
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1); // Minimum 1 day from now
-        tomorrow.setHours(0, 0, 0, 0); // Start of tomorrow
-        deliveryInput.min = tomorrow.toISOString().slice(0, 16);
-
-        // Initialize custom payment dropdown
-        initPaymentDropdown();
-
-        // Load saved form data
-        loadFormData();
-
-        // Show the current step (in case we loaded a saved step)
-        showStep(currentStep);
-
-        // Add input listeners to save data
-        setupAutoSave();
-    }
-
-    // Custom dropdown for payment method
-    function initPaymentDropdown() {
-        const customSelect = document.getElementById("payment-select");
-        const trigger = customSelect?.querySelector(".select-trigger");
-        const menu = customSelect?.querySelector(".select-menu");
-        const options = customSelect?.querySelectorAll(".select-option");
-        const hiddenInput = document.getElementById(
-            "payment",
-        ) as HTMLInputElement;
-        const placeholder = customSelect?.querySelector(".select-placeholder");
-
-        if (!customSelect || !trigger || !menu || !options || !hiddenInput)
-            return;
-
-        // Toggle dropdown
-        trigger.addEventListener("click", (e) => {
-            e.stopPropagation();
-            customSelect.classList.toggle("open");
-        });
-
-        // Select option
-        options.forEach((option) => {
-            option.addEventListener("click", (e) => {
-                e.stopPropagation();
-                const value = option.getAttribute("data-value") || "";
-                const text = option.querySelector("strong")?.textContent || "";
-
-                // Update hidden input
-                hiddenInput.value = value;
-
-                // Dispatch change event so listeners can pick it up
-                hiddenInput.dispatchEvent(
-                    new Event("change", { bubbles: true }),
-                );
-
-                // Explicitly update summary if we are on the last step
-                if (currentStep === 3) {
-                    updateSummary();
-                }
-
-                // Update placeholder text
-                if (placeholder) {
-                    placeholder.textContent = text;
-                    placeholder.classList.add("selected");
-                }
-
-                // Remove error if present
-                const formGroup = customSelect.closest(".form-group");
-                formGroup?.classList.remove("has-error");
-
-                // Close dropdown
-                customSelect.classList.remove("open");
-
-                // Save to localStorage
-                saveFormData();
-            });
-        });
-
-        // Close dropdown when clicking outside
-        document.addEventListener("click", (e) => {
-            if (!customSelect.contains(e.target as Node)) {
-                customSelect.classList.remove("open");
-            }
-        });
-    }
-
-    // Update progress bar
-    function updateProgress() {
-        const progress = (currentStep / totalSteps) * 100;
-        progressFill.style.width = `${progress}%`;
-
-        // Update step indicators
-        document
-            .querySelectorAll(".step-indicator")
-            .forEach((indicator, index) => {
-                const stepNum = index + 1;
-                if (stepNum < currentStep) {
-                    indicator.classList.add("completed");
-                    indicator.classList.remove("active");
-                } else if (stepNum === currentStep) {
-                    indicator.classList.add("active");
-                    indicator.classList.remove("completed");
-                } else {
-                    indicator.classList.remove("active", "completed");
-                }
-            });
-    }
-
-    // Update navigation buttons
-    function updateButtons() {
-        btnPrev.style.display = currentStep > 1 ? "block" : "none";
-
-        if (currentStep === totalSteps) {
-            btnNext.style.display = "none";
-            btnSubmit.style.display = "block";
-        } else {
-            btnNext.style.display = "block";
-            btnSubmit.style.display = "none";
-        }
-    }
-
-    // Validate current step
-    function validateStep(step: number): boolean {
-        const currentStepEl = document.querySelector(
-            `.form-step[data-step="${step}"]`,
-        ) as HTMLElement;
-        const inputs = currentStepEl.querySelectorAll(
-            "input[required], textarea[required], select[required]",
-        );
-        let isValid = true;
-
-        inputs.forEach((input) => {
-            const inputEl = input as
-                | HTMLInputElement
-                | HTMLTextAreaElement
-                | HTMLSelectElement;
-            const formGroup = inputEl.closest(".form-group") as HTMLElement;
-
-            if (inputEl.type === "radio") {
-                const radioGroup = currentStepEl.querySelector(
-                    `input[name="${inputEl.name}"]:checked`,
-                );
-                const radioFormGroup = currentStepEl
-                    .querySelector(`input[name="${inputEl.name}"]`)
-                    ?.closest(".form-group") as HTMLElement;
-
-                if (!radioGroup && radioFormGroup) {
-                    radioFormGroup.classList.add("has-error");
-                    isValid = false;
-                } else if (radioFormGroup) {
-                    radioFormGroup.classList.remove("has-error");
-                }
-            } else if (!inputEl.value.trim()) {
-                formGroup?.classList.add("has-error");
-                isValid = false;
-            } else {
-                formGroup?.classList.remove("has-error");
-            }
-        });
-
-        return isValid;
-    }
-
-    // Show step with animation
-    function showStep(step: number) {
-        const steps = document.querySelectorAll(".form-step");
-
-        steps.forEach((stepEl, index) => {
-            const stepNum = index + 1;
-            if (stepNum === step) {
-                stepEl.classList.add("active");
-            } else {
-                stepEl.classList.remove("active");
-            }
-        });
-
-        updateProgress();
-        updateButtons();
-        updateSummary();
-
-        // Scroll to top of form
-        document
-            .querySelector(".form-container")
-            ?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-
-    // Update order summary
-    function updateSummary() {
-        if (currentStep === 3) {
-            const nameInput = document.getElementById(
-                "fullname",
-            ) as HTMLInputElement;
-            const phoneInput = document.getElementById(
-                "phone",
-            ) as HTMLInputElement;
-            const emailInput = document.getElementById(
-                "email",
-            ) as HTMLInputElement;
-            const addressInput = document.getElementById(
-                "address",
-            ) as HTMLTextAreaElement;
-            const dateInput = document.getElementById(
-                "delivery-date",
-            ) as HTMLInputElement;
-            const paymentInput = document.getElementById(
-                "payment",
-            ) as HTMLInputElement;
-            const shippingInput = document.querySelector(
-                'input[name="shipping"]:checked',
-            ) as HTMLInputElement;
-
-            // Update text fields
-            document.getElementById("summary-name")!.textContent =
-                nameInput.value || "-";
-            document.getElementById("summary-phone")!.textContent =
-                phoneInput.value || "-";
-
-            // Handle optional email field
-            const emailItem = document.getElementById("summary-email-item");
-            if (emailInput.value.trim()) {
-                document.getElementById("summary-email")!.textContent =
-                    emailInput.value;
-                if (emailItem) emailItem.style.display = "flex";
-            } else {
-                if (emailItem) emailItem.style.display = "none";
-            }
-            document.getElementById("summary-address")!.textContent =
-                addressInput.value || "-";
-
-            if (dateInput.value) {
-                const date = new Date(dateInput.value);
-                document.getElementById("summary-date")!.textContent =
-                    date.toLocaleString("es-CO", {
-                        dateStyle: "medium",
-                        timeStyle: "short",
-                    });
-            } else {
-                document.getElementById("summary-date")!.textContent = "-";
-            }
-
-            // Update shipping
-            document.getElementById("summary-shipping")!.textContent =
-                shippingInput
-                    ? shippingInput.value === "nacional"
-                        ? "Nacional"
-                        : "Internacional"
-                    : "-";
-
-            // Update payment
-            const paymentMap: Record<string, string> = {
-                efectivo: "Efectivo contra entrega",
-                transferencia: "Transferencia bancaria",
-                tarjeta: "Tarjeta de crédito/débito",
-                nequi: "Nequi",
-                daviplata: "Daviplata",
-            };
-            document.getElementById("summary-payment")!.textContent =
-                paymentInput.value
-                    ? paymentMap[paymentInput.value] || paymentInput.value
-                    : "-";
-
-            // Render Products from Cart
-            renderCartSummary();
-        }
     }
 
     function renderCartSummary() {
         const productsContainer = document.getElementById("summary-products");
         const totalElement = document.getElementById("summary-total");
-
         if (!productsContainer || !totalElement) return;
 
         try {
             const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-
             if (cart.length === 0) {
-                productsContainer.innerHTML =
-                    '<p class="empty-summary">No hay productos en el carrito</p>';
+                productsContainer.innerHTML = '<p class="empty-summary">No hay productos en el carrito</p>';
                 totalElement.textContent = "$0 COP";
                 return;
             }
@@ -858,15 +526,10 @@ import BaseLayout from "~/layouts/BaseLayout.astro";
             let total = 0;
             let html = "";
 
-            cart.forEach((item: any) => {
+            cart.forEach((item) => {
                 const itemTotal = item.price * item.quantity;
                 total += itemTotal;
-
-                const imageUrl = item.image
-                    ? item.image.startsWith("http")
-                        ? item.image
-                        : `${STRAPI_HOST}${item.image}`
-                    : "";
+                const imageUrl = item.image ? (item.image.startsWith("http") ? item.image : `${STRAPI_HOST}${item.image}`) : "";
 
                 html += `
                     <div class="summary-product-item">
@@ -877,8 +540,7 @@ import BaseLayout from "~/layouts/BaseLayout.astro";
                         <div class="summary-product-details">
                             <span class="summary-product-name">${item.name}</span>
                             <span class="summary-product-meta">
-                                ${item.size ? `Talla: ${item.size}` : ""} 
-                                ${item.color ? `| ${item.color}` : ""}
+                                ${item.size ? `Talla: ${item.size}` : ""} ${item.color ? `| ${item.color}` : ""}
                             </span>
                             <span class="summary-product-meta">
                                 <strong>Cantidad: ${item.quantity}</strong>
@@ -893,306 +555,314 @@ import BaseLayout from "~/layouts/BaseLayout.astro";
             totalElement.textContent = `${formatPriceCOP(total)} COP`;
         } catch (e) {
             console.error("Error rendering cart summary:", e);
-            productsContainer.innerHTML =
-                '<p class="error-summary">Error al cargar productos</p>';
         }
     }
-    btnNext.addEventListener("click", () => {
-        if (validateStep(currentStep)) {
-            if (currentStep < totalSteps) {
-                currentStep++;
-                saveCurrentStep();
-                showStep(currentStep);
+
+    function updateSummary() {
+        if (currentStep !== 3) return;
+        
+        const getVal = (id) => { const el = document.getElementById(id); return el ? el.value : ""; };
+        const setTxt = (id, txt) => { const el = document.getElementById(id); if(el) el.textContent = txt || "-"; };
+
+        setTxt("summary-name", getVal("fullname"));
+        setTxt("summary-phone", getVal("phone"));
+        setTxt("summary-address", getVal("address"));
+        
+        const emailVal = getVal("email");
+        const emailItem = document.getElementById("summary-email-item");
+        if(emailItem) {
+            if(emailVal.trim()) {
+                setTxt("summary-email", emailVal);
+                emailItem.style.display = "flex";
+            } else {
+                emailItem.style.display = "none";
             }
         }
-    });
 
-    // Handle previous button
-    btnPrev.addEventListener("click", () => {
-        if (currentStep > 1) {
-            currentStep--;
-            saveCurrentStep();
-            showStep(currentStep);
+        const dateVal = getVal("delivery-date");
+        if (dateVal) {
+             setTxt("summary-date", new Date(dateVal).toLocaleString("es-CO", { dateStyle: "medium", timeStyle: "short" }));
+        } else {
+             setTxt("summary-date", "-");
         }
-    });
 
-    // Handle form submission
-    btnSubmit.addEventListener("click", async () => {
-        if (validateStep(currentStep)) {
-            // Verify cart has products before submitting
-            const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+        const shippingEl = document.querySelector('input[name="shipping"]:checked');
+        const shippingVal = shippingEl ? shippingEl.value : "";
+        setTxt("summary-shipping", shippingVal === "nacional" ? "Nacional" : (shippingVal === "internacional" ? "Internacional" : "-"));
 
-            if (cart.length === 0) {
-                alert(
-                    "No puedes realizar un pedido sin productos en el carrito. Por favor, agrega productos antes de continuar.",
-                );
-                window.location.href = "/productos";
-                return;
+        const paymentVal = getVal("payment");
+        const paymentMap = {
+            efectivo: "Efectivo contra entrega",
+            transferencia: "Transferencia bancaria",
+            tarjeta: "Tarjeta de crédito/débito",
+            nequi: "Nequi",
+            daviplata: "Daviplata",
+        };
+        setTxt("summary-payment", paymentMap[paymentVal] || paymentVal || "-");
+
+        renderCartSummary();
+    }
+
+    function updateProgress() {
+        if (!progressFill) return;
+        const progress = (currentStep / totalSteps) * 100;
+        progressFill.style.width = `${progress}%`;
+
+        document.querySelectorAll(".step-indicator").forEach((indicator, index) => {
+            const stepNum = index + 1;
+            indicator.classList.remove("active", "completed");
+            if (stepNum < currentStep) indicator.classList.add("completed");
+            else if (stepNum === currentStep) indicator.classList.add("active");
+        });
+    }
+
+    function updateButtons() {
+        if (!btnPrev || !btnNext || !btnSubmit) return;
+        btnPrev.style.display = currentStep > 1 ? "block" : "none";
+        if (currentStep === totalSteps) {
+            btnNext.style.display = "none";
+            btnSubmit.style.display = "block";
+        } else {
+            btnNext.style.display = "block";
+            btnSubmit.style.display = "none";
+        }
+    }
+
+    function showStep(step) {
+        document.querySelectorAll(".form-step").forEach((stepEl, index) => {
+            stepEl.classList.toggle("active", (index + 1) === step);
+        });
+        updateProgress();
+        updateButtons();
+        updateSummary();
+        document.querySelector(".form-container")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function validateStep(step) {
+        const currentStepEl = document.querySelector(`.form-step[data-step="${step}"]`);
+        if (!currentStepEl) return true;
+        
+        let isValid = true;
+        const inputs = currentStepEl.querySelectorAll("input[required], textarea[required], select[required]");
+        
+        inputs.forEach((input) => {
+            const formGroup = input.closest(".form-group");
+            if (input.type === "radio") {
+                const groupName = input.name;
+                const checked = currentStepEl.querySelector(`input[name="${groupName}"]:checked`);
+                const radioGroup = formGroup || input.closest(".radio-group")?.closest(".form-group"); // fallback
+                if (!checked) {
+                    if(radioGroup) radioGroup.classList.add("has-error");
+                    isValid = false;
+                } else {
+                     if(radioGroup) radioGroup.classList.remove("has-error");
+                }
+            } else {
+                if (!input.value.trim()) {
+                    formGroup?.classList.add("has-error");
+                    isValid = false;
+                } else {
+                    formGroup?.classList.remove("has-error");
+                }
             }
+        });
+        return isValid;
+    }
 
-            // Collect all form data
-            const fullname = (
-                document.getElementById("fullname") as HTMLInputElement
-            ).value;
-            const phone = (document.getElementById("phone") as HTMLInputElement)
-                .value;
-            const email = (document.getElementById("email") as HTMLInputElement)
-                .value;
-            const address = (
-                document.getElementById("address") as HTMLTextAreaElement
-            ).value;
-            const deliveryDate = (
-                document.getElementById("delivery-date") as HTMLInputElement
-            ).value;
-            const payment = (
-                document.getElementById("payment") as HTMLInputElement
-            ).value;
-            const shipping = (
-                document.querySelector(
-                    'input[name="shipping"]:checked',
-                ) as HTMLInputElement
-            )?.value;
+    function initPaymentDropdown() {
+        const customSelect = document.getElementById("payment-select");
+        if (!customSelect) return;
+        
+        const trigger = customSelect.querySelector(".select-trigger");
+        const options = customSelect.querySelectorAll(".select-option");
+        const input = document.getElementById("payment");
+        const placeholder = customSelect.querySelector(".select-placeholder");
 
-            // Payment method mapping
-            const paymentMap: Record<string, string> = {
-                efectivo: "Efectivo contra entrega",
-                transferencia: "Transferencia bancaria",
-                tarjeta: "Tarjeta de crédito/débito",
-                nequi: "Nequi",
-                daviplata: "Daviplata",
+        // Remove old listeners to avoid duplicates if any (though initPage creates new ones, the element is fresh if page loaded, but safe to be sure)
+        // Actually, replacing the element or cloning it is the only way to remove anon listeners, but Astro ViewTransitions swaps the body, so elements are new.
+        
+        trigger?.addEventListener("click", () => customSelect.classList.toggle("open"));
+
+        options.forEach(option => {
+            option.addEventListener("click", () => {
+                const val = option.getAttribute("data-value");
+                if (input) input.value = val;
+                saveFormData();
+
+                if (placeholder) {
+                    placeholder.textContent = option.querySelector("strong")?.textContent || "";
+                    placeholder.classList.add("selected");
+                }
+                options.forEach(o => o.classList.remove("selected"));
+                option.classList.add("selected");
+                customSelect.classList.remove("open");
+                customSelect.closest(".form-group")?.classList.remove("has-error");
+                
+                if (currentStep === 3) updateSummary();
+            });
+        });
+
+        document.addEventListener("click", (e) => {
+            if (!customSelect.contains(e.target)) customSelect.classList.remove("open");
+        });
+    }
+
+    function initFormState() {
+        if (!hasCartProducts()) {
+            showCartEmptyWarning();
+            return;
+        }
+
+        loadSavedStep();
+        updateProgress();
+        updateButtons();
+
+        // Min date
+        const deliveryInput = document.getElementById("delivery-date");
+        if (deliveryInput) {
+            const tmr = new Date();
+            tmr.setDate(tmr.getDate() + 1);
+            tmr.setHours(0,0,0,0);
+            deliveryInput.min = tmr.toISOString().slice(0, 16);
+        }
+
+        initPaymentDropdown();
+        loadFormData();
+        showStep(currentStep);
+        setupAutoSave();
+    }
+
+    // --- MAIN INIT ---
+    function initPage() {
+        form = document.getElementById("order-form");
+        btnNext = document.getElementById("btn-next");
+        btnPrev = document.getElementById("btn-prev");
+        btnSubmit = document.getElementById("btn-submit");
+        progressFill = document.getElementById("progress-fill");
+        successModal = document.getElementById("success-modal");
+
+        if (!form) return;
+
+        // Button Listeners
+        if (btnNext) {
+            btnNext.onclick = () => {
+                if (validateStep(currentStep) && currentStep < totalSteps) {
+                    currentStep++;
+                    saveCurrentStep();
+                    showStep(currentStep);
+                }
             };
-
-            // Calculate Total
-            const total = cart.reduce(
-                (sum: number, item: any) => sum + item.price * item.quantity,
-                0,
-            );
-
-            // Create order object for LocalStorage (keep existing logic)
-            const order = {
-                timestamp: Date.now(),
-                fullname,
-                phone,
-                email: email || undefined,
-                address,
-                deliveryDate,
-                payment: paymentMap[payment] || payment,
-                shipping,
-                products: cart,
+        }
+        if (btnPrev) {
+            btnPrev.onclick = () => {
+                if (currentStep > 1) {
+                    currentStep--;
+                    saveCurrentStep();
+                    showStep(currentStep);
+                }
             };
+        }
+        if (btnSubmit) {
+            btnSubmit.onclick = async () => {
+                if (!validateStep(currentStep)) return;
 
-            // Save order to orders list (LocalStorage)
-            const orders = JSON.parse(localStorage.getItem("orders") || "[]");
-            orders.push(order);
-            localStorage.setItem("orders", JSON.stringify(orders));
+                if (!hasCartProducts()) {
+                    alert("Carrito vacío.");
+                    window.location.href = "/productos";
+                    return;
+                }
 
-            // Send to Strapi
-            try {
-                // Disable button to prevent double submit
-                btnSubmit.disabled = true;
-                btnSubmit.textContent = "Enviando...";
+                // Gather data
+                const getVal = (id) => document.getElementById(id)?.value || "";
+                const fullname = getVal("fullname");
+                const phone = getVal("phone");
+                const email = getVal("email");
+                const address = getVal("address");
+                const deliveryDate = getVal("delivery-date");
+                const payment = getVal("payment");
+                const shipping = document.querySelector('input[name="shipping"]:checked')?.value;
 
-                // Generate a reference ID
-                const reference = `ORD-${Date.now()}`;
+                const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+                const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-                // Clean phone number (keep only digits)
-                const numberClient =
-                    parseInt(phone.replace(/\D/g, ""), 10) || 0;
-
-                const strapiData = {
-                    data: {
-                        reference,
-                        nameClient: fullname,
-                        numberClient,
-                        typeDelivery:
-                            shipping === "nacional"
-                                ? "Nacional"
-                                : "Internacional",
-                        buyMethod: paymentMap[payment] || payment,
-                        address,
-                        dateDelivery: deliveryDate,
-                        totalDelivery: total,
-                        email: email || undefined,
-                    },
+                const paymentMap = {
+                    efectivo: "Efectivo contra entrega",
+                    transferencia: "Transferencia bancaria",
+                    tarjeta: "Tarjeta de crédito/débito",
+                    nequi: "Nequi",
+                    daviplata: "Daviplata",
                 };
 
-                await posts({ query: "/api/orders", body: strapiData });
-            } catch (error) {
-                console.error("Error sending order to Strapi:", error);
-                alert(
-                    "Hubo un error al enviar tu pedido. Por favor, inténtalo de nuevo o contáctanos.",
-                );
-                btnSubmit.disabled = false;
-                btnSubmit.textContent = "Finalizar Pedido";
-                return; // Stop execution if Strapi fails
-            }
+                // WhatsApp Logic
+                const reference = `ORD-${Date.now()}`;
+                const productLines = cart.map(item => `• *${item.quantity}x* ${item.name} - ${formatPriceCOP(item.price * item.quantity)}`).join("\n");
+                
+                const message = `*Nuevo Pedido*\nRef: ${reference}\nCliente: ${fullname}\nTel: ${phone}\nDirección: ${address}\nPago: ${paymentMap[payment] || payment}\nEntregar: ${deliveryDate}\n\n*Productos:*\n${productLines}\n\n*Total: ${formatPriceCOP(total)}*`;
+                
+                // Save Order Local
+                const order = { timestamp: Date.now(), fullname, phone, address, total, products: cart, reference };
+                const orders = JSON.parse(localStorage.getItem(ORDERS_KEY) || "[]");
+                orders.push(order);
+                localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
 
-            // Clear saved form data
-            clearSavedData();
+                // Open WhatsApp
+                const COMPANY_PHONE = "573183158515";
+                window.open(`https://wa.me/${COMPANY_PHONE}?text=${encodeURIComponent(message)}`, "_blank");
 
-            // Show success modal
-            successModal.classList.add("show");
-
-            // Reset button state (though modal is showing)
-            btnSubmit.disabled = false;
-            btnSubmit.textContent = "Finalizar Pedido";
+                // Cleanup
+                clearSavedData();
+                localStorage.removeItem("cart");
+                window.dispatchEvent(new Event("cartUpdated"));
+                
+                if (successModal) successModal.classList.add("show");
+            };
         }
-    });
 
-    // Handle success modal buttons
-    document.getElementById("btn-home")?.addEventListener("click", () => {
-        // Clear the cart
-        localStorage.removeItem("cart");
-        window.dispatchEvent(new Event("cartUpdated"));
+        // Modal Listeners
+        const btnHome = document.getElementById("btn-home");
+        if(btnHome) btnHome.onclick = () => window.location.href = "/";
+        
+        const btnClose = document.getElementById("btn-close-modal");
+        if(btnClose) btnClose.onclick = () => {
+             if(successModal) successModal.classList.remove("show");
+             window.location.reload();
+        };
 
-        window.location.href = "/";
-    });
-
-    document
-        .getElementById("btn-close-modal")
-        ?.addEventListener("click", () => {
-            // Clear the cart
-            localStorage.removeItem("cart");
-            window.dispatchEvent(new Event("cartUpdated"));
-
-            successModal.classList.remove("show");
-            // Optional: Reset form or redirect to a specific state if needed
-            // For now, just closing the modal. The user is still on step 3.
-            // Maybe better to reload or reset form?
-            // Let's reload to clear state visually as data is already cleared
-            window.location.reload();
+        // Step Indicators
+        document.querySelectorAll(".step-indicator").forEach(ind => {
+            ind.onclick = () => {
+                const target = parseInt(ind.getAttribute("data-step") || "1");
+                if (target < currentStep) {
+                    currentStep = target;
+                    saveCurrentStep();
+                    showStep(currentStep);
+                } else if (target > currentStep && validateStep(currentStep)) {
+                     // For simplicity, allowed to go next if current valid
+                     currentStep++; 
+                     saveCurrentStep();
+                     showStep(currentStep);
+                }
+            };
         });
+        
+        // Remove error classes on input
+        form.oninput = (e) => {
+            if (e.target.closest(".form-group")) e.target.closest(".form-group").classList.remove("has-error");
+            if (currentStep === 3) updateSummary();
+        };
 
-    // Remove error on input
-    form.addEventListener("input", (e) => {
-        const target = e.target as HTMLElement;
-        if (
-            target.classList.contains("form-control") ||
-            target.tagName === "INPUT" ||
-            target.tagName === "TEXTAREA" ||
-            target.tagName === "SELECT"
-        ) {
-            const formGroup = target.closest(".form-group");
-            formGroup?.classList.remove("has-error");
-        }
-    });
+        initFormState();
+    }
 
-    // Initialize on load
-    initForm();
+    // Initialize on Page Load (Navigation safe)
+    document.addEventListener("astro:page-load", initPage);
 
-    // Listen for cart updates
+    // Cart Updates Listener
     window.addEventListener("cartUpdated", () => {
-        // Check if cart became empty
-        if (!hasCartProducts()) {
-            // Cart is now empty, show warning
-            showCartEmptyWarning();
-        } else if (currentStep === 3) {
-            // Cart still has products, just update summary
-            renderCartSummary();
-        }
+        if (!hasCartProducts()) showCartEmptyWarning();
+        else if (currentStep === 3) renderCartSummary();
     });
 
-    // Listen for input changes to update summary in real-time
-    const inputs = form.querySelectorAll("input, textarea, select");
-    inputs.forEach((input) => {
-        input.addEventListener("input", () => {
-            if (currentStep === 3) updateSummary();
-        });
-        input.addEventListener("change", () => {
-            if (currentStep === 3) updateSummary();
-        });
-    });
-
-    // Handle step indicator clicks
-    document.querySelectorAll(".step-indicator").forEach((indicator) => {
-        indicator.addEventListener("click", () => {
-            const targetStep = parseInt(
-                indicator.getAttribute("data-step") || "1",
-                10,
-            );
-
-            // If clicking the same step, do nothing
-            if (targetStep === currentStep) return;
-
-            // If going back, allow it
-            if (targetStep < currentStep) {
-                currentStep = targetStep;
-                saveCurrentStep();
-                showStep(currentStep);
-                return;
-            }
-
-            // If going forward, validate current step
-            // We only allow going to the next immediate step if current is valid
-            // Or if we want to allow jumping, we must validate all intermediate steps
-            // For simplicity and better UX, let's just check if we can move from current to target
-            // But usually, you can only move to the next step if current is valid.
-            // If user tries to jump from 1 to 3, we should validate 1 and 2.
-
-            // Let's implement sequential validation
-            let canMove = true;
-            for (let i = currentStep; i < targetStep; i++) {
-                if (!validateStep(i)) {
-                    canMove = false;
-                    // Show error on the first invalid step found (which is 'i')
-                    // But we are currently on 'currentStep'.
-                    // If we are on 1 and click 3, and 1 is invalid, we stay on 1 and show errors.
-                    // If 1 is valid but 2 is invalid (which shouldn't happen if we haven't visited 2 yet, but maybe we did),
-                    // we should probably stop at 2.
-
-                    // Actually, if we are on 1, we can only go to 2.
-                    // If we are on 1 and click 3, we should check 1. If 1 is valid, we go to 2. Then user sees 2.
-                    // Jumping 1 -> 3 directly might be confusing if 2 is empty.
-
-                    // Let's restrict: can only click next step if current is valid.
-                    // Can click any previous step.
-                    // Can click any future step ONLY if all previous steps are valid/completed?
-                    // A simpler approach: You can only click steps that you have already "reached" or "completed"?
-                    // But the user request implies they want to use it for navigation.
-
-                    // Let's stick to: Validate current step. If valid, allow moving to targetStep IF targetStep is just currentStep + 1.
-                    // If targetStep > currentStep + 1, we could either disallow or try to validate intermediate.
-
-                    // Let's try to validate from currentStep up to targetStep - 1
-                    break;
-                }
-            }
-
-            // Improved logic:
-            // If target > current:
-            // Validate current step. If invalid, stop.
-            // If valid, check if target is current + 1. If so, go.
-            // If target > current + 1, check if intermediate steps are valid?
-            // Actually, usually you can't jump over steps.
-            // So let's allow clicking ONLY if targetStep <= currentStep + 1 AND validateStep(currentStep) is true.
-
-            if (targetStep > currentStep) {
-                // Check if we are trying to skip steps
-                // For this form, let's enforce sequential progress
-                if (targetStep !== currentStep + 1) {
-                    // If trying to jump more than 1 step, check if intermediate steps are effectively "done" or just disallow
-                    // For now, let's just validate the current step and if valid, allow moving to next.
-                    // If user clicks 3 while on 1, and 1 is valid, we could move to 2 (as a courtesy) or just do nothing.
-                    // Let's move to the next available step if valid.
-
-                    if (validateStep(currentStep)) {
-                        // If current is valid, we can advance.
-                        // If target is 3 and we are on 1, we should probably go to 2 first.
-                        currentStep++;
-                        saveCurrentStep();
-                        showStep(currentStep);
-                    }
-                } else {
-                    // Target is immediate next
-                    if (validateStep(currentStep)) {
-                        currentStep = targetStep;
-                        saveCurrentStep();
-                        showStep(currentStep);
-                    }
-                }
-            }
-        });
-    });
 </script>
 
 <style>

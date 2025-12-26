@@ -69,15 +69,20 @@
 </style>
 
 <script>
+    let cleanup: (() => void) | undefined;
+
     function initToast() {
+        if (cleanup) cleanup();
+
         const toast = document.getElementById("toast-container");
         const messageSpan = document.getElementById("toast-message");
         let timeoutId: any;
 
-        window.addEventListener("showToast", ((e: CustomEvent) => {
+        const handleShowToast = (e: Event) => {
+            const customEvent = e as CustomEvent;
             if (!toast || !messageSpan) return;
 
-            messageSpan.textContent = e.detail.message;
+            messageSpan.textContent = customEvent.detail.message;
             toast.classList.add("active");
 
             if (timeoutId) clearTimeout(timeoutId);
@@ -85,10 +90,16 @@
             timeoutId = setTimeout(() => {
                 toast.classList.remove("active");
             }, 3000);
-        }) as EventListener);
+        };
+
+        window.addEventListener("showToast", handleShowToast);
+
+        cleanup = () => {
+            window.removeEventListener("showToast", handleShowToast);
+            if (timeoutId) clearTimeout(timeoutId);
+        };
     }
 
-    // Initialize on load and after Astro swaps
-    initToast();
-    document.addEventListener("astro:after-swap", initToast);
+    // Initialize on page load (covers initial and navigation)
+    document.addEventListener("astro:page-load", initToast);
 </script>
