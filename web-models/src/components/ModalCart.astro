@@ -466,9 +466,7 @@ import { STRAPI_HOST } from "~/services/consts";
                 li.className = "cart-item";
 
                 const imageUrl = item?.image
-                    ? strapiHost
-                        ? strapiHost + item.image
-                        : item.image
+                    ? item.image
                     : "";
 
                 li.innerHTML = `
