@@ -2,7 +2,7 @@ import type { ProductAttributes, StrapiResponse } from "~/types/product"
 
 export const STRAPI_HOST = import.meta.env.STRAPI_HOST as string
 export const STRAPI_API_TOKEN = import.meta.env.STRAPI_API_TOKEN as string
-
+export const VERCEL_HOST = import.meta.env.VERCEL_HOST as string
 export async function gets({ query }: { query: string }): Promise<StrapiResponse<ProductAttributes>> {
     let url = `${STRAPI_HOST}${query}`
 

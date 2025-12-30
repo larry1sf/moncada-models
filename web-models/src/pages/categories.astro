@@ -1,17 +1,20 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import CategoryCard from "../components/CategoryCard.astro";
-import { categories } from "../data/categories";
+import BaseLayout from "~/layouts/BaseLayout.astro";
+import CategoryCard from "~/components/CategoryCard.astro";
+import { categories } from "~/data/categories";
 ---
 
-<BaseLayout title="Categorías de Blusas - Tienda de Ropa">
+<BaseLayout
+  title="Categorías: Estilos Casuales, Elegantes y Modernos | Tienda de Ropa"
+  description="Explora nuestra completa selección de ropa clasificada por categorías. Encuentra el diseño ideal para cada momento, desde prendas básicas y minimalistas para el día a día hasta estilos sofisticados y elegantes para ocasiones especiales. Descubre las últimas tendencias en moda femenina con materiales de alta calidad y cortes diseñados para resaltar tu estilo único."
+>
   <div class="categories-container">
     <section class="hero-section">
       <div class="hero-content">
         <h1>Explora Nuestras Categorías</h1>
         <p>
-          Descubre diferentes estilos de blusas para cada ocasión. Desde casual
-          hasta formal, encuentra tu estilo perfecto.
+          Descubre diferentes estilos para cada ocasión. Desde casual hasta
+          formal, encuentra tu outfit perfecto.
         </p>
       </div>
     </section>
@@ -37,7 +40,7 @@ import { categories } from "../data/categories";
       <div class="cta-content">
         <h2>¿No sabes qué elegir?</h2>
         <p>
-          Visita nuestra colección completa y descubre todas nuestras blusas
+          Visita nuestra colección completa y descubre todas nuestras prendas
         </p>
         <a href="/" class="cta-button">Ver Todos los Productos</a>
       </div>

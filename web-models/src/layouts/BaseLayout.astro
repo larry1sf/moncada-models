@@ -1,15 +1,16 @@
 ---
-import "../styles/global.css";
-import { ClientRouter } from "astro:transitions";
-import { categories } from "../data/categories";
+import "~/styles/global.css";
 import ModalCart from "~/components/ModalCart.astro";
+import { ClientRouter } from "astro:transitions";
+import { categories } from "~/data/categories";
 import { STRAPI_HOST } from "~/services/consts";
-interface Props {
-    title: string;
-}
 import { products } from "~/data/products";
 import { siteInfo } from "~/data/siteInfo";
-const { title } = Astro.props;
+interface Props {
+    title: string;
+    description?: string;
+}
+const { title, description = siteInfo.meta.description } = Astro.props;
 ---
 
 <script>
@@ -104,13 +105,34 @@ const { title } = Astro.props;
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <meta name="robots" content="index, follow" />
+        <meta name="googlebot" content="index, follow" />
+        <meta name="generator" content={Astro.generator} />
+        <meta name="keywords" content={siteInfo.meta.keywords} />
+        <meta name="author" content={siteInfo.meta.author} />
+        <link rel="icon" type="image/svg+xml" href={siteInfo.meta.logo} />
+        <link rel="canonical" href={siteInfo.meta.url} />
         <link
             href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap"
             rel="stylesheet"
         />
-        <meta name="generator" content={Astro.generator} />
-        <title>{title}</title>
+
+        <meta name="og:title" content={title} />
+        <meta name="og:description" content={description} />
+        <meta name="og:type" content="website" />
+        <meta name="og:url" content={siteInfo.meta.url} />
+        <meta name="og:image" content={siteInfo.meta.image} />
+        <meta name="og:image:width" content="1200" />
+        <meta name="og:image:height" content="630" />
+        <meta name="og:image:alt" content={description} />
+
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={siteInfo.meta.image} />
+
         <ClientRouter />
     </head>
     <body>
@@ -1598,7 +1620,6 @@ const { title } = Astro.props;
 
 <style>
     /* ITEM GENERAL */
-    /* ITEM GENERAL */
     :global(.search-result-item) {
         display: flex;
         align-items: center;
@@ -1658,4 +1679,3 @@ const { title } = Astro.props;
         margin-top: 4px;
     }
 </style>
-

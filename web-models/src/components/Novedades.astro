@@ -1,8 +1,8 @@
 ---
 import CardsProducts from "~/components/CardsProducts.astro";
-import { getProducts } from "~/services/get-products";
+import { products } from "~/data/products";
 
-const novedades = (await getProducts()).data.reverse().slice(0, 6);
+const novedades = products.reverse().slice(0, 6);
 ---
 
 <section id="novedades" class="novedades-section">
