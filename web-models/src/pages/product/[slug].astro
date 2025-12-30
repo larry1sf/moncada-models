@@ -365,7 +365,7 @@ if (!product) return "Producto no encontrado";
             </div>
           )
         }
-        {
+        <!-- {
           product?.texture && (
             <div class="options-section">
               <h3>Texturas Disponibles</h3>
@@ -376,7 +376,7 @@ if (!product) return "Producto no encontrado";
               )}
             </div>
           )
-        }
+        } -->
 
         {
           product?.color && (
@@ -423,6 +423,7 @@ if (!product) return "Producto no encontrado";
       </article>
     </div>
   </section>
+
   <ProductRelationated product={product} />
 
   <div class="category-container">
@@ -469,12 +470,16 @@ if (!product) return "Producto no encontrado";
 
   .product-gallery {
     max-width: 40rem;
+    height: 100%;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     gap: 1rem;
+    max-height: 900px;
   }
 
   .main-image {
+    flex-grow: 1;
     width: 100%;
     border-radius: 1.5rem;
     overflow: hidden;
@@ -484,9 +489,8 @@ if (!product) return "Producto no encontrado";
 
   .main-image img {
     width: 100%;
-    height: auto;
+    height: 100%;
     min-height: 700px;
-    max-height: 700px;
     display: block;
     object-fit: cover;
   }
