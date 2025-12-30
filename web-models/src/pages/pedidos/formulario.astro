@@ -1389,9 +1389,8 @@ import { STRAPI_HOST } from "~/services/consts";
         padding-top: 2rem;
         border-top: 1px solid rgba(196, 164, 122, 0.15);
     }
-
-    .btn-primary,
-    .btn-secondary {
+    ::global(.btn-primary),
+    ::global(.btn-secondary) {
         flex: 1;
         padding: 1.2rem 2rem;
         border: none;
@@ -1404,19 +1403,18 @@ import { STRAPI_HOST } from "~/services/consts";
         cursor: pointer;
         transition: all 0.3s ease;
     }
-
-    .btn-primary {
+    ::global(.btn-primary) {
         background: var(--color-cta-dark);
         color: white;
     }
 
-    .btn-primary:hover {
+    ::global(.btn-primary:hover) {
         background: var(--color-cta-dark-hover);
         transform: translateY(-2px);
         box-shadow: var(--shadow-lg);
     }
 
-    .btn-secondary {
+    ::global(.btn-secondary) {
         background: transparent;
         color: var(--color-cta-dark);
         border: 2px solid var(--color-cta-dark);
