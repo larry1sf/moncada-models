@@ -2,7 +2,7 @@
 import CardsProducts from "~/components/CardsProducts.astro";
 import { products } from "~/data/products";
 
-const novedades = products.reverse().slice(0, 6);
+const novedades = [...products].reverse().slice(0, 6);
 ---
 
 <span id="novedades"></span>
