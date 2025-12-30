@@ -4,7 +4,10 @@ import BaseLayout from "~/layouts/BaseLayout.astro";
 import { STRAPI_HOST } from "~/services/consts";
 ---
 
-<BaseLayout title="Realizar Pedido - Moncada Models">
+<BaseLayout
+    title="Finaliza tu Pedido | Compra Segura y Rápida | Moncada Models"
+    description="Completa tu pedido en Moncada Models de forma rápida y segura. Envío nacional e internacional, atención personalizada vía WhatsApp y la mejor moda a un clic de distancia."
+>
     <div class="form-page">
         <div class="form-container">
             <!-- Progress Bar -->
@@ -367,7 +370,8 @@ import { STRAPI_HOST } from "~/services/consts";
     import { formatPriceCOP, posts } from "~/services/consts";
 
     // Strapi Host
-    const STRAPI_HOST = (document.querySelector("form.order-form")?.dataset?.host);
+    const STRAPI_HOST =
+        document.querySelector("form.order-form")?.dataset?.host;
 
     // LocalStorage keys
     const STORAGE_KEY = "orderFormData";
@@ -405,7 +409,9 @@ import { STRAPI_HOST } from "~/services/consts";
         const deliveryDate = getVal("delivery-date");
         const payment = getVal("payment");
 
-        const shippingEl = document.querySelector('input[name="shipping"]:checked');
+        const shippingEl = document.querySelector(
+            'input[name="shipping"]:checked',
+        );
         const shipping = shippingEl ? shippingEl.value : "";
 
         if (fullname) formData.fullname = fullname;
@@ -425,7 +431,7 @@ import { STRAPI_HOST } from "~/services/consts";
 
         try {
             const formData = JSON.parse(savedData);
-            
+
             const setVal = (id, val) => {
                 const el = document.getElementById(id);
                 if (el && val) el.value = val;
@@ -438,7 +444,9 @@ import { STRAPI_HOST } from "~/services/consts";
             setVal("delivery-date", formData.deliveryDate);
 
             if (formData.shipping) {
-                const shippingRadio = document.querySelector(`input[name="shipping"][value="${formData.shipping}"]`);
+                const shippingRadio = document.querySelector(
+                    `input[name="shipping"][value="${formData.shipping}"]`,
+                );
                 if (shippingRadio) shippingRadio.checked = true;
             }
 
@@ -446,11 +454,16 @@ import { STRAPI_HOST } from "~/services/consts";
                 setVal("payment", formData.payment);
                 // Update dropdown UI
                 const customSelect = document.getElementById("payment-select");
-                const placeholder = customSelect?.querySelector(".select-placeholder");
-                const option = customSelect?.querySelector(`[data-value="${formData.payment}"]`);
-                
+                const placeholder = customSelect?.querySelector(
+                    ".select-placeholder",
+                );
+                const option = customSelect?.querySelector(
+                    `[data-value="${formData.payment}"]`,
+                );
+
                 if (placeholder && option) {
-                    const text = option.querySelector("strong")?.textContent || "";
+                    const text =
+                        option.querySelector("strong")?.textContent || "";
                     placeholder.textContent = text;
                     placeholder.classList.add("selected");
                 }
@@ -519,7 +532,8 @@ import { STRAPI_HOST } from "~/services/consts";
         try {
             const cart = JSON.parse(localStorage.getItem("cart") || "[]");
             if (cart.length === 0) {
-                productsContainer.innerHTML = '<p class="empty-summary">No hay productos en el carrito</p>';
+                productsContainer.innerHTML =
+                    '<p class="empty-summary">No hay productos en el carrito</p>';
                 totalElement.textContent = "$0 COP";
                 return;
             }
@@ -530,7 +544,11 @@ import { STRAPI_HOST } from "~/services/consts";
             cart.forEach((item) => {
                 const itemTotal = item.price * item.quantity;
                 total += itemTotal;
-                const imageUrl = item.image ? (item.image.startsWith("http") ? item.image : `${STRAPI_HOST}${item.image}`) : "";
+                const imageUrl = item.image
+                    ? item.image.startsWith("http")
+                        ? item.image
+                        : `${STRAPI_HOST}${item.image}`
+                    : "";
 
                 html += `
                     <div class="summary-product-item">
@@ -561,18 +579,24 @@ import { STRAPI_HOST } from "~/services/consts";
 
     function updateSummary() {
         if (currentStep !== 3) return;
-        
-        const getVal = (id) => { const el = document.getElementById(id); return el ? el.value : ""; };
-        const setTxt = (id, txt) => { const el = document.getElementById(id); if(el) el.textContent = txt || "-"; };
+
+        const getVal = (id) => {
+            const el = document.getElementById(id);
+            return el ? el.value : "";
+        };
+        const setTxt = (id, txt) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = txt || "-";
+        };
 
         setTxt("summary-name", getVal("fullname"));
         setTxt("summary-phone", getVal("phone"));
         setTxt("summary-address", getVal("address"));
-        
+
         const emailVal = getVal("email");
         const emailItem = document.getElementById("summary-email-item");
-        if(emailItem) {
-            if(emailVal.trim()) {
+        if (emailItem) {
+            if (emailVal.trim()) {
                 setTxt("summary-email", emailVal);
                 emailItem.style.display = "flex";
             } else {
@@ -582,14 +606,29 @@ import { STRAPI_HOST } from "~/services/consts";
 
         const dateVal = getVal("delivery-date");
         if (dateVal) {
-             setTxt("summary-date", new Date(dateVal).toLocaleString("es-CO", { dateStyle: "medium", timeStyle: "short" }));
+            setTxt(
+                "summary-date",
+                new Date(dateVal).toLocaleString("es-CO", {
+                    dateStyle: "medium",
+                    timeStyle: "short",
+                }),
+            );
         } else {
-             setTxt("summary-date", "-");
+            setTxt("summary-date", "-");
         }
 
-        const shippingEl = document.querySelector('input[name="shipping"]:checked');
+        const shippingEl = document.querySelector(
+            'input[name="shipping"]:checked',
+        );
         const shippingVal = shippingEl ? shippingEl.value : "";
-        setTxt("summary-shipping", shippingVal === "nacional" ? "Nacional" : (shippingVal === "internacional" ? "Internacional" : "-"));
+        setTxt(
+            "summary-shipping",
+            shippingVal === "nacional"
+                ? "Nacional"
+                : shippingVal === "internacional"
+                  ? "Internacional"
+                  : "-",
+        );
 
         const paymentVal = getVal("payment");
         const paymentMap = {
@@ -609,12 +648,15 @@ import { STRAPI_HOST } from "~/services/consts";
         const progress = (currentStep / totalSteps) * 100;
         progressFill.style.width = `${progress}%`;
 
-        document.querySelectorAll(".step-indicator").forEach((indicator, index) => {
-            const stepNum = index + 1;
-            indicator.classList.remove("active", "completed");
-            if (stepNum < currentStep) indicator.classList.add("completed");
-            else if (stepNum === currentStep) indicator.classList.add("active");
-        });
+        document
+            .querySelectorAll(".step-indicator")
+            .forEach((indicator, index) => {
+                const stepNum = index + 1;
+                indicator.classList.remove("active", "completed");
+                if (stepNum < currentStep) indicator.classList.add("completed");
+                else if (stepNum === currentStep)
+                    indicator.classList.add("active");
+            });
     }
 
     function updateButtons() {
@@ -631,32 +673,42 @@ import { STRAPI_HOST } from "~/services/consts";
 
     function showStep(step) {
         document.querySelectorAll(".form-step").forEach((stepEl, index) => {
-            stepEl.classList.toggle("active", (index + 1) === step);
+            stepEl.classList.toggle("active", index + 1 === step);
         });
         updateProgress();
         updateButtons();
         updateSummary();
-        document.querySelector(".form-container")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        document
+            .querySelector(".form-container")
+            ?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
     function validateStep(step) {
-        const currentStepEl = document.querySelector(`.form-step[data-step="${step}"]`);
+        const currentStepEl = document.querySelector(
+            `.form-step[data-step="${step}"]`,
+        );
         if (!currentStepEl) return true;
-        
+
         let isValid = true;
-        const inputs = currentStepEl.querySelectorAll("input[required], textarea[required], select[required]");
-        
+        const inputs = currentStepEl.querySelectorAll(
+            "input[required], textarea[required], select[required]",
+        );
+
         inputs.forEach((input) => {
             const formGroup = input.closest(".form-group");
             if (input.type === "radio") {
                 const groupName = input.name;
-                const checked = currentStepEl.querySelector(`input[name="${groupName}"]:checked`);
-                const radioGroup = formGroup || input.closest(".radio-group")?.closest(".form-group"); // fallback
+                const checked = currentStepEl.querySelector(
+                    `input[name="${groupName}"]:checked`,
+                );
+                const radioGroup =
+                    formGroup ||
+                    input.closest(".radio-group")?.closest(".form-group"); // fallback
                 if (!checked) {
-                    if(radioGroup) radioGroup.classList.add("has-error");
+                    if (radioGroup) radioGroup.classList.add("has-error");
                     isValid = false;
                 } else {
-                     if(radioGroup) radioGroup.classList.remove("has-error");
+                    if (radioGroup) radioGroup.classList.remove("has-error");
                 }
             } else {
                 if (!input.value.trim()) {
@@ -673,7 +725,7 @@ import { STRAPI_HOST } from "~/services/consts";
     function initPaymentDropdown() {
         const customSelect = document.getElementById("payment-select");
         if (!customSelect) return;
-        
+
         const trigger = customSelect.querySelector(".select-trigger");
         const options = customSelect.querySelectorAll(".select-option");
         const input = document.getElementById("payment");
@@ -681,30 +733,36 @@ import { STRAPI_HOST } from "~/services/consts";
 
         // Remove old listeners to avoid duplicates if any (though initPage creates new ones, the element is fresh if page loaded, but safe to be sure)
         // Actually, replacing the element or cloning it is the only way to remove anon listeners, but Astro ViewTransitions swaps the body, so elements are new.
-        
-        trigger?.addEventListener("click", () => customSelect.classList.toggle("open"));
 
-        options.forEach(option => {
+        trigger?.addEventListener("click", () =>
+            customSelect.classList.toggle("open"),
+        );
+
+        options.forEach((option) => {
             option.addEventListener("click", () => {
                 const val = option.getAttribute("data-value");
                 if (input) input.value = val;
                 saveFormData();
 
                 if (placeholder) {
-                    placeholder.textContent = option.querySelector("strong")?.textContent || "";
+                    placeholder.textContent =
+                        option.querySelector("strong")?.textContent || "";
                     placeholder.classList.add("selected");
                 }
-                options.forEach(o => o.classList.remove("selected"));
+                options.forEach((o) => o.classList.remove("selected"));
                 option.classList.add("selected");
                 customSelect.classList.remove("open");
-                customSelect.closest(".form-group")?.classList.remove("has-error");
-                
+                customSelect
+                    .closest(".form-group")
+                    ?.classList.remove("has-error");
+
                 if (currentStep === 3) updateSummary();
             });
         });
 
         document.addEventListener("click", (e) => {
-            if (!customSelect.contains(e.target)) customSelect.classList.remove("open");
+            if (!customSelect.contains(e.target))
+                customSelect.classList.remove("open");
         });
     }
 
@@ -723,7 +781,7 @@ import { STRAPI_HOST } from "~/services/consts";
         if (deliveryInput) {
             const tmr = new Date();
             tmr.setDate(tmr.getDate() + 1);
-            tmr.setHours(0,0,0,0);
+            tmr.setHours(0, 0, 0, 0);
             deliveryInput.min = tmr.toISOString().slice(0, 16);
         }
 
@@ -781,10 +839,15 @@ import { STRAPI_HOST } from "~/services/consts";
                 const address = getVal("address");
                 const deliveryDate = getVal("delivery-date");
                 const payment = getVal("payment");
-                const shipping = document.querySelector('input[name="shipping"]:checked')?.value;
+                const shipping = document.querySelector(
+                    'input[name="shipping"]:checked',
+                )?.value;
 
                 const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-                const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+                const total = cart.reduce(
+                    (sum, item) => sum + item.price * item.quantity,
+                    0,
+                );
 
                 const paymentMap = {
                     efectivo: "Efectivo contra entrega",
@@ -795,48 +858,68 @@ import { STRAPI_HOST } from "~/services/consts";
                 };
 
                 // WhatsApp Logic
-                const fechaColombia = (date:Date) => new Intl.DateTimeFormat("es-CO", {
-                timeZone: "America/Bogota",
-                dateStyle: "full",
-                timeStyle: "short"
-                }).format(date);
+                const fechaColombia = (date: Date) =>
+                    new Intl.DateTimeFormat("es-CO", {
+                        timeZone: "America/Bogota",
+                        dateStyle: "full",
+                        timeStyle: "short",
+                    }).format(date);
 
                 const reference = `ORD-${Date.now()}`;
-                const productLines = cart.map(item => `• *${item.quantity}x* ${item.name} - ${formatPriceCOP(item.price * item.quantity)}`).join("\n");
-                
+                const productLines = cart
+                    .map(
+                        (item) =>
+                            `• *${item.quantity}x* ${item.name} - ${formatPriceCOP(item.price * item.quantity)}`,
+                    )
+                    .join("\n");
+
                 const message = `*Nuevo Pedido*\nRef: ${reference}\nCliente: ${fullname}\nTel: ${phone}\nDirección: ${address}\nPago: ${paymentMap[payment] || payment}\nEntregar: ${fechaColombia(new Date(deliveryDate + "Z"))}\n\n*Productos:*\n${productLines}\n\n*Total: ${formatPriceCOP(total)}*`;
-                
+
                 // Save Order Local
-                const order = { timestamp: Date.now(), fullname, phone, address, total, products: cart, reference };
-                const orders = JSON.parse(localStorage.getItem(ORDERS_KEY) || "[]");
+                const order = {
+                    timestamp: Date.now(),
+                    fullname,
+                    phone,
+                    address,
+                    total,
+                    products: cart,
+                    reference,
+                };
+                const orders = JSON.parse(
+                    localStorage.getItem(ORDERS_KEY) || "[]",
+                );
                 orders.push(order);
                 localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
 
                 // Open WhatsApp
                 const COMPANY_PHONE = "573024512965";
-                window.open(`https://wa.me/${COMPANY_PHONE}?text=${encodeURIComponent(message)}`, "_blank");
+                window.open(
+                    `https://wa.me/${COMPANY_PHONE}?text=${encodeURIComponent(message)}`,
+                    "_blank",
+                );
 
                 // Cleanup
                 clearSavedData();
                 localStorage.removeItem("cart");
                 window.dispatchEvent(new Event("cartUpdated"));
-                
+
                 if (successModal) successModal.classList.add("show");
             };
         }
 
         // Modal Listeners
         const btnHome = document.getElementById("btn-home");
-        if(btnHome) btnHome.onclick = () => window.location.href = "/";
-        
+        if (btnHome) btnHome.onclick = () => (window.location.href = "/");
+
         const btnClose = document.getElementById("btn-close-modal");
-        if(btnClose) btnClose.onclick = () => {
-             if(successModal) successModal.classList.remove("show");
-             window.location.reload();
-        };
+        if (btnClose)
+            btnClose.onclick = () => {
+                if (successModal) successModal.classList.remove("show");
+                window.location.reload();
+            };
 
         // Step Indicators
-        document.querySelectorAll(".step-indicator").forEach(ind => {
+        document.querySelectorAll(".step-indicator").forEach((ind) => {
             ind.onclick = () => {
                 const target = parseInt(ind.getAttribute("data-step") || "1");
                 if (target < currentStep) {
@@ -844,17 +927,18 @@ import { STRAPI_HOST } from "~/services/consts";
                     saveCurrentStep();
                     showStep(currentStep);
                 } else if (target > currentStep && validateStep(currentStep)) {
-                     // For simplicity, allowed to go next if current valid
-                     currentStep++; 
-                     saveCurrentStep();
-                     showStep(currentStep);
+                    // For simplicity, allowed to go next if current valid
+                    currentStep++;
+                    saveCurrentStep();
+                    showStep(currentStep);
                 }
             };
         });
-        
+
         // Remove error classes on input
         form.oninput = (e) => {
-            if (e.target.closest(".form-group")) e.target.closest(".form-group").classList.remove("has-error");
+            if (e.target.closest(".form-group"))
+                e.target.closest(".form-group").classList.remove("has-error");
             if (currentStep === 3) updateSummary();
         };
 
@@ -869,7 +953,6 @@ import { STRAPI_HOST } from "~/services/consts";
         if (!hasCartProducts()) showCartEmptyWarning();
         else if (currentStep === 3) renderCartSummary();
     });
-
 </script>
 
 <style>

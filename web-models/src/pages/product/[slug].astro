@@ -17,18 +17,25 @@ if (!product) return "Producto no encontrado";
 
 <script>
   function setupSelection() {
-    const buttonSendCart = document.querySelector(".add-to-cart-btn");
-    const product = JSON.parse(buttonSendCart?.dataset?.product);
+    const buttonSendCart = document.querySelector(
+      ".add-to-cart-btn",
+    ) as HTMLButtonElement | null;
+    const productData = buttonSendCart?.dataset?.product;
+    const product = productData ? JSON.parse(productData) : null;
     const selectedSize = document.querySelectorAll(".size-btn");
     const selectedColor = document.querySelectorAll(".color-btn");
 
+    if (!buttonSendCart || !product) return;
+
     let valueSize, valueColor;
     function updateDataset() {
-      buttonSendCart.dataset.product = JSON.stringify(product);
+      if (buttonSendCart) {
+        buttonSendCart.dataset.product = JSON.stringify(product);
+      }
       // console.log(product);
     }
-    function selectSize(e) {
-      const clicked = e.currentTarget;
+    function selectSize(e: Event) {
+      const clicked = e.currentTarget as HTMLButtonElement;
       selectedSize.forEach((s) => s.classList.remove("active"));
       clicked.classList.add("active");
       valueSize = clicked.innerText.trim();
@@ -36,8 +43,8 @@ if (!product) return "Producto no encontrado";
       updateDataset();
     }
 
-    function selectColor(e) {
-      const clicked = e.currentTarget;
+    function selectColor(e: Event) {
+      const clicked = e.currentTarget as HTMLButtonElement;
       selectedColor.forEach((s) => s.classList.remove("active"));
       clicked.classList.add("active");
       valueColor = clicked.innerText.trim();
@@ -72,8 +79,12 @@ if (!product) return "Producto no encontrado";
       quantity: number;
     };
 
-    const addToCartBtn = document.querySelector(".add-to-cart-btn");
-    const quantityDisplay = document.querySelector("#counter-quantity");
+    const addToCartBtn = document.querySelector(
+      ".add-to-cart-btn",
+    ) as HTMLButtonElement | null;
+    const quantityDisplay = document.querySelector(
+      "#counter-quantity",
+    ) as HTMLElement | null;
 
     // 1) Función para actualizar el carrito en localStorage
     // 1) Función para actualizar el carrito en localStorage
@@ -119,10 +130,11 @@ if (!product) return "Producto no encontrado";
     // 2) Click del botón → actualiza LS y luego dispara evento
     addToCartBtn?.addEventListener("click", () => {
       const quantity = parseInt(quantityDisplay?.innerText || "1");
-      const product = JSON.parse(addToCartBtn.dataset.product) as Product;
+      const productData = addToCartBtn.dataset.product;
+      const product = productData ? (JSON.parse(productData) as Product) : null;
 
       // Validation: Check if size and color are selected
-      if (!product.size || !product.color) {
+      if (!product || !product.size || !product.color) {
         window.dispatchEvent(
           new CustomEvent("showToast", {
             detail: {
@@ -269,7 +281,10 @@ if (!product) return "Producto no encontrado";
   });
 </script>
 
-<BaseLayout title={`${product?.name} - Tienda de Moda`}>
+<BaseLayout
+  title={`${product?.name} | Moda y Estilo Exclusivo | Moncada Models`}
+  description={`Compra ${product?.name} en Moncada Models. ${product?.description?.slice(0, 150)}... Descubre la mejor calidad en moda con envíos a todo el país. ¡Haz tu pedido ahora!`}
+>
   <section class="product-container">
     <div class="product-wrapper">
       <article class="product-gallery">
@@ -405,6 +420,49 @@ if (!product) return "Producto no encontrado";
     </div>
   </section>
   <ProductRelationated product={product} />
+
+  <!-- Features and Style SEO Section -->
+  <section class="product-features-seo">
+    <div class="features-container">
+      <div class="features-header">
+        <h2>Características y Estilo</h2>
+        <p>
+          Por qué el <strong>{product?.name}</strong> es la elección perfecta para
+          ti.
+        </p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-item">
+          <div class="feature-icon">✨</div>
+          <h3>Diseño Exclusivo</h3>
+          <p>
+            Esta prenda ha sido diseñada pensando en la mujer moderna que busca
+            destacar. El <strong>{product?.name}</strong> combina elegancia y comodidad,
+            ideal para elevar cualquier outfit.
+          </p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🧵</div>
+          <h3>Materiales Premium</h3>
+          <p>
+            Utilizamos solo las mejores telas para garantizar durabilidad y un
+            tacto suave sobre la piel. La calidad es nuestra prioridad en
+            Moncada Models.
+          </p>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon">🛍️</div>
+          <h3>Compra Fácil</h3>
+          <p>
+            Agrega al carrito y finaliza tu pedido en pocos pasos. Nos
+            encargamos de que tu <strong>{product?.name}</strong> llegue a la puerta
+            de tu casa de forma segura.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <div class="category-container">
     <AnotherCategories slug={slug} />
   </div>
@@ -677,6 +735,71 @@ if (!product) return "Producto no encontrado";
   .details-box p {
     margin: 0;
     color: #8a7a72;
+  }
+
+  /* SEO Features Section */
+  .product-features-seo {
+    background: white;
+    padding: 5rem 2rem;
+    margin: 4rem 0;
+    border-radius: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+  }
+
+  .features-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .features-header {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+
+  .features-header h2 {
+    font-family: "Playfair Display", serif;
+    font-size: 2.5rem;
+    color: #5a4a42;
+    margin-bottom: 1rem;
+  }
+
+  .features-header p {
+    color: #8a7a72;
+    font-size: 1.1rem;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 3rem;
+  }
+
+  .feature-item {
+    text-align: center;
+    padding: 2rem;
+    transition: transform 0.3s ease;
+  }
+
+  .feature-item:hover {
+    transform: translateY(-8px);
+  }
+
+  .feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    display: inline-block;
+  }
+
+  .feature-item h3 {
+    font-size: 1.4rem;
+    color: #5a4a42;
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+
+  .feature-item p {
+    color: #8a7a72;
+    line-height: 1.7;
   }
 
   @media (max-width: 1135px) {

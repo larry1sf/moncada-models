@@ -1,4 +1,5 @@
-<section class="newsletter" id="newsletter">
+<span id="newsletter"></span>
+<section class="newsletter">
   <div class="newsletter-bg"></div>
   <div class="newsletter-content">
     <div class="newsletter-text">
@@ -21,7 +22,7 @@
 
 <script>
   document.addEventListener("astro:page-load", () => {
-    const newsletter = document.getElementById("newsletter");
+    const newsletter = document.querySelector(".newsletter") as HTMLElement;
 
     if (newsletter) {
       newsletter.addEventListener("mousemove", (e) => {

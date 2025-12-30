@@ -21,7 +21,10 @@ const filteredProducts = products.filter(
 );
 ---
 
-<BaseLayout title={`${category.title} - Tienda de Blusas`}>
+<BaseLayout
+  title={`${category.title} - Colección Exclusiva de Moda Femenina | Moncada Models`}
+  description={`Descubre nuestra colección de ${category.title} en Moncada Models. Diseños exclusivos, telas de alta calidad y lo último en tendencias para resaltar tu estilo único. Explora ${filteredProducts.length} productos increíbles.`}
+>
   <div class="category-container">
     <section class="category-hero">
       <div class="hero-image">
@@ -52,6 +55,21 @@ const filteredProducts = products.filter(
     <section class="products-section">
       <div class="products-wrapper">
         <ProductList products={filteredProducts} />
+      </div>
+    </section>
+
+    <!-- SEO Content Section -->
+    <section class="category-seo-content">
+      <div class="seo-grid">
+        <div class="seo-card">
+          <h3>Compra con Confianza</h3>
+          <p>
+            Disfruta de una experiencia de compra segura y personalizada.
+            Realiza tu pedido fácilmente y recibe asesoría directa a través de
+            WhatsApp. ¡Renueva tu clóset hoy mismo con lo mejor de la moda
+            femenina en Moncada Models!
+          </p>
+        </div>
       </div>
     </section>
 
@@ -210,6 +228,45 @@ const filteredProducts = products.filter(
     border-color: #c4a47a;
     background: linear-gradient(135deg, #f5f1e8 0%, #ede8e0 100%);
     transform: translateY(-2px);
+  }
+
+  /* SEO Content Styles */
+  .category-seo-content {
+    margin-bottom: 4rem;
+    padding: 3rem 0;
+    border-top: 1px solid rgba(196, 164, 122, 0.15);
+  }
+
+  .seo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+
+  .seo-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 1.25rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(232, 213, 196, 0.3);
+    transition: transform 0.3s ease;
+  }
+
+  .seo-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .seo-card h3 {
+    color: #5a4a42;
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    font-family: "Playfair Display", serif;
+  }
+
+  .seo-card p {
+    color: #8a7a72;
+    line-height: 1.6;
+    font-size: 0.95rem;
   }
 
   @media (max-width: 768px) {
