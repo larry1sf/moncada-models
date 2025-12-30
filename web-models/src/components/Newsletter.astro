@@ -9,12 +9,7 @@
       </p>
     </div>
     <form class="newsletter-form">
-      <input
-        type="email"
-        placeholder="tu@email.com"
-        required
-        class="email-input"
-      />
+      <input type="text" placeholder="Tu Nombre" required class="name-input" />
       <button type="submit" class="subscribe-btn"> Suscribirse 🎁 </button>
     </form>
   </div>
@@ -34,6 +29,20 @@
         newsletter.style.setProperty("--mouse-y", `${y}px`);
       });
     }
+  });
+</script>
+
+<script>
+  const form = document.querySelector(".newsletter-form") as HTMLFormElement;
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const name = document.querySelector(".name-input") as HTMLInputElement;
+    if (!name.value) return;
+
+    window.open(
+      `https://wa.me/573024512965?text=Hola%20${name.value}%20me%20gustaria%20estar%20al%20tanto%20de%20los%20nuevos%20productos%20y%20ofertas`,
+      "_blank",
+    );
   });
 </script>
 
@@ -103,7 +112,7 @@
     gap: 0.75rem;
   }
 
-  .email-input {
+  .name-input {
     flex: 1;
     padding: 0.85rem 1.2rem;
     border: 1px solid var(--color-border);
@@ -115,14 +124,14 @@
     transition: var(--transition);
   }
 
-  .email-input:focus {
+  .name-input:focus {
     outline: none;
     background: var(--color-bg-dark);
     border-color: var(--color-accent);
     box-shadow: 0 0 0 3px rgba(196, 164, 122, 0.1);
   }
 
-  .email-input::placeholder {
+  .name-input::placeholder {
     color: var(--color-text-light);
   }
 
