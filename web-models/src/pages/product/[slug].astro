@@ -1,16 +1,20 @@
 ---
-export const prerender = false;
 import Image from "astro/components/Image.astro";
 import BaseLayout from "~/layouts/BaseLayout.astro";
-import { getProducts } from "~/services/get-products";
 import Toast from "~/components/Toast.astro";
 import AnotherCategories from "~/components/AnotherCategories.astro";
 import ProductRelationated from "~/components/ProductRelationated.astro";
+import { products } from "~/data/products";
 
 const { slug } = Astro.params;
 if (!slug) return "No tienes un slug";
-
-const { data: products } = await getProducts();
+export const getStaticPaths = async () => {
+  return products.map((product) => ({
+    params: {
+      slug: product.slug,
+    },
+  }));
+};
 const product = products.find((product) => product.slug === slug);
 if (!product) return "Producto no encontrado";
 ---
@@ -420,48 +424,6 @@ if (!product) return "Producto no encontrado";
     </div>
   </section>
   <ProductRelationated product={product} />
-
-  <!-- Features and Style SEO Section -->
-  <section class="product-features-seo">
-    <div class="features-container">
-      <div class="features-header">
-        <h2>Características y Estilo</h2>
-        <p>
-          Por qué el <strong>{product?.name}</strong> es la elección perfecta para
-          ti.
-        </p>
-      </div>
-      <div class="features-grid">
-        <div class="feature-item">
-          <div class="feature-icon">✨</div>
-          <h3>Diseño Exclusivo</h3>
-          <p>
-            Esta prenda ha sido diseñada pensando en la mujer moderna que busca
-            destacar. El <strong>{product?.name}</strong> combina elegancia y comodidad,
-            ideal para elevar cualquier outfit.
-          </p>
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon">🧵</div>
-          <h3>Materiales Premium</h3>
-          <p>
-            Utilizamos solo las mejores telas para garantizar durabilidad y un
-            tacto suave sobre la piel. La calidad es nuestra prioridad en
-            Moncada Models.
-          </p>
-        </div>
-        <div class="feature-item">
-          <div class="feature-icon">🛍️</div>
-          <h3>Compra Fácil</h3>
-          <p>
-            Agrega al carrito y finaliza tu pedido en pocos pasos. Nos
-            encargamos de que tu <strong>{product?.name}</strong> llegue a la puerta
-            de tu casa de forma segura.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
 
   <div class="category-container">
     <AnotherCategories slug={slug} />

@@ -1,7 +1,5 @@
 ---
-export const prerender = true;
 import BaseLayout from "~/layouts/BaseLayout.astro";
-import { STRAPI_HOST } from "~/services/consts";
 ---
 
 <BaseLayout
@@ -32,7 +30,7 @@ import { STRAPI_HOST } from "~/services/consts";
             </div>
 
             <!-- Form Steps -->
-            <form id="order-form" class="order-form" data-host={STRAPI_HOST}>
+            <form id="order-form" class="order-form">
                 <!-- Step 1: Personal Data -->
                 <div class="form-step active" data-step="1">
                     <div class="step-header">
@@ -367,11 +365,12 @@ import { STRAPI_HOST } from "~/services/consts";
 </BaseLayout>
 
 <script>
-    import { formatPriceCOP, posts } from "~/services/consts";
+    import { formatPriceCOP } from "~/services/consts";
 
     // Strapi Host
-    const STRAPI_HOST =
-        document.querySelector("form.order-form")?.dataset?.host;
+    const STRAPI_HOST = (
+        document.querySelector("header.main-header") as HTMLElement
+    )?.dataset?.strapi?.host;
 
     // LocalStorage keys
     const STORAGE_KEY = "orderFormData";
