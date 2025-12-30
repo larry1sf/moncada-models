@@ -5,7 +5,8 @@ import { products } from "~/data/products";
 const novedades = products.reverse().slice(0, 6);
 ---
 
-<section id="novedades" class="novedades-section">
+<span id="novedades"></span>
+<section class="novedades-section">
     <div class="section-header">
         <h2>Novedades</h2>
         <p>Descubre las últimas tendencias en moda</p>
@@ -25,3 +26,30 @@ const novedades = products.reverse().slice(0, 6);
         }
     </div>
 </section>
+<style>
+    .novedades-section {
+        max-width: 1200px;
+        position: relative;
+        z-index: 10;
+        padding-top: 5rem;
+    }
+
+    .novedades-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        animation: fadeIn 0.6s ease-out;
+    }
+    @media (max-width: 768px) {
+        .novedades-grid {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+    }
+    @media (max-width: 640px) {
+        .novedades-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+    }
+</style>
