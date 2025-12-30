@@ -14,15 +14,7 @@ const novedades = products.reverse().slice(0, 6);
     <div class="novedades-grid">
         {
             novedades.length &&
-                novedades.map(({ name, slug, description, price, images }) => (
-                    <CardsProducts
-                        slug={slug}
-                        title={name}
-                        description={description}
-                        price={price}
-                        images={images}
-                    />
-                ))
+                novedades.map((cProducts) => <CardsProducts {...cProducts} />)
         }
     </div>
 </section>

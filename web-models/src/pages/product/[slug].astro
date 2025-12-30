@@ -8,7 +8,7 @@ import { products } from "~/data/products";
 
 const { slug } = Astro.params;
 if (!slug) return "No tienes un slug";
-export const getStaticPaths = async () => {
+export const getStaticPaths = () => {
   return products.map((product) => ({
     params: {
       slug: product.slug,

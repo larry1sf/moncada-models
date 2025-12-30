@@ -5,12 +5,12 @@ import type { ProductImage } from "~/types/product";
 
 interface Props {
     slug: string;
-    title: string;
+    name: string;
     description: string;
     price: number | string;
     images: ProductImage[];
 }
-const { images, slug, title, description, price } = Astro.props;
+const { images, slug, name, description, price } = Astro.props;
 // crear la funcionalidad de los slides si es un array de urls.
 let image = images.length
     ? images[0].url
@@ -19,7 +19,9 @@ let image = images.length
 
 <a href={`/product/${slug}`} class="product-card">
     <div class="product-image">
-        <div class="product-badge">Nuevo</div>
+        <div class="product-badge">
+            {Number(price) > 45000 ? "Nuevo" : "Oferta"}
+        </div>
         <Image
             width={300}
             height={300}
@@ -30,7 +32,7 @@ let image = images.length
     </div>
     <div class="product-info">
         <div>
-            <h3>{title ?? "Chaqueta Premium"}</h3>
+            <h3>{name ?? "Chaqueta Premium"}</h3>
             <p class="product-description">
                 {description ?? "Elegancia y calidez"}
             </p>

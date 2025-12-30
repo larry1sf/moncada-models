@@ -879,7 +879,13 @@ import BaseLayout from "~/layouts/BaseLayout.astro";
                     timestamp: Date.now(),
                     fullname,
                     phone,
+                    email,
                     address,
+                    deliveryDate,
+                    shipping,
+                    payment:
+                        paymentMap[payment as keyof typeof paymentMap] ||
+                        payment,
                     total,
                     products: cart,
                     reference,

@@ -193,7 +193,9 @@ const { title, description = siteInfo.meta.description } = Astro.props;
                                             </span>
                                             <span class="dropdown-item-count">
                                                 {category.productCount}{" "}
-                                                productos
+                                                {category.productCount === 1
+                                                    ? "producto"
+                                                    : "productos"}
                                             </span>
                                         </a>
                                     ))

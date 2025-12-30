@@ -1,19 +1,19 @@
 ---
 import type { ProductAttributes } from "~/types/product";
-import ProductCard from "~/components/CardsProducts.astro";
+import CardsProducts from "~/components/CardsProducts.astro";
 import { getProductsCategories } from "~/services/get-productsCategories";
+
 interface Props {
     product: ProductAttributes;
 }
 
 const { product } = Astro.props;
-
 const productCategory = product.product_category.slug;
 let { data: relatedProducts } = await getProductsCategories({
     productCategory,
 });
 relatedProducts = relatedProducts.filter(({ slug }) => slug !== product.slug);
-if(!relatedProducts.length) return;
+if (!relatedProducts.length) return;
 ---
 
 <section class="product-container">
@@ -25,19 +25,11 @@ if(!relatedProducts.length) return;
     </p>
     <div class="product-grid" id="related-products-grid">
         {
-            relatedProducts?.map(
-                ({ name, description, slug, price, images }) => (
-                    <div class="product-item">
-                        <ProductCard
-                            title={name}
-                            description={description}
-                            slug={slug}
-                            price={price}
-                            images={images}
-                        />
-                    </div>
-                ),
-            )
+            relatedProducts?.map((cProducts) => (
+                <div class="product-item">
+                    <CardsProducts {...cProducts} />
+                </div>
+            ))
         }
     </div>
 
