@@ -3,12 +3,12 @@ import { VERCEL_HOST } from "~/services/consts";
 export const siteInfo = {
     name: "Moncada Models",
     meta: {
-        logo: `${VERCEL_HOST}/ico.webp`,
+        logo: `${VERCEL_HOST}/ico.svg`,
         keywords: "tienda, moda, ropa, ropa de moda, ropa de mujer",
         author: "Moncada Models : Larry Ceballos Moncada",
         description: "Descubre las últimas tendencias en moda femenina y masculina en Moncada Models. Tu tienda online de ropa exclusiva, novedades y estilo único con envíos a todo el país.",
         url: VERCEL_HOST,
-        image: `${VERCEL_HOST}/meta-image.avif`,
+        image: `${VERCEL_HOST}/hero-pedidos.webp`,
     },
     contact: {
         phone: "+57 302 451 2965",
