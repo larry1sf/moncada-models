@@ -44,7 +44,16 @@ if (!product) return "Producto no encontrado";
       clicked.classList.add("active");
       valueSize = clicked.innerText.trim();
       product.size = valueSize;
-      updateDataset();
+
+      // Update both buttons
+      const addToCartBtn = document.querySelector(
+        ".add-to-cart-btn",
+      ) as HTMLButtonElement | null;
+      const buyNowBtn = document.querySelector(
+        ".buy-now-btn",
+      ) as HTMLButtonElement | null;
+      if (addToCartBtn) addToCartBtn.dataset.product = JSON.stringify(product);
+      if (buyNowBtn) buyNowBtn.dataset.product = JSON.stringify(product);
     }
 
     function selectColor(e: Event) {
@@ -53,7 +62,16 @@ if (!product) return "Producto no encontrado";
       clicked.classList.add("active");
       valueColor = clicked.innerText.trim();
       product.color = valueColor;
-      updateDataset();
+
+      // Update both buttons
+      const addToCartBtn = document.querySelector(
+        ".add-to-cart-btn",
+      ) as HTMLButtonElement | null;
+      const buyNowBtn = document.querySelector(
+        ".buy-now-btn",
+      ) as HTMLButtonElement | null;
+      if (addToCartBtn) addToCartBtn.dataset.product = JSON.stringify(product);
+      if (buyNowBtn) buyNowBtn.dataset.product = JSON.stringify(product);
     }
 
     selectedColor.forEach((color) => {
@@ -173,6 +191,49 @@ if (!product) return "Producto no encontrado";
           },
         }),
       );
+    });
+
+    const buyNowBtn = document.querySelector(
+      ".buy-now-btn",
+    ) as HTMLButtonElement | null;
+
+    buyNowBtn?.addEventListener("click", () => {
+      const quantity = parseInt(quantityDisplay?.innerText || "1");
+      const productData = buyNowBtn.dataset.product;
+      const product = productData ? (JSON.parse(productData) as Product) : null;
+
+      // Validation
+      if (!product || !product.size || !product.color) {
+        window.dispatchEvent(
+          new CustomEvent("showToast", {
+            detail: {
+              message: "Por favor selecciona una talla y un color",
+            },
+          }),
+        );
+        return;
+      }
+
+      const cartBefore = JSON.parse(
+        localStorage.getItem("cart") || "[]",
+      ) as CartItem[];
+      const wasEmpty = cartBefore.length === 0;
+
+      // Add to cart
+      addToCart(product, quantity);
+
+      // Notify update
+      window.dispatchEvent(
+        new CustomEvent("cartUpdated", {
+          detail: { product, quantity },
+        }),
+      );
+
+      if (wasEmpty) {
+        window.location.href = "/pedidos/formulario";
+      } else {
+        document.dispatchEvent(new Event("openCartModal"));
+      }
     });
   }
 
@@ -384,6 +445,63 @@ if (!product) return "Producto no encontrado";
         }
 
         <div class="actions">
+          <div class="primary-actions">
+            <div class="quantity-container">
+              <button
+                class="quantity-btn"
+                type="button"
+                aria-label="Disminuir cantidad"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  ><line x1="5" y1="12" x2="19" y2="12"></line></svg
+                >
+              </button>
+              <span id="counter-quantity" aria-live="polite">1</span>
+              <button
+                class="quantity-btn"
+                type="button"
+                aria-label="Aumentar cantidad"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  ><line x1="12" y1="5" x2="12" y2="19"></line><line
+                    x1="5"
+                    y1="12"
+                    x2="19"
+                    y2="12"></line></svg
+                >
+              </button>
+            </div>
+            <button
+              data-product={JSON.stringify({
+                name: product.name,
+                size: null,
+                color: null,
+                image: product.images[0].url,
+                price: product.price,
+                quantity: 1,
+              })}
+              class="add-to-cart-btn"
+              disabled={!product?.isActive}
+            >
+              {product?.isActive ? "Añadir al Carrito" : "Agotado"}
+            </button>
+          </div>
           <button
             data-product={JSON.stringify({
               name: product.name,
@@ -393,20 +511,11 @@ if (!product) return "Producto no encontrado";
               price: product.price,
               quantity: 1,
             })}
-            class="add-to-cart-btn"
+            class="buy-now-btn"
             disabled={!product?.isActive}
           >
-            {product?.isActive ? "Añadir al Carrito" : "Agotado"}
+            Comprar ahora
           </button>
-          <div class="quantity-container">
-            <button class="quantity-btn" type="button">
-              <i>-</i>
-            </button>
-            <span id="counter-quantity">1</span>
-            <button class="quantity-btn" type="button">
-              <i>+</i>
-            </button>
-          </div>
         </div>
       </article>
     </div>
@@ -610,47 +719,69 @@ if (!product) return "Producto no encontrado";
   .actions {
     margin-top: auto;
     display: flex;
-    align-items: center;
+    flex-direction: column;
     gap: 1rem;
+    width: 100%;
+    max-width: 500px;
   }
+
+  .primary-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    width: 100%;
+  }
+
   .actions .quantity-container {
-    background-color: var(--color-text-dark);
-    height: 100%;
-    padding: 0 1.2rem;
+    background-color: #fcfbf9;
+    border: 1px solid #e8d5c4;
+    height: 54px;
+    padding: 0 0.8rem;
     display: flex;
     align-items: center;
-    gap: 1.2rem;
+    gap: 1rem;
     border-radius: 1rem;
+    box-shadow: 0 2px 8px rgba(90, 74, 66, 0.05);
+    flex-shrink: 0;
   }
   #counter-quantity {
-    font-weight: 700;
-    color: var(--color-cream);
-    font-size: 1.2rem;
+    font-weight: 600;
+    color: #5a4a42;
+    font-size: 1.1rem;
     min-width: 2rem;
     text-align: center;
+    font-variant-numeric: tabular-nums;
   }
   .actions .quantity-container .quantity-btn {
     width: 2rem;
     height: 2rem;
-    border-radius: 50%;
-    border: 1px solid #e8d5c4;
+    border-radius: 0.75rem;
+    border: none;
     background: white;
-    font-weight: 600;
-    color: var(--color-text-dark);
+    color: #5a4a42;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   }
   .quantity-btn:hover {
-    background: #e8ddd2;
-    color: #5a4a42;
+    background: #5a4a42;
+    color: white;
+    transform: scale(1.05);
+  }
+  .quantity-btn:active {
+    transform: scale(0.95);
+  }
+  .quantity-btn:focus-visible {
+    outline: 2px solid #c4a47a;
+    outline-offset: 2px;
   }
   .add-to-cart-btn {
-    width: 100%;
-    padding: 1.2rem;
+    flex-grow: 1;
+    height: 54px;
+    padding: 0 1.5rem;
     background: linear-gradient(135deg, #5a4a42 0%, #4a3a32 100%);
     color: white;
     border: none;
@@ -659,18 +790,57 @@ if (!product) return "Producto no encontrado";
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 8px 20px rgba(90, 74, 66, 0.2);
+    box-shadow: 0 8px 20px rgba(90, 74, 66, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .buy-now-btn {
+    width: 100%;
+    height: 54px;
+    background: white;
+    color: #5a4a42;
+    border: 2px solid #5a4a42;
+    border-radius: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .add-to-cart-btn:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 12px 25px rgba(90, 74, 66, 0.3);
+    box-shadow: 0 12px 25px rgba(90, 74, 66, 0.25);
   }
 
-  .add-to-cart-btn:disabled {
+  .buy-now-btn:hover:not(:disabled) {
+    background: #fcfbf9;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(90, 74, 66, 0.08);
+  }
+
+  .add-to-cart-btn:disabled,
+  .buy-now-btn:disabled {
     background: #e8ddd2;
+    border-color: #e8ddd2;
+    color: #a89a92;
     cursor: not-allowed;
     box-shadow: none;
+    transform: none;
+  }
+
+  @media (max-width: 500px) {
+    .primary-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .actions .quantity-container {
+      justify-content: center;
+    }
   }
 
   .details-box {
