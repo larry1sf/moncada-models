@@ -775,6 +775,7 @@ if (!product) return "Producto no encontrado";
     }
     .product-wrapper .product-gallery {
       max-width: none;
+      height: 700px;
     }
     .product-title {
       font-size: 2rem;
@@ -786,6 +787,11 @@ if (!product) return "Producto no encontrado";
     .main-image img {
       min-height: auto;
       max-height: auto;
+    }
+  }
+  @media (width <= 550px) {
+    .product-wrapper .product-gallery {
+      height: 450px;
     }
   }
 </style>
