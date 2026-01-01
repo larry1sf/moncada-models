@@ -901,6 +901,7 @@ import BaseLayout from "~/layouts/BaseLayout.astro";
                 window.open(
                     `https://wa.me/${COMPANY_PHONE}?text=${encodeURIComponent(message)}`,
                     "_blank",
+                    "noopener,noreferrer",
                 );
 
                 // Cleanup

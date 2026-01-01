@@ -118,6 +118,7 @@ const { title, description = siteInfo.meta.description } = Astro.props;
             href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;500;600;700&display=swap"
             rel="stylesheet"
         />
+        <link rel="sitemap" href="/sitemap-index.xml" />
 
         <meta name="og:title" content={title} />
         <meta name="og:description" content={description} />
@@ -678,7 +679,7 @@ const { title, description = siteInfo.meta.description } = Astro.props;
                     <h4>Ayuda</h4>
                     <ul>
                         <li><a href="/guia-pedidos">Guia de Pedidos</a></li>
-                        <li><a href="/contacto">Contacto</a></li>
+                        <li><a href="/ubicacion">Ubicacion</a></li>
                         <li>
                             <a href="/pedidos/registros">Registros </a>
                         </li>
