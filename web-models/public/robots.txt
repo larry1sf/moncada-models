@@ -1,0 +1,10 @@
+# Robots.txt para Moncada Models
+# Permite el acceso a todos los crawlers excepto a la página de registros
+
+User-agent: *
+Allow: /
+Disallow: /pedidos/registros
+
+# Sitemap
+# Sitemap: https://moncada-models.com/sitemap-index.xml
+Sitemap: https://moncada-models-three.vercel.app/sitemap-index.xml
