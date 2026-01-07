@@ -6,5 +6,4 @@ Allow: /
 Disallow: /pedidos/registros
 
 # Sitemap
-# Sitemap: https://moncada-models.com/sitemap-index.xml
-Sitemap: https://moncada-models-three.vercel.app/sitemap-index.xml
+Sitemap: https://moncada-models.vercel.app/sitemap-index.xml
