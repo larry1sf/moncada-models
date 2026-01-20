@@ -113,6 +113,36 @@
       },
       "targetField": "name",
       "required": true
+    },
+    "gender": {
+      "type": "enumeration",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "required": true,
+      "enum": [
+        "hombre",
+        "mujer",
+        "niño",
+        "niña"
+      ]
+    },
+    "clothingType": {
+      "type": "enumeration",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "required": true,
+      "enum": [
+        "urbana",
+        "deportiva",
+        "formal",
+        "casual"
+      ]
     }
   }
 }

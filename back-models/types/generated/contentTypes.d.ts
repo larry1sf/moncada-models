@@ -597,6 +597,15 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     };
   };
   attributes: {
+    clothingType: Schema.Attribute.Enumeration<
+      ['urbana', 'deportiva', 'formal', 'casual']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     color: Schema.Attribute.JSON &
       Schema.Attribute.Required &
       Schema.Attribute.SetPluginOptions<{
@@ -616,6 +625,15 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
       }> &
       Schema.Attribute.SetMinMaxLength<{
         maxLength: 150;
+      }>;
+    gender: Schema.Attribute.Enumeration<
+      ['hombre', 'mujer', 'ni\u00F1o', 'ni\u00F1a']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
       }>;
     images: Schema.Attribute.Media<
       'images' | 'files' | 'videos' | 'audios',
