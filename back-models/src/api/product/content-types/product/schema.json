@@ -126,7 +126,8 @@
         "hombre",
         "mujer",
         "niño",
-        "niña"
+        "niña",
+        "unisex"
       ]
     },
     "clothingType": {
