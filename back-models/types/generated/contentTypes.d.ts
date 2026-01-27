@@ -507,7 +507,7 @@ export interface ApiProductProduct extends Struct.CollectionTypeSchema {
     };
   };
   attributes: {
-    clothingType: Schema.Attribute.Enumeration<
+    clothing_type: Schema.Attribute.Enumeration<
       ['urbana', 'deportiva', 'formal', 'casual']
     > &
       Schema.Attribute.Required &

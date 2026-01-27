@@ -130,7 +130,7 @@
         "unisex"
       ]
     },
-    "clothingType": {
+    "clothing_type": {
       "type": "enumeration",
       "pluginOptions": {
         "i18n": {
