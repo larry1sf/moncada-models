@@ -1,4 +1,3 @@
-import { getProductos } from "@/service/get-producto";
 import { getCategorias } from "@/service/get-categorias";
 import BadgePremium from "@/components/badge-premium";
 import { Badge } from "@/components/ui/badge";
@@ -15,11 +14,9 @@ export const metadata = {
 };
 
 export default async function ProductosPage() {
-    // Carga inicial de datos para SEO y carga rápida
-    const [{ data: initialProducts, meta: initialMeta }, { data: categories }] = await Promise.all([
-        getProductos({ itemsPerPage: 6 }),
-        getCategorias({ onlyProductCount: true })
-    ]);
+    // Solo cargamos las categorías para los filtros
+    const { data: categories } = await getCategorias({ onlyProductCount: true });
+    
     return (
         <div className="py-16 flex flex-col gap-12 relative overflow-hidden">
             {/* Background Decorative Elements */}
@@ -59,8 +56,6 @@ export default async function ProductosPage() {
             <section className="relative px-4 md:px-8 min-h-screen">
                 <article className="max-w-7xl mx-auto">
                     <ProductosClientPage
-                        initialProducts={initialProducts as any}
-                        initialMeta={initialMeta?.pagination}
                         categories={(categories ?? categoriasMook) as any}
                     />
                 </article>

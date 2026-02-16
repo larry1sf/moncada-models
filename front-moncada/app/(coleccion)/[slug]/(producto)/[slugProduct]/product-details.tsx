@@ -65,7 +65,7 @@ export default function ProductDetails({
         ))}
       </div>
 
-      <div className="min-h-125 md:min-h-115 animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out">
+      <div className="md:min-h-fit animate-in fade-in slide-in-from-bottom-4 duration-700 ease-out">
         {activeTab === "description" && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             <div className="lg:col-span-2 space-y-8">
@@ -92,7 +92,7 @@ export default function ProductDetails({
                   </p>
                 </div>
               </div>
-              <div className="space-y-4">
+              {/* <div className="space-y-4">
                 <h4 className="font-bold text-text-dark uppercase tracking-wider text-sm">
                   Características Destacadas
                 </h4>
@@ -117,7 +117,7 @@ export default function ProductDetails({
                     </li>
                   ))}
                 </ul>
-              </div>
+              </div> */}
             </div>
 
             <aside className="space-y-6 lg:border-l lg:pl-8 border-border">

@@ -4,78 +4,61 @@ import ProductsPagination from "@/components/load-more-products"
 import SectionProducts from "@/components/sections/section-products"
 import SectionCategories from "@/components/categorias/section-categories"
 import Link from "next/link";
-import { categoriasMook, productosMook } from "@/lib/mock";
+import { categoriasMook } from "@/lib/mock";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { STRAPI_URL } from "@/lib/const";
-import { useCategorias } from "@/context/categorias-context";
+import { useProductosContext } from "@/context/productos-context";
 import { useMemo } from "react";
-import { ProductCategory, TComponentChild } from "@/types/typos";
+import { ProductCategory, TComponentChild, Producto } from "@/types/typos";
 import { Skeleton } from "@/components/ui/skeleton/skeleton";
 import { ViewTransition } from "react";
 
 export default function ClientPage({ slug, initialCategory }: { slug: string, initialCategory?: ProductCategory }) {
 
-    const { categories, isLoading } = useCategorias();
+    const { allProducts, categoriasHeaders, isLoadingC } = useProductosContext();
 
-    // Obtenemos la categoría actual y las demás de forma memoizada
-    const { category, otherCategories } = useMemo(() => {
-        // Buscamos en las categorías del contexto si ya existen
-        const current = categories?.find((cate) => cate.slug === slug);
-        const others = categories?.filter((cate) => cate.slug !== slug);
+    // Obtener los productos de esta categoría filtrando allProducts
+    const { products, category, otherCategories } = useMemo(() => {
+        // Filtrar productos por categoría
+        const categoryProducts = allProducts.filter(
+            (product: Producto) => product.product_category?.slug === slug
+        );
+
+        // Encontrar la categoría actual en los headers
+        const currentCategoryHeader = categoriasHeaders.find(c => c.slug === slug);
+        
+        // Construir el objeto de categoría completo
+        const currentCategory: ProductCategory | undefined = initialCategory || (currentCategoryHeader ? {
+            id: currentCategoryHeader.id,
+            documentId: '',
+            title: currentCategoryHeader.title,
+            slug: currentCategoryHeader.slug,
+            description: '',
+            image: currentCategoryHeader.image,
+            products: categoryProducts
+        } : undefined);
+
+        // Otras categorías (excluyendo la actual)
+        const others = categoriasHeaders
+            .filter(c => c.slug !== slug)
+            .map(header => ({
+                id: header.id,
+                documentId: '',
+                title: header.title,
+                slug: header.slug,
+                description: '',
+                image: header.image,
+                products: []
+            }));
 
         return {
-            // Priorizamos: Contexto -> Prop Inicial (SSR) -> Mock (solo si no estamos cargando)
-            category: current ?? initialCategory ?? (isLoading ? null : categoriasMook[0]),
-            otherCategories: others ?? (isLoading ? [] : categoriasMook)
+            products: categoryProducts,
+            category: currentCategory,
+            otherCategories: others.length > 0 ? others : (isLoadingC ? [] : categoriasMook)
         };
-    }, [categories, slug, isLoading, initialCategory]);
-
-    // Extraemos y mapeamos los productos de la categoría de forma robusta
-    const products = useMemo(() => {
-        // Durante la carga, si no hay categorías cargadas en el contexto, 
-        // y la categoría inicial no tiene productos detallados, mostramos skeletons.
-        const productsRaw = category?.products;
-        let productsArray: any[] = [];
-
-        if (Array.isArray(productsRaw)) {
-            productsArray = productsRaw;
-        } else if (productsRaw && typeof productsRaw === 'object' && 'data' in productsRaw) {
-            productsArray = (productsRaw as any).data || [];
-        }
-
-        // VALIDACIÓN CLAVE: Si los productos no tienen nombre o slug, es que vienen de la carga rápida (solo IDs)
-        // en ese caso, preferimos devolver [] para que se vean los skeletons.
-        const hasFullData = productsArray.length > 0 && (productsArray[0].name || productsArray[0].slug);
-
-        if (hasFullData) {
-            return productsArray.map(product => {
-                let categoryInfo = product.product_category;
-                if (categoryInfo && typeof categoryInfo === 'object' && 'data' in categoryInfo) {
-                    categoryInfo = (categoryInfo as any).data;
-                }
-
-                let imagesInfo = product.images;
-                if (imagesInfo && typeof imagesInfo === 'object' && 'data' in imagesInfo) {
-                    imagesInfo = (imagesInfo as any).data;
-                }
-
-                return {
-                    ...product,
-                    images: Array.isArray(imagesInfo) ? imagesInfo : [],
-                    product_category: categoryInfo || {
-                        slug: category?.slug || slug,
-                        title: category?.title || ""
-                    }
-                };
-            });
-        }
-
-        // Si no hay data completa, mostramos skeletons mientras cargamos, o mocks si terminó y no hay nada
-        if (isLoading || !categories) return [];
-        return []
-    }, [category, isLoading, categories, slug]);
+    }, [allProducts, categoriasHeaders, slug, initialCategory, isLoadingC]);
 
     const imagePreview = useMemo(() => {
         if (!category?.image?.url) return "";
@@ -205,7 +188,7 @@ export default function ClientPage({ slug, initialCategory }: { slug: string, in
                 fetchRute="productos"
                 products={products}
                 slugCategory={slug}
-                isLoading={isLoading && !categories}
+                isLoading={isLoadingC}
                 skeletonType="product"
                 ComponentChild={SectionProducts as TComponentChild}
                 sectionHeaderTexts={{
@@ -219,7 +202,7 @@ export default function ClientPage({ slug, initialCategory }: { slug: string, in
             <ProductsPagination
                 products={otherCategories}
                 slugCategory={slug}
-                isLoading={isLoading && !categories}
+                isLoading={isLoadingC}
                 skeletonType="category"
                 minHeight="min-h-[85vh]"
                 fetchRute="categorias"

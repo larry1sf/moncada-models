@@ -28,7 +28,7 @@ export default function Hero() {
 
                     <div className="flex flex-col sm:flex-row gap-4 md:gap-6 mt-4">
                         <Button asChild variant="default" className="px-12 w-full sm:w-auto">
-                            <Link href="#colecciones">
+                            <Link href="/productos">
                                 Comprar Ahora
                             </Link>
                         </Button>

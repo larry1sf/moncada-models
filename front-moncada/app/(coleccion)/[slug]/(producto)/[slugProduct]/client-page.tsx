@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import { GAMA_COLORES } from "@/lib/colores";
 import { useCarrito } from "@/context/carrito-context";
 import { toast } from "sonner";
+import { SOCIAL_MEDIA_LINKS } from "@/lib/const";
 
 export default function ClientPage({ size, color, name, price, images, id }: Producto) {
   const [quantity, setQuantity] = useState(1);
@@ -97,7 +98,7 @@ export default function ClientPage({ size, color, name, price, images, id }: Pro
       `Hola, me gustaría hacer un pedido del siguiente producto: \n- *${name}* de color *${selectedColor}* y talla *${selectedSize.toUpperCase()}* que se publico con el precio de: *${price}*\n
       ${price > 100000 ? "*Debido a que el precio supera los 100.000 COP el envio es gratis*" : ""}`
     )
-    window.open(`https://wa.me/573024512965?text=${text}`, "_blank", "noopener no referrer");
+    window.open(`${SOCIAL_MEDIA_LINKS.WHATSAPP}?text=${text}`, "_blank", "noopener no referrer");
   }
 
   return (
@@ -141,7 +142,7 @@ export default function ClientPage({ size, color, name, price, images, id }: Pro
               >
                 <span
                   className="w-full h-full rounded-full shadow-inner"
-                  style={{ backgroundColor: GAMA_COLORES[c.toLowerCase() as keyof typeof GAMA_COLORES] }}
+                  style={{ backgroundColor: GAMA_COLORES[c?.toLowerCase() as keyof typeof GAMA_COLORES] }}
                 />
               </button>
             );

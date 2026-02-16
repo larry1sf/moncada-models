@@ -131,7 +131,7 @@ export function ContactForm() {
                             name="name"
                             placeholder="Ej: Alejandra García"
                             className={cn(
-                                "h-14 bg-bg-light/50 border-border focus:bg-white focus:border-accent transition-all duration-300 rounded-xl ",
+                                "h-14 bg-bg-light/50 border-border focus:bg-white focus:border-accent transition-all duration-300 rounded-xl text-text-dark",
                                 errors.name && "border-red-200"
                             )}
                         />
@@ -147,7 +147,7 @@ export function ContactForm() {
                                 name="whatsapp"
                                 placeholder="300 000 0000"
                                 className={cn(
-                                    "h-14 bg-bg-light/50 border-border focus:bg-white focus:border-accent transition-all duration-300 rounded-l-none rounded-r-xl",
+                                    "h-14 bg-bg-light/50 border-border focus:bg-white focus:border-accent transition-all duration-300 rounded-l-none rounded-r-xl text-text-dark",
                                     errors.whatsapp && "border-red-200"
                                 )}
                             />
@@ -164,7 +164,7 @@ export function ContactForm() {
                         type="email"
                         placeholder="alejandra@ejemplo.com"
                         className={cn(
-                            "h-14 bg-bg-light/50 border-border focus:bg-white focus:border-accent transition-all duration-300 rounded-xl",
+                            "h-14 bg-bg-light/50 border-border focus:bg-white focus:border-accent transition-all duration-300 rounded-xl text-text-dark",
                             errors.email && "border-red-200"
                         )}
                     />
@@ -180,7 +180,7 @@ export function ContactForm() {
                             fieldSizing: "content"
                         }}
                         className={cn(
-                            "w-full h-[6.5lh] p-4 bg-bg-light/50 border-border focus:bg-white focus:border-accent transition-all duration-300 rounded-xl outline-none text-sm border shadow-sm resize-none",
+                            "w-full h-[6.5lh] p-4 bg-bg-light/50 border-border focus:bg-white focus:border-accent transition-all duration-300 rounded-xl outline-none text-sm border shadow-sm resize-none text-text-dark",
                             errors.message && "border-red-200"
                         )}
                     />

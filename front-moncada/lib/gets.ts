@@ -1,19 +1,12 @@
-import { STRAPI_URL, STRAPI_TOKEN } from "./const"
+import { STRAPI_URL, STRAPI_TOKEN } from "@/lib/const"
 
 export async function gets({ query }: { query: string }) {
-
     try {
-        // Log para depuración en Vercel
-        console.log(`[GETS DEBUG] Intentando conectar a: ${STRAPI_URL}`);
-        console.log(`[GETS DEBUG] Token existe: ${!!STRAPI_TOKEN}`);
-        console.log(`[GETS DEBUG] Query: ${query}`);
-
         const res = await fetch(`${STRAPI_URL}/api/${query}`, {
             headers: {
                 "Authorization": `Bearer ${STRAPI_TOKEN}`
             }
         })
-
 
         if (!res.ok) {
             console.error(`[GETS ERROR] Status: ${res.status} ${res.statusText}`);

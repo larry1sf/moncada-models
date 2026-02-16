@@ -26,20 +26,11 @@ export default function CtaMoncadaModels() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
           <FeatureCard
-            title={promesa_de_confienza.title}
-            icon={promesa_de_confienza.icon}
-            points={promesa_de_confienza.points}
-            rotateIcon={true}
-            linkText="Explorar Proceso"
-            steps={promesa_de_confienza.steps}
+            {...promesa_de_confienza}
+
           />
           <FeatureCard
-            title={logistica_de_elite.title}
-            icon={logistica_de_elite.icon}
-            points={logistica_de_elite.points}
-            rotateIcon={false}
-            linkText="Detalles de Envío"
-            steps={logistica_de_elite.steps}
+            {...logistica_de_elite}
           />
         </div>
 
@@ -283,10 +274,13 @@ function FeatureCard({
                   ¿Tienes alguna pregunta? Estamos aquí para ayudarte.
                 </p>
                 <Button
+                  asChild
                   variant="default"
                   className="bg-text-dark hover:bg-cta-dark-hover text-cream font-bold px-6 md:px-8 py-2.5 md:py-3 rounded-2xl shadow-lg transition-all duration-300 whitespace-nowrap"
                 >
-                  Contactar Soporte
+                  <Link href={"/nosotros/contactanos"}>
+                    Contactar Soporte
+                  </Link>
                 </Button>
               </div>
             </DialogContent>
