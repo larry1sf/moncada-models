@@ -4,9 +4,10 @@ import "@/app/globals.css";
 import Header from "@/app/header";
 import Footer from "@/app/footer";
 import { Toaster } from "@/components/ui/sonner"
-import CategoriasContextProvider from "@/context/categorias-context";
 import ProductosContextProvider from "@/context/productos-context";
 import CarritoContextProvider from "@/context/carrito-context";
+import { getProductos } from "@/service/get-producto";
+import { Producto } from "@/types/typos";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -25,32 +26,34 @@ export const metadata: Metadata = {
   description: "Descubre la mejor tienda de ropa de Bucaramanga. Desde ropa elegante hasta deportiva, con variedad en tallas y colores.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Petición inicial: obtener TODOS los productos sin filtros
+  const { data: allProducts, meta: allProductsMeta } = await getProductos({
+    itemsPerPage: 1000 // Obtener todos los productos disponibles
+  });
+
   return (
     <html lang="es" className="scroll-smooth">
       <body
         className={`${poppins.variable} ${playfair.variable} font-sans antialiased bg-background text-foreground overflow-x-hidden`}
       >
         <Toaster />
-        <CategoriasContextProvider>
-          <ProductosContextProvider>
-            <CarritoContextProvider>
-
-              <Header />
-              <main className="max-w-7xl mx-auto px-4 md:px-8 min-h-screen">
-                {children}
-              </main>
-
-            </CarritoContextProvider>
-          </ProductosContextProvider>
-        </CategoriasContextProvider>
-
+        <ProductosContextProvider 
+          initialData={allProducts as Producto[] || undefined} 
+          initialMeta={allProductsMeta?.pagination}
+        >
+          <CarritoContextProvider>
+            <Header />
+            <main className="max-w-7xl mx-auto px-4 md:px-8 min-h-screen">
+              {children}
+            </main>
+          </CarritoContextProvider>
+        </ProductosContextProvider>
         <Footer />
-
       </body>
     </html>
   )

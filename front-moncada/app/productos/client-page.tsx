@@ -1,8 +1,8 @@
 "use client";
 
 import { useRef, useEffect } from "react";
-import ProductosProvider, { useProductosContext } from "@/context/productos-context";
-import { Producto, ProductCategory, responseMetaApi } from "@/types/typos";
+import { useProductosContext } from "@/context/productos-context";
+import { ProductCategory } from "@/types/typos";
 import ProductCard from "@/components/product-card";
 import { CardSkeleton } from "@/components/ui/skeleton/card-skeleton";
 import FilterBarProducts from "@/app/productos/filter-bar-products";
@@ -12,8 +12,6 @@ import { useSizeScreen } from "@/hooks/useSizeScreen";
 import { Pagination } from "@/components/ui/pagination";
 
 interface Props {
-    initialProducts?: Producto[] | null;
-    initialMeta?: responseMetaApi["pagination"];
     categories: ProductCategory[];
 }
 
@@ -39,7 +37,7 @@ function ProductsGrid() {
             fetchProductos({ page: 1, itemsPerPage: currentIP });
             previousItemsPerPage.current = currentIP;
         }
-    }, [width, fetchProductos]);
+    }, [width, fetchProductos, productos.meta]);
 
     const handlePageChange = (page: number) => fetchProductos({ page, itemsPerPage });
 
@@ -120,13 +118,11 @@ function ProductsGrid() {
     );
 }
 
-export default function ProductosClientPage({ initialProducts, initialMeta, categories }: Props) {
+export default function ProductosClientPage({ categories }: Props) {
     return (
-        <ProductosProvider initialData={initialProducts || undefined} initialMeta={initialMeta}>
-            <div className="flex flex-col gap-10 sm:gap-12 lg:gap-16">
-                <FilterBarProducts categories={categories} />
-                <ProductsGrid />
-            </div>
-        </ProductosProvider>
+        <div className="flex flex-col gap-10 sm:gap-12 lg:gap-16">
+            <FilterBarProducts categories={categories} />
+            <ProductsGrid />
+        </div>
     );
 }

@@ -1,21 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
-import { IconMenu, IconX, IconChevronRight, IconChevronDown } from "@tabler/icons-react";
-import { useCategorias } from "@/context/categorias-context";
 import Spinner from "@/components/ui/spinner";
-import { CategoryHeader } from "@/types/typos";
+import { useState, useEffect } from "react";
+import { IconMenu, IconX, IconChevronRight, IconChevronDown } from "@tabler/icons-react";
 import { useProductosContext } from "@/context/productos-context";
 import { CartSheet } from "@/components/cart-sheet";
 
 export default function Header() {
-    const [categoriasHeaders, setCategoriasHeaders] = useState<CategoryHeader[]>([])
+    const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-    const [isScrolled, setIsScrolled] = useState(false);
-    const { categories, fetchCategorias, isLoading: isLoadingC, error: errorCategories } = useCategorias()
-    const { productos, fetchProductos, error: errorProducts } = useProductosContext()
+    const { categoriasHeaders, isLoadingC } = useProductosContext()
 
     useEffect(() => {
         const handleScroll = () => {
@@ -23,29 +19,7 @@ export default function Header() {
         };
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
-
-    // sacamos las categorias que mostramos en el boton del menu
-    // pedimos las categorias iniciales del contexto
-    useEffect(() => {
-        if (categories) {
-            const formatCategoryMenu = categories.map(({ title, slug, products }) => ({
-                title,
-                slug,
-                productCount: products?.length ?? 0
-            }))
-            setCategoriasHeaders(formatCategoryMenu)
-        } else if (!errorCategories) {
-            fetchCategorias()
-        }
-    }, [categories, errorCategories])
-
-    // pedimos los productos iniciales del contacto
-    useEffect(() => {
-        if (productos.data.length || errorProducts) return
-
-        fetchProductos()
-    }, [productos, errorProducts])
+    }, [])
 
     return (
         <>

@@ -24,18 +24,6 @@ interface Props {
     categories: ProductCategory[];
 }
 
-// const GENDER_OPTIONS = [
-//     { value: "all", label: "Todos" },
-//     { value: "hombre", label: "Hombre" },
-//     { value: "mujer", label: "Mujer" },
-//     { value: "niño", label: "Niño" },
-//     { value: "niña", label: "Niña" },
-// ];
-
-
-
-//  
-
 const SORT_OPTIONS = [
     { value: "createdAt:desc", label: "Nuevos y Populares", icon: <IconSortDescending size={16} /> },
     { value: "price:asc", label: "Menor Precio", icon: <IconSortAscending size={16} /> },

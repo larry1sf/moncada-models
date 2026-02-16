@@ -55,10 +55,11 @@ export interface responseApi {
     data: (Producto | ProductCategory)[] | null;
     meta: responseMetaApi | null;
 }
-
 export interface CategoryHeader {
+    id: number;
     slug: string;
     title: string;
+    image: Image
     productCount: number;
 }
 

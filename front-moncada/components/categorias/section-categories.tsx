@@ -1,23 +1,20 @@
 "use client";
 
-import { ProductCategory } from "@/types/typos";
 import CategoryPremiumCard from "@/components/categorias/category-premium-card";
-import { useCategorias } from "@/context/categorias-context";
-import { CardSkeleton } from "@/components/ui/skeleton/card-skeleton";
 import ErrorSection from "@/components/sections/error-section";
+import { ProductCategory } from "@/types/typos";
+import { CardSkeleton } from "@/components/ui/skeleton/card-skeleton";
+import { useProductosContext } from "@/context/productos-context";
 
 export default function SectionCategories({
   outProducts,
 }: {
   outProducts?: ProductCategory[];
 }) {
-  const { categories: categoriasContext, isLoading } =
-    outProducts != undefined
-      ? { categories: outProducts, isLoading: false }
-      : useCategorias();
 
-  const categoriasMostrar = categoriasContext ?? outProducts ?? [];
-  const isError = !isLoading && !categoriasMostrar.length
+  const { categoriasHeaders, isLoadingC } = outProducts != undefined ? { categoriasHeaders: outProducts, isLoadingC: false } : useProductosContext()
+  const categoriasMostrar = categoriasHeaders ?? outProducts ?? [];
+  const isError = !isLoadingC && !categoriasMostrar.length
   return (
     <article className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" role="list">
       {
@@ -27,14 +24,14 @@ export default function SectionCategories({
         }} />
       }
       {
-        isLoading && !categoriasMostrar ? (
+        isLoadingC && !categoriasMostrar.length ? (
           Array.from({ length: 6 }).map((_, index) => (
             <CardSkeleton key={index} variant="category" />
           ))
         ) : (
           categoriasMostrar?.map(({ id, title, slug, image }, index) => (
             <CategoryPremiumCard
-              key={id}
+              key={slug}
               id={id}
               title={title}
               slug={slug}
