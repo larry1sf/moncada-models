@@ -14,7 +14,6 @@ import { useMemo } from "react";
 import { ProductCategory, TComponentChild, Producto } from "@/types/typos";
 import { Skeleton } from "@/components/ui/skeleton/skeleton";
 import { ViewTransition } from "react";
-import Image from "next/image";
 
 export default function ClientPage({ slug, initialCategory }: { slug: string, initialCategory?: ProductCategory }) {
 
