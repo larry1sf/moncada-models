@@ -57,7 +57,7 @@ function extractMetadata(products: Producto[]) {
     // Extraer categorías header
     const headersCategories = products.map(product => ({
         id: product.id,
-        image: product.images?.at(1),
+        image: product.images?.at(0),
         title: product.product_category.title,
         slug: product.product_category.slug,
         productCount: 1
