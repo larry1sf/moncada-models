@@ -29,16 +29,18 @@ export default function SectionCategories({
             <CardSkeleton key={index} variant="category" />
           ))
         ) : (
-            categoriasMostrar?.map(({ id, title, slug, image }, index) => (
+            categoriasMostrar
+              // ?.filter(({ image }) => image?.url)
+              ?.map(({ id, title, slug, image }, index) => (
                 <CategoryPremiumCard
-              key={slug}
-              id={id}
-              title={title}
-              slug={slug}
-              imageUrl={image.url}
-              index={index}
-            />
-            )
+                  key={slug}
+                  id={id}
+                  title={title}
+                  slug={slug}
+                  imageUrl={image?.url}
+                  index={index}
+                />
+              )
           )
         )
       }
