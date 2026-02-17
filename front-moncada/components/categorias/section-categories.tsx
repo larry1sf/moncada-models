@@ -37,7 +37,7 @@ export default function SectionCategories({
                   id={id}
                   title={title}
                   slug={slug}
-                  imageUrl={image.url ?? "fail image"}
+                  imageUrl={image?.url ?? "fail image"}
                   index={index}
                 />
               )
