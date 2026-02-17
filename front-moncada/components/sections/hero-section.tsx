@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { IconCheck } from "@tabler/icons-react";
-import Image from "next/image";
+// import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -59,7 +59,7 @@ export default function Hero() {
                 <article className="relative flex justify-center opacity-0 animate-[fadeIn_1.2s_ease-out_0.2s_forwards]">
                     <div className="relative w-full max-w-125">
                         <div className="relative z-10 shadow-2xs md:shadow-xl rounded-4xl overflow-hidden aspect-3/4 bg-bg-dark">
-                            <Image
+                            <img
                                 src="/hero-fashion.webp"
                                 alt="Blusa elegante de nueva colección"
                                 className="w-full h-full object-cover "
