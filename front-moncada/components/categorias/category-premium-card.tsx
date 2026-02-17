@@ -21,6 +21,7 @@ export default function CategoryPremiumCard({
     index
 }: CategoryPremiumCardProps) {
     const fullImageUrl = imageUrl.startsWith('http') ? imageUrl : `${STRAPI_URL}${imageUrl}`;
+console.log(fullImageUrl);
 
     return (
         <Link
