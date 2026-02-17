@@ -12,7 +12,7 @@ export default function SectionCategories({
   outProducts?: ProductCategory[];
 }) {
 
-  const { categoriasHeaders, isLoadingC } = outProducts != undefined ? { categoriasHeaders: outProducts, isLoadingC: false } : useProductosContext()
+  const { categoriasHeaders, isLoadingC } = useProductosContext() ?? outProducts
   const categoriasMostrar = categoriasHeaders ?? outProducts ?? [];
   const isError = !isLoadingC && !categoriasMostrar.length
   return (
