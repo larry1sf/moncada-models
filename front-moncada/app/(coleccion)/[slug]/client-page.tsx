@@ -14,6 +14,7 @@ import { useMemo } from "react";
 import { ProductCategory, TComponentChild, Producto } from "@/types/typos";
 import { Skeleton } from "@/components/ui/skeleton/skeleton";
 import { ViewTransition } from "react";
+import Image from "next/image";
 
 export default function ClientPage({ slug, initialCategory }: { slug: string, initialCategory?: ProductCategory }) {
 
@@ -75,13 +76,16 @@ export default function ClientPage({ slug, initialCategory }: { slug: string, in
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                         {/* Image Section */}
                         <article className="relative group animate-fade-in-up">
-                            <ViewTransition name={`categoria-${slug}`}>
+                            <ViewTransition name={`categoria-${category?.id}`}>
                                 <figure className="relative w-full h-80 md:h-125 rounded-4xl overflow-hidden shadow-sm md:shadow-lg transform transition-all duration-1000 group-hover:scale-[1.02] border-2 border-accent/20">
                                     {!category ? (
                                         <Skeleton className="w-full h-full bg-zinc-200" />
                                     ) : (
                                         <>
-                                            <img
+                                                <img
+                                                    loading="eager"
+                                                    width={200}
+                                                    height={200}
                                                 src={imagePreview}
                                                 alt={category?.title}
                                                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
@@ -148,7 +152,7 @@ export default function ClientPage({ slug, initialCategory }: { slug: string, in
                                         </h1>
 
                                         <p className="text-xl md:line-clamp-3 text-text-dark/80 leading-relaxed max-w-4xl font-medium italic">
-                                            "{category?.description}"
+                                            &quot;{category?.description}&quot;
                                         </p>
                                     </>
                                 )}
