@@ -29,8 +29,8 @@ export default function SectionCategories({
             <CardSkeleton key={index} variant="category" />
           ))
         ) : (
-          categoriasMostrar?.map(({ id, title, slug, image }, index) => (
-            <CategoryPremiumCard
+            categoriasMostrar?.map(({ id, title, slug, image }, index) => (
+                <CategoryPremiumCard
               key={slug}
               id={id}
               title={title}
@@ -38,7 +38,8 @@ export default function SectionCategories({
               imageUrl={image.url}
               index={index}
             />
-          ))
+            )
+          )
         )
       }
     </article>
