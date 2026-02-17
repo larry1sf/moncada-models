@@ -37,7 +37,7 @@ console.log(fullImageUrl);
                 className="relative w-full h-full shrink-0 overflow-hidden">
                 <ViewTransition name={`categoria-${slug}`}>
                     <img
-                        src={fullImageUrl || ""}
+                        src={fullImageUrl}
                         alt={title}
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         className="object-cover transition-transform duration-1000 group-hover:scale-105"
