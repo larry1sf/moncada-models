@@ -17,7 +17,6 @@ interface ProductCardProps {
 }
 
 import { useState, ViewTransition } from "react";
-// import Image from "next/image";
 export default function ProductCard({
   slug,
   name,
@@ -34,8 +33,8 @@ export default function ProductCard({
 
   const [transitionanding, setTransitionanding] = useState(false)
   return (
-    <div
-      className={`group relative flex flex-col justify-between bg-white rounded-2xl overflow-hidden border border-border transition-custom hover:-translate-y-3 hover:border-accent hover:shadow-2xl h-full ${className}`}
+    <article
+      className={`group relative flex flex-col justify-between bg-white rounded-2xl overflow-hidden border border-border transition-custom hover:-translate-y-3 hover:border-accent hover:shadow-2xl h-125 ${className}`}
     >
       <Link
         href={`/${slugCate}/${slug}`} onClick={() => setTransitionanding(true)}
@@ -85,6 +84,6 @@ export default function ProductCard({
           </Button>
         </div>
       </div>
-    </div>
+    </article>
   );
 }
