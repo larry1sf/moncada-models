@@ -16,7 +16,7 @@ export default function SectionCategories({
   const categoriasMostrar = categoriasHeaders ?? outProducts ?? [];
   const isError = !isLoadingC && !categoriasMostrar.length
   return (
-    <article className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" role="list">
+    <article className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-8" role="list">
       {
         isError && <ErrorSection messages={{
           title: "No Ahi categorias disponibles",
@@ -30,7 +30,6 @@ export default function SectionCategories({
           ))
         ) : (
             categoriasMostrar
-              // ?.filter(({ image }) => image?.url)
               ?.map(({ id, title, slug, image }, index) => (
                 <CategoryPremiumCard
                   key={slug}

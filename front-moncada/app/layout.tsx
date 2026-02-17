@@ -48,7 +48,7 @@ export default async function RootLayout({
         >
           <CarritoContextProvider>
             <Header />
-            <main className="max-w-7xl mx-auto px-4 md:px-8 min-h-screen">
+            <main className="max-w-7xl mx-auto px-4 md:px-8">
               {children}
             </main>
           </CarritoContextProvider>

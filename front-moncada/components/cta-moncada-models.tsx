@@ -16,7 +16,7 @@ import {
 
 export default function CtaMoncadaModels() {
   return (
-    <section className="relative pt-16 border-t border-border">
+    <section className="relative mt-3 pt-12 border-t border-border">
       <div className="max-w-300 mx-auto px-4 md:px-8">
         <SectionHeader
           badgeContent="Compromiso con la Excelencia"
@@ -24,7 +24,7 @@ export default function CtaMoncadaModels() {
           description="Tu satisfacción es nuestra prioridad. Descubre los beneficios de comprar con nosotros"
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 pt-16">
           <FeatureCard
             {...promesa_de_confienza}
 
@@ -47,7 +47,6 @@ export default function CtaMoncadaModels() {
     </section>
   );
 }
-
 
 // QuickStats
 interface StatItem {

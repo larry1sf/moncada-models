@@ -2,13 +2,12 @@
 
 import Link from "next/link";
 import { IconCheck } from "@tabler/icons-react";
-// import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 export default function Hero() {
     return (
-        <section className="relative pt-20 px-8 overflow-hidden min-h-[85vh] flex items-center">
+        <section className="relative py-12 px-8 overflow-hidden flex items-center">
             <div className="max-w-300 mx-auto grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-24 items-center relative z-10 w-full">
                 {/* Content */}
                 <article className="flex flex-col gap-6 md:gap-8 opacity-0 animate-[slideUp_0.8s_cubic-bezier(0.2,0.8,0.2,1)_forwards]">
@@ -39,26 +38,26 @@ export default function Hero() {
                         </Button>
                     </div>
 
-                    <div className="flex flex-wrap gap-4 md:gap-8 mt-4 md:mt-8 pt-6 md:pt-8 border-t border-accent/20">
-                        <div className="flex items-center gap-2 text-text-dark font-medium text-xs md:text-sm">
+                    <ul className="flex flex-wrap gap-4 md:gap-8 mt-4 md:mt-10 pt-6 md:pt-8 border-t border-accent/20">
+                        <li className="flex items-center gap-2 text-text-dark font-medium text-xs md:text-sm">
                             <span className="text-accent font-bold"><IconCheck className="w-4 h-4" /></span>
                             <span>Envíos Gratis</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-text-dark font-medium text-xs md:text-sm">
+                        </li>
+                        <li className="flex items-center gap-2 text-text-dark font-medium text-xs md:text-sm">
                             <span className="text-accent font-bold"><IconCheck className="w-4 h-4" /></span>
                             <span>Calidad Premium</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-text-dark font-medium text-xs md:text-sm">
+                        </li>
+                        <li className="flex items-center gap-2 text-text-dark font-medium text-xs md:text-sm">
                             <span className="text-accent font-bold"><IconCheck className="w-4 h-4" /></span>
                             <span>Respuesta Rápida</span>
-                        </div>
-                    </div>
+                        </li>
+                    </ul>
                 </article>
 
                 {/* Visual */}
                 <article className="relative flex justify-center opacity-0 animate-[fadeIn_1.2s_ease-out_0.2s_forwards]">
                     <div className="relative w-full max-w-125">
-                        <div className="relative z-10 shadow-2xs md:shadow-xl rounded-4xl overflow-hidden aspect-3/4 bg-bg-dark">
+                        <div className="relative z-10 shadow-xs rounded-4xl overflow-hidden aspect-3/4 bg-bg-dark">
                             <img
                                 src="/hero-fashion.webp"
                                 alt="Blusa elegante de nueva colección"

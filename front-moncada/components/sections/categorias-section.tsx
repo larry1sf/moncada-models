@@ -6,7 +6,7 @@ import SectionHeader from "@/components/sections/section-header";
 
 export default async function CategoriasSection() {
     return (
-        <section id="colecciones" className="scroll-mt-24 px-4 md:px-8">
+        <section id="colecciones" className="scroll-mt-24 px-4 md:px-8 pt-8 border-t border-border">
             <SectionHeader
                 title="Nuestras Colecciones"
                 description="Explora nuestras categorías diseñadas para cada ocasión"
@@ -15,7 +15,7 @@ export default async function CategoriasSection() {
 
             <SectionCategories />
 
-            <div className="flex justify-center mt-12 md:mt-16">
+            <div className="flex justify-center my-3">
                 <Button
                     asChild
                     variant="secondary"

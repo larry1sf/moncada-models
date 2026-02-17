@@ -2,18 +2,14 @@
 
 import Link from "next/link";
 import { socials } from "@/lib/const";
-import { useState, useEffect } from "react";
+import {  useMemo } from "react";
 
 export default function Footer() {
-  const [year, setYear] = useState<number | null>(null);
-
-  useEffect(() => {
-    setYear(new Date().getFullYear());
-  }, []);
+  const year = useMemo(()=>new Date().getFullYear(),[])
 
   if (!year) return null;
   return (
-    <footer className="bg-cta-dark text-bg-light mt-12 sm:mt-20">
+    <footer className="bg-cta-dark text-bg-light mt-6">
       <div className="max-w-7xl mx-auto px-8 pt-16 pb-8 grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-10">
         <div className="flex flex-col gap-4">
           <h3 className="font-display text-2xl text-accent font-bold">

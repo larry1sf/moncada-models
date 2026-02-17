@@ -17,7 +17,7 @@ export default function SectionHeader({
     className = ""
 }: SectionHeaderProps) {
     return (
-        <div className={`text-center mb-16 space-y-4 ${className}`}>
+        <div className={`text-center space-y-4 ${className}`}>
             {showBadge && badgeContent && (
                 <BadgePremium color="dark">
                     <>{badgeContent}</>
@@ -27,7 +27,9 @@ export default function SectionHeader({
                 {title}
             </h2>
             {description && (
-                <p className="mt-4 text-xl text-text-dark max-w-2xl mx-auto font-medium leading-relaxed animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+                <p
+                    className="text-xl text-text-dark max-w-2xl mx-auto font-medium leading-relaxed animate-fade-in-up"
+                    style={{ animationDelay: '0.2s' }}>
                     {description}
                 </p>
             )}

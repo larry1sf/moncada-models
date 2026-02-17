@@ -22,7 +22,7 @@ export default function SectionProducts({
   const isError = !isLoading && productosAMostrar()?.length === 0
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-12">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 py-8">
 
       {
         isError && <ErrorSection className="col-span-full row-span-full" />
