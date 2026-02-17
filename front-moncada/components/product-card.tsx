@@ -17,6 +17,7 @@ interface ProductCardProps {
 }
 
 import { useState, ViewTransition } from "react";
+import Image from "next/image";
 export default function ProductCard({
   slug,
   name,
@@ -44,7 +45,9 @@ export default function ProductCard({
           {isNew ? "Nuevo" : "Oferta"}
         </div>
         <ViewTransition name={transitionanding ? `producto-${slug}` : undefined}>
-          <img
+          <Image
+            width={250}
+            height={400}
             src={imageUrl}
             alt={name}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"

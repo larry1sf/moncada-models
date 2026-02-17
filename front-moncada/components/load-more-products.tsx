@@ -6,8 +6,7 @@ import { Button } from "@/components/ui/button";
 import { IconPackageOff } from "@tabler/icons-react";
 import Link from "next/link";
 import { ProductCategory, Producto, TComponentChild } from "@/types/typos";
-import { Suspense, useEffect, useMemo, useState } from "react";
-// import { categoriasMook } from "@/lib/mock";
+import { Suspense, useMemo, useState } from "react";
 
 export default function ProductsPagination({
   products,
@@ -36,7 +35,6 @@ export default function ProductsPagination({
 }) {
   const ITEMS_PER_PAGE = itemsPerPage;
   const [currentPage, setCurrentPage] = useState(1);
-  const [error, setError] = useState("");
 
   // Calculamos los productos a mostrar y meta-información de forma local
   const { productosAMostrar, pageCount } = useMemo(() => {
@@ -63,12 +61,15 @@ export default function ProductsPagination({
       productosAMostrar: products?.slice(startIndex, endIndex) ?? [],
       pageCount: count || 1
     };
-  }, [products, currentPage, fetchRute, isLoading]);
+
+  }, [products, currentPage, fetchRute, isLoading,ITEMS_PER_PAGE]);
 
   // Resetear a página 1 si cambian los productos (ej. cambio de categoría)
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [products]);
+  // useEffect(() => {
+    
+  //   setCurrentPage(1)
+
+  // }, [products]);
 
   return (
     <section

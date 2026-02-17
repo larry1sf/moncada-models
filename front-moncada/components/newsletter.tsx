@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useRef, useState } from "react";
-import { Button } from "./ui/button";
-import useMousePosition from "../hooks/useMousePosition";
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import useMousePosition from "@/hooks/useMousePosition";
 
 
 
