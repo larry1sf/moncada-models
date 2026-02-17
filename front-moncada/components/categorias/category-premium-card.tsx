@@ -21,12 +21,11 @@ export default function CategoryPremiumCard({
     index
 }: CategoryPremiumCardProps) {
     const fullImageUrl = imageUrl.startsWith('http') ? imageUrl : `${STRAPI_URL}${imageUrl}`;
-console.log(fullImageUrl);
 
     return (
         <Link
             href={`/${slug}`}
-            className="group relative rounded-2xl overflow-hidden bg-white border border-border hover:border-accent/90 hover-lift shadow-sm hover:shadow-2xl transition-all duration-700 h-full flex flex-col"
+            className="group relative rounded-2xl overflow-hidden bg-white border border-border hover:border-accent/90 hover-lift shadow-sm hover:shadow-2xl transition-all duration-700 h-96 flex flex-col"
             style={{ animationDelay: `${index * 0.1}s` }}
             role="listitem"
             aria-label={`Ver colección: ${title}`}
@@ -34,13 +33,12 @@ console.log(fullImageUrl);
             {/* Image with enhanced effects */}
             <div
 
-                className="relative w-full h-full shrink-0 overflow-hidden">
+                className="relative size-full ">
                 <ViewTransition name={`categoria-${slug}`}>
                     <img
                         src={fullImageUrl}
                         alt={title}
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        className="object-cover transition-transform duration-1000 group-hover:scale-105"
+                        className="size-full object-cover transition-transform duration-1000 group-hover:scale-105"
                     />
                 </ViewTransition>
 
